@@ -1,0 +1,9 @@
+---
+title: "Notes on the conversion of the DEBinfer code into a package"
+author: "phbs"
+date: "10/5/2015"
+output: html_document
+---
+
+##Run scripts
+run_deb_mcmc.R was moved to /demo as it is not a function per se, but rather a template for how the user should use the package. In the long run this should be re-implemented as a vignette.
