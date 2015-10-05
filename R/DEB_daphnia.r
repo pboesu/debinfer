@@ -150,10 +150,10 @@ add.noise<-function(data, sds, params){
   alpha<-params["shape"]
   gamma<-params["gamma"]
   ##print(c(alpha, gamma))
-  t<-data$time
+  t<-data[,'time']
   ##print(t)
-  L<-rnorm(t, data$y3*alpha, sd=sds$L)
-  Negg<-rnorm(t, data$y5*gamma, sd=sds$Negg)
+  L<-rnorm(t, data[,'L']*alpha, sd=sds$L)
+  Negg<-rnorm(t, data[,'M.R']*gamma, sd=sds$Negg)
 
   w<-which(L<0)
   L[w]<-0

@@ -5,11 +5,12 @@
 
 ##install PBS solve with
 ##sudo R CMD INSTALL PBSddesolve_1.08.9_bobby.tar.gz
-library(PBSddesolve)
+#library(PBSddesolve)
 
 
 #' Title
 #'
+#' @import deSolve
 #' @param sim
 #' @param params
 #' @param inits
@@ -17,19 +18,20 @@ library(PBSddesolve)
 #' @param numsteps
 #' @param which
 #' @param sizestep
+#' @param verbose passed to deSolve::ode
 #'
 #' @return integrated ode - describe structure
 #' @export
 #'
 #' @examples example
 solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
-                    which=1, sizestep=NULL){
+                    which=1, sizestep=NULL, verbose=TRUE){
 
   if(is.null(sizestep)) times<- seq(0, Tmax, length=numsteps)
   if(is.null(numsteps))  times<- seq(0, Tmax, by=sizestep)
   if(which==1){
-    require(odesolve)
-    out<-lsoda(inits, times, sim, parms=params, verbose=TRUE)
+    require(deSolve)
+    out<-ode(inits, times, sim, parms=params, verbose=verbose ,method='lsoda')
   }
   if(which==2){
     require(PBSddesolve)
@@ -134,7 +136,7 @@ plot.DEB.red<-function(out){
 #' @examples examples
 extract.data<-function(data, w.t=1, Tmax){
 
-  ww<-which(data$time%%w.t==0)
+  ww<-which(data[,'time']%%w.t==0) #function breaks here when handling deSolve output
   ##print(ww)
   if(length(ww)!=(Tmax+1)){
     print("something is wrong")
