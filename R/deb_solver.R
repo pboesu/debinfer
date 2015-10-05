@@ -8,6 +8,20 @@
 library(PBSddesolve)
 
 
+#' Title
+#'
+#' @param sim
+#' @param params
+#' @param inits
+#' @param Tmax
+#' @param numsteps
+#' @param which
+#' @param sizestep
+#'
+#' @return integrated ode - describe structure
+#' @export
+#'
+#' @examples example
 solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
                     which=1, sizestep=NULL){
 
@@ -27,6 +41,21 @@ solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
 
 
 
+#' Title
+#'
+#' @param sim
+#' @param params
+#' @param inits
+#' @param ylim
+#' @param Tmax
+#' @param numsteps
+#' @param which
+#' @param scale
+#'
+#' @return simulated ODE and a plot
+#' @export
+#'
+#' @examples example
 test.sim <- function(sim, params, inits, ylim=c(0,600), Tmax=200,
                   numsteps=10000, which=2, scale=10){
 
@@ -34,11 +63,22 @@ test.sim <- function(sim, params, inits, ylim=c(0,600), Tmax=200,
 
   plot.DEB(out, scale)
   return(out)
- 
+
 }
 
 
+#' Title
+#'
+#' @param out
+#' @param scale
+#' @param scaled.length
+#'
+#' @return plot
+#' @export
+#'
+#' @examples plot
 plot.DEB<-function(out, scale=100, scaled.length=TRUE){
+
   par(mfrow=c(2,2))
    plot(out[,1],out[,2], type="l", lty=5, col="blue",
         lwd=2, xlab="time", ylab="Food")
@@ -58,7 +98,16 @@ plot.DEB<-function(out, scale=100, scaled.length=TRUE){
 }
 
 
+#' Title
+#'
+#' @param out
+#'
+#' @return plots
+#' @export
+#'
+#' @examples plot
 plot.DEB.red<-function(out){
+
   par(mfrow=c(2,1))
    plot(out$t,out$L, lty=5, col="blue",
         lwd=2, xlab="time", ylab="Length", pch=19)
@@ -69,10 +118,20 @@ plot.DEB.red<-function(out){
 
 
 
-## The following functions extract time series observations from the
-## forward simulation. In particular, it extracts only those data
-## points which are zero mod w.t
-
+#' Title
+#'
+#' The following functions extract time series observations from the
+#' forward simulation. In particular, it extracts only those data
+#' points which are zero mod w.t
+#'
+#' @param data
+#' @param w.t
+#' @param Tmax
+#'
+#' @return data
+#' @export
+#'
+#' @examples examples
 extract.data<-function(data, w.t=1, Tmax){
 
   ww<-which(data$time%%w.t==0)
@@ -83,13 +142,27 @@ extract.data<-function(data, w.t=1, Tmax){
   }
   else data<-data[ww,]
   return(data)
-  
+
 }
 
-## This function takes data from a forward simulation, extracts a
-## subset of the data points using extract.data, and adds
-## observational noise using add.noise
 
+
+#' Title
+#'
+#' This function takes data from a forward simulation,
+#' extracts a subset of the data points using extract.data,
+#' and adds observational noise using add.noise
+#'
+#' @param dt
+#' @param sds
+#' @param params
+#' @param w.t
+#' @param Tmax
+#'
+#' @return dt
+#' @export
+#'
+#' @examples examples
 make.obs<-function(dt, sds, params, w.t, Tmax){
 
   ##print(w.t)
@@ -98,24 +171,39 @@ make.obs<-function(dt, sds, params, w.t, Tmax){
   #return(data)
   dt<-add.noise(dt, sds, params)
   return(dt)
-  
+
 }
 
 
-## This function takes the simulator, params, inits, etc, and runs a
-## forward simulation, and then extracts a subset of the points from
-## the simulator (determined by w.t), without noise
 
+#' Title
+#'
+#'This function takes the simulator, params, inits, etc, and runs a
+#'forward simulation, and then extracts a subset of the points from
+#'the simulator (determined by w.t), without noise
+#'
+#' @param sim
+#' @param params
+#' @param inits
+#' @param Tmax
+#' @param which
+#' @param sizestep
+#' @param w.t
+#'
+#' @return a subset of the points from the simulator (determined by w.t), without noise
+#' @export
+#'
+# #' @examples EXAMPLES
 make.states<-function(sim=DEB1, params, inits, Tmax, which=2, sizestep=0.01, w.t=1){
 
   ##dt<-0
   ##print(dt)
   dt<-solve.DEB(sim, params, inits, Tmax, numsteps=NULL, which, sizestep)
-  
+
   dt<-extract.data(dt, w.t, Tmax)
 
   return(list(t=dt$t, l=dt$y3, n=dt$y5))
-  
+
 }
 
 

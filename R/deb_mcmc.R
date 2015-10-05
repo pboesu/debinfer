@@ -9,6 +9,29 @@
 
 
 
+#' deb.mcmc
+#'
+#' @param N
+#' @param p.start
+#' @param data
+#' @param w.p
+#' @param params
+#' @param inits
+#' @param sim
+#' @param sds
+#' @param hyper
+#' @param prop.sd
+#' @param Tmax
+#' @param cnt
+#' @param burnin
+#' @param plot
+#' @param sizestep
+#' @param w.t
+#'
+#' @return returns sth
+#' @export
+#'
+#' @examples example
 deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
                    sds, hyper, prop.sd, Tmax, cnt, burnin=0.1,
                    plot=TRUE, sizestep=0.01, w.t=1)
@@ -35,7 +58,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   ## p.new, respectively. Here, p.old is initialized with the values
   ## passed as params, and then the values for the parameters that are
   ## going to be infered are changed to those in samps.
-  
+
   p.old<-params
 
   ## for testing, I'll run things and see what the posterior prob of
@@ -43,7 +66,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   sim.old<-make.states(sim, p.old, inits, Tmax, which=2, sizestep, w.t)
   prob.old<-log.post.params(params, w.p, data, p.old, hyper, sim.old, sds)
   print(paste("posterior likelihood of the real parameters= ", prob.old, sep=""))
-  
+
   for(k in 1:np) p.old[w.p[k]]<-samps[1,k]
 
   ## run the data simulation to make the underlying states (for
@@ -55,34 +78,34 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   ## starting values, and to initialize prob.old
   prob.old<-log.post.params(samps[1,], w.p, data, p.old, hyper, sim.old, sds)
   print(paste("initial posterior likelihood = ", prob.old, sep=""))
-  
+
   if(!is.finite(prob.old)){
     print("bad starting values")
     break
   }
-  
-  
+
+
   for(i in 1:N){
     if(i%%cnt == 0){
       print(paste("sample number", i, sep=" "))
-      ##for(j in 1:np) print(paste(w.p[j], "=", samps[i,j], sep=" ")) 
+      ##for(j in 1:np) print(paste(w.p[j], "=", samps[i,j], sep=" "))
       if(plot){
         if(np>1 ) par(mfrow=c(np,1), bty="n")
         for(j in 1:np) plot(samps[0:i,j], type="l")
       }
     }
-    
+
     samps[i+1,]<-samps[i,]
-    
+
     for(k in 1:np){
       p.new<-p.old
-      
+
       u<-runif(1)
       q<-propose(samps[i,k], prop.sd[w.p[k]])##, i)
-      
+
       ## add something here to automatically reject if the proposed
       ## parameter value is outside some limit?
-  
+
       p.new[w.p[k]]<-q$b
       samps[i+1,k]<-q$b
 
@@ -108,33 +131,42 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
         p.old<-p.new
         prob.old<-prob.new
       }
-    } 
-		
+    }
+
   }
-	
+
   ##plot(b[100:N],type="l")
   lim<-min(1, burnin*N)
   samps <- samps[lim:(N+1),]
 
   return(list(samps=samps))
-	
+
 }
 
 
 
+#' propose
+#'
+#' @param b
+#' @param sd
+#'
+#' @return list of b.new and lfwd and lbak
+#' @export
+#'
+#' @examples example
 propose<-function(b, sd)##, i, freq=50, size=50 )##l=5, h=6)
 {
   ##b.new<-runif(1,	l/h*b, h/l*b)
   ##fwd<-dunif(b.new, l/h*b, h/l*b)
   ##bak<-dunif(b, l/h*b.new, h/l*b.new)
-  
+
   ##if(i%%freq==0) sd<-sd*size
   b.new<-rnorm(1, b, sd=sd)
   fwd<-dnorm(b.new, b, sd=sd)
   bak<-dnorm(b, b.new, sd=sd)
-  
+
   return(list(b=b.new, lfwd=log(fwd), lbak=log(bak)))
-}	
+}
 
 
 
