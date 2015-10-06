@@ -9,9 +9,10 @@ output: html_document
 run_deb_mcmc.R was moved to /demo as it is not a function per se, but rather a template for how the user should use the package. In the long run this should be re-implemented as a vignette.
 
 ##Wishlist
-1) A set of functions to extract prior and posterior distributions for parameters and to plot them.
-2) A function to print the git output, i.e. parameter estimates and corresponding credible intervals
-3) Alternatively make sure MCMC output is coda-compliant
+1) make sure MCMC output is coda-compliant, so one can use std functions for plotting, convergence checking etc.
+2) A function to print the fit, i.e. parameter estimates and corresponding credible intervals
+3) A set of functions to extract prior and posterior distributions for parameters and to plot them.
+4) implement multiple chains?
 
 ##The DEB model specification
 
