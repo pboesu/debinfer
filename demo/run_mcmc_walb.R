@@ -5,28 +5,29 @@
 
 source("R/deb_mcmc.R")
 source("R/deb_solver.R")
-source("R/DEB_daphnia.r")
+source("R/DEB_walb.r")
 
 ## need to source this one after deb_mcmc.R to tell it to use this
 ## versio of the prior/posterior calcs instead of the versions in
 ## deb_post_prior.R
-source("R/deb_post_prior_daph.R")
+source("R/deb_post_prior_walb.R")
 
 ##library("coda")
 
-params<-setparams.DEB()
-inits<-setinits.DEB()
-inits[2]<-PHI(params["X.h"], inits[1])
-Tmax<-50
-sds<-list(L=0.5, Negg=50)
+params<-setparams.DEB.walb()
+inits<-setinits.DEB.walb()
+
+Tmax<-500
+sds<-list(L=0.5, Ww=50)
 
 
 ss<-0.01
-data<-solve.DEB(DEB.daphnia, params, inits, Tmax=Tmax, numsteps=NULL,
+data<-solve.DEB(DEB.walb, params, inits, Tmax=Tmax, numsteps=NULL,
                 which=1, sizestep=ss)
 
-plot.DEB(data, scaled.length=FALSE, scale=100)
-data<-make.obs(data, sds, params, w.t=1, Tmax=Tmax)
+plot(data)
+plot.DEB(data, scaled.length=FALSE, scale=100) # breaks with walb model
+data<-make.obs(data, sds, params = c( shape = 0.721, gamma = 630), w.t=1, Tmax=Tmax, ode.pars=setparams.DEB.walb())#params are simply copied from daphnia model. doesn't make sense for walb
 
 plot.DEB.red(data)
 

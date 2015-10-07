@@ -21,7 +21,7 @@
 #' @param verbose passed to deSolve::ode
 #'
 #' @return integrated ode - describe structure
-#' @export
+#'
 #'
 #' @examples example
 solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
@@ -55,7 +55,7 @@ solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
 #' @param scale
 #'
 #' @return simulated ODE and a plot
-#' @export
+#'
 #'
 #' @examples example
 test.sim <- function(sim, params, inits, ylim=c(0,600), Tmax=200,
@@ -76,7 +76,7 @@ test.sim <- function(sim, params, inits, ylim=c(0,600), Tmax=200,
 #' @param scaled.length
 #'
 #' @return plot
-#' @export
+#'
 #'
 #' @examples plot
 plot.DEB<-function(out, scale=100, scaled.length=TRUE){
@@ -105,7 +105,7 @@ plot.DEB<-function(out, scale=100, scaled.length=TRUE){
 #' @param out
 #'
 #' @return plots
-#' @export
+#'
 #'
 #' @examples plot
 plot.DEB.red<-function(out){
@@ -131,7 +131,7 @@ plot.DEB.red<-function(out){
 #' @param Tmax
 #'
 #' @return data
-#' @export
+#'
 #'
 #' @examples examples
 extract.data<-function(data, w.t=1, Tmax){
@@ -162,16 +162,16 @@ extract.data<-function(data, w.t=1, Tmax){
 #' @param Tmax
 #'
 #' @return dt
-#' @export
+#'
 #'
 #' @examples examples
-make.obs<-function(dt, sds, params, w.t, Tmax){
+make.obs<-function(dt, sds, params, w.t, Tmax, ode.pars){
 
   ##print(w.t)
   dt<-extract.data(dt, w.t, Tmax)
   #print(head(data))
   #return(data)
-  dt<-add.noise(dt, sds, params)
+  dt<-add.noise(dt, sds, params, ode.pars)
   return(dt)
 
 }
@@ -193,7 +193,7 @@ make.obs<-function(dt, sds, params, w.t, Tmax){
 #' @param w.t
 #'
 #' @return a subset of the points from the simulator (determined by w.t), without noise
-#' @export
+#'
 #'
 # #' @examples EXAMPLES
 make.states<-function(sim=DEB1, params, inits, Tmax, which=2, sizestep=0.01, w.t=1){

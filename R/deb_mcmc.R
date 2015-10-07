@@ -29,7 +29,7 @@
 #' @param w.t
 #'
 #' @return returns sth
-#' @export
+#'
 #'
 #' @examples example
 deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
@@ -151,7 +151,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
 #' @param sd
 #'
 #' @return list of b.new and lfwd and lbak
-#' @export
+#'
 #'
 #' @examples example
 propose<-function(b, sd)##, i, freq=50, size=50 )##l=5, h=6)

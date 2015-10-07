@@ -4,7 +4,7 @@
 \alias{make.obs}
 \title{Title}
 \usage{
-make.obs(dt, sds, params, w.t, Tmax)
+make.obs(dt, sds, params, w.t, Tmax, ode.pars)
 }
 \arguments{
 \item{dt}{}

@@ -13,7 +13,8 @@ run_deb_mcmc.R was moved to /demo as it is not a function per se, but rather a t
 2) A function to print the fit, i.e. parameter estimates and corresponding credible intervals
 3) A set of functions to extract prior and posterior distributions for parameters and to plot them.
 4) implement multiple chains?
-
+5) add.noise function, name should not be fixed, implement do.call procedure, also, make sure this function only accepts the output from deSolve
+6) all plotting routines need to be changed to dynamically plot whatever vatriables are contained in the underlying data structure. currently variable names are hardcoded.
 ##The DEB model specification
 
 rather than using `dy1, dy2` etc. for the derivatives in the ODE specifications it would be more clear to use the actual notation for the state variables. 

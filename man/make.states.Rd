@@ -24,6 +24,9 @@ make.states(sim = DEB1, params, inits, Tmax, which = 2, sizestep = 0.01,
 }
 \value{
 a subset of the points from the simulator (determined by w.t), without noise
+
+
+#
 }
 \description{
 This function takes the simulator, params, inits, etc, and runs a

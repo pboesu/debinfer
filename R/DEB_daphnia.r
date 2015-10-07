@@ -124,7 +124,7 @@ setparams.DEB<-function(J.EAm = 0.00361, y.EX = 0.5, v = 1.48,
 #' @param M.R0
 #'
 #' @return initial states
-#' @export
+#'
 #'
 #' @examples examples
 setinits.DEB<-function(X0=0.2, e0=-Inf, L0 = 0.69, M.H0 = 0, M.R0 = 0){

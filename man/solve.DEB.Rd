@@ -5,7 +5,7 @@
 \title{Title}
 \usage{
 \method{solve}{DEB}(sim, params, inits, Tmax = 400, numsteps = 10000,
-  which = 1, sizestep = NULL)
+  which = 1, sizestep = NULL, verbose = TRUE)
 }
 \arguments{
 \item{sim}{}
@@ -21,6 +21,8 @@
 \item{which}{}
 
 \item{sizestep}{}
+
+\item{verbose}{passed to deSolve::ode}
 }
 \value{
 integrated ode - describe structure
