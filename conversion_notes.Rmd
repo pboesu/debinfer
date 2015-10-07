@@ -15,6 +15,7 @@ run_deb_mcmc.R was moved to /demo as it is not a function per se, but rather a t
 4) implement multiple chains?
 5) add.noise function, name should not be fixed, implement do.call procedure, also, make sure this function only accepts the output from deSolve
 6) all plotting routines need to be changed to dynamically plot whatever vatriables are contained in the underlying data structure. currently variable names are hardcoded.
+7)need to assert in extract.data (and hence solve.DEB), that the time vector is actually evaluated at integer values, which may not be the case when it is created using the numsteps argument in solve.DEB
 ##The DEB model specification
 
 rather than using `dy1, dy2` etc. for the derivatives in the ODE specifications it would be more clear to use the actual notation for the state variables. 

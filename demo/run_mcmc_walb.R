@@ -38,13 +38,14 @@ plot(data$t,data$Ww)
 ## condition for e0 is set, so we don't need to reset the "inits"
 ## inits<-setinits.DEB()
 hyper<-make.hypers()
-w.p<-c("kap", "g")
-p.start<-c(0.5, 0.8)
-prop.sd<-c(kap=0.004, g=0.004)
+w.p<-c("f_slope", "f_intercept") #name the parameters that are to be estimated??
+
+p.start<-c(0.5, 0.8) #what is this?
+prop.sd<-c(f_slope=0.004, f_intercept=0.004)#what is this?
 
 N<-200
 
-samps<-deb.mcmc(N, p.start, data, w.p, params, inits, sim=DEB.daphnia, sds, hyper, prop.sd, Tmax, cnt=10, burnin=0, plot=TRUE, sizestep=ss)
+samps<-deb.mcmc(N, p.start, data, w.p, params, inits, sim=DEB.walb, sds, hyper, prop.sd, Tmax, cnt=10, burnin=0, plot=TRUE, sizestep=ss)
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
 
 samps<-samps$samps

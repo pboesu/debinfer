@@ -27,6 +27,7 @@
 #' @param plot
 #' @param sizestep
 #' @param w.t
+#' @param which which ode solver to use. 1=desolve 2=PBSdesolve
 #'
 #' @return returns sth
 #'
@@ -34,7 +35,7 @@
 #' @examples example
 deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
                    sds, hyper, prop.sd, Tmax, cnt, burnin=0.1,
-                   plot=TRUE, sizestep=0.01, w.t=1)
+                   plot=TRUE, sizestep=0.01, w.t=1, which=1)
 {
 
   ## first determine the number of parameters to be infered
