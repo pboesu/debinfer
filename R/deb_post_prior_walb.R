@@ -21,8 +21,8 @@ log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds){
   ## observation model
   alpha<-p["shape"]
   gamma<-p["gamma"]
-  l.temp<-sim.data$l*alpha
-  n.temp<-sim.data$n*gamma # shouldn't this be reproductive buffer * gamma
+  l.temp<-sim.data$L*alpha
+  w.temp<-sim.data$n*gamma # shouldn't this be reproductive buffer * gamma
 
   llik.L<-sum(dnorm(data$L, mean=l.temp, sd=sds$L, log=TRUE))
   ##  print("here")
@@ -64,18 +64,17 @@ log.prior.params<-function(samp, w.p, hyper){
     p<-w.p[i]
     s<-as.numeric(samp[p])
 
-    if( p == "J.EAm" ) "not ready yet"
-    if( p == "y.EX" ) "not ready yet"
+    if( p == "L_m" ) "not ready yet"
+    if( p == "p_Am" ) "not ready yet"
     if( p == "v" ) "not ready yet"
-    if( p == "k.M" ) "not ready yet"
-    if( p == "g" ) lp$g<-dgamma(s, shape=hyper[[p]][1], rate=hyper[[p]][2], log=TRUE)
-    if( p == "kap" ) lp$kap<-dbeta(s, hyper[[p]][1], hyper[[p]][2], log=TRUE)
-    if( p == "k.J" ) "not ready yet"
-    if( p == "M.PH" ) "not ready yet"
-    if( p == "shape" ) "not ready yet"
-    if( p == "gamma" ) "not ready yet"
-    if( p == "X.h" ) "not ready yet"
-    if( p == "vol" ) "not ready yet"
+    if( p == "k_J" ) "not ready yet"
+    if( p == "kap" ) "not ready yet"
+    if( p == "T_A" ) "not ready yet"
+    if( p == "T_ref" ) "not ready yet"
+    if( p == "T_b" ) "not ready yet"
+    if( p == "E_G" ) "not ready yet"
+    if( p == "f_slope" ) lp$f_slope<-dnorm(s, mean=hyper[[p]][1], sd=hyper[[p]][2], log=TRUE)
+    if( p == "f_intercept" ) lp$f_intercept<-dnorm(s, mean=hyper[[p]][1], sd=hyper[[p]][2], log=TRUE)
   }
 
   return(lp)
@@ -94,8 +93,8 @@ make.hypers<-function(L_m = NULL,
                       T_ref = NULL,
                       T_b = NULL,
                       E_G = NULL,
-                      f_slope = NULL,
-                      f_intercept = NULL){
+                      f_slope = c(-0.006154762,0.002985912911), #from linear fit on food data in Teixeira 2014
+                      f_intercept = c(1.561011905,0.4685600146)){
 
   hyper<-list(L_m = L_m, p_Am = p_Am, v = v, k_J = k_J, kap = kap, T_A = T_A, T_ref = T_ref, T_b = T_b, E_G = E_G, f_slope = f_slope, f_intercept = f_intercept)
 
