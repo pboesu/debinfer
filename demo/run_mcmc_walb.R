@@ -18,19 +18,21 @@ params<-setparams.DEB.walb()
 inits<-setinits.DEB.walb()
 
 Tmax<-500
-sds<-list(L=0.5, Ww=50)
+sds<-list(L=0.5, Ww=250)
 
 
-ss<-0.01
-data<-solve.DEB(DEB.walb, params, inits, Tmax=Tmax, numsteps=NULL,
-                which=1, sizestep=ss)
+ss<-0.5
+system.time(data<-solve.DEB(DEB.walb, params, inits, Tmax=Tmax, numsteps=NULL,
+                which=1, sizestep=ss, verbose = FALSE))
 
+#data is now a deSolve object
 plot(data)
-plot.DEB(data, scaled.length=FALSE, scale=100) # breaks with walb model
+#plot.DEB(data, scaled.length=FALSE, scale=100) # breaks with walb model
 data<-make.obs(data, sds, params = c( shape = 0.721, gamma = 630), w.t=1, Tmax=Tmax, ode.pars=setparams.DEB.walb())#params are simply copied from daphnia model. doesn't make sense for walb
-
-plot.DEB.red(data)
-
+#data is now a list of 3, t, L, Ww
+#plot.DEB.red(data)# works but not sensible for walb DEB
+plot(data$t,data$L)
+plot(data$t,data$Ww)
 ## p.start is a list giving the initial guesses for the params we want
 ## to infer since we're not currently proposing X.h, the initial
 ## condition for e0 is set, so we don't need to reset the "inits"

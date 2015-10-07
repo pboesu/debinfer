@@ -135,7 +135,7 @@ plot.DEB.red<-function(out){
 #'
 #' @examples examples
 extract.data<-function(data, w.t=1, Tmax){
-
+  #need to assert here, that the time vector is actually evaluated at integer values, which may not be the case when it is created using the numsteps argument in solve.DEB
   ww<-which(data[,'time']%%w.t==0) #function breaks here when handling deSolve output
   ##print(ww)
   if(length(ww)!=(Tmax+1)){
