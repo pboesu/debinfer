@@ -22,7 +22,7 @@ log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds){
   alpha<-p["shape"]
   gamma<-p["gamma"]
   l.temp<-sim.data$l*alpha
-  n.temp<-sim.data$n*gamma
+  n.temp<-sim.data$n*gamma # shouldn't this be reproductive buffer * gamma
 
   llik.L<-sum(dnorm(data$L, mean=l.temp, sd=sds$L, log=TRUE))
   ##  print("here")
@@ -85,12 +85,19 @@ log.prior.params<-function(samp, w.p, hyper){
 
 ## here's a function to make the hyper params in the correct format
 
-make.hypers<-function(J.EAm=NULL, y.EX=NULL, v=NULL, k.M=NULL,
-                      g=c(1,1), kap=c(2,2),  k.J=NULL, M.HP=NULL,
-                      shape=NULL, gamma=NULL, X.h=NULL, vol=NULL){
+make.hypers<-function(L_m = NULL,
+                      p_Am = NULL,
+                      v = NULL,
+                      k_J = NULL,
+                      kap = NULL,
+                      T_A = NULL,
+                      T_ref = NULL,
+                      T_b = NULL,
+                      E_G = NULL,
+                      f_slope = NULL,
+                      f_intercept = NULL){
 
-  hyper<-list(J.EAm=J.EAm, y.EX=y.EX, v=v, k.M=k.M, g=g, kap=kap,
-  k.J=k.J, M.HP=M.HP, shape=shape, gamma=gamma, X.h=X.h, vol=vol)
+  hyper<-list(L_m = L_m, p_Am = p_Am, v = v, k_J = k_J, kap = kap, T_A = T_A, T_ref = T_ref, T_b = T_b, E_G = E_G, f_slope = f_slope, f_intercept = f_intercept)
 
   return(hyper)
 
