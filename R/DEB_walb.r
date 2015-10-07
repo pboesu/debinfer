@@ -126,7 +126,7 @@ add.noise<-function(data, sds, params, ode.pars){
   mu_E = 550000 # chemical potential of reserve J / mol
   wdratio = -1.37e-3 * data[, 'time'] + 2.09
   omega = unname(ode.pars['p_Am'] * w_E / (ode.pars['v'] * d_v * mu_E))
-  Ww = data[,'L']^3 * (1 + data[,'f_n'] * omega) * d_v * wdratio
+  Ww = rnorm(t, data[,'L']^3 * (1 + data[,'f_n'] * omega) * d_v * wdratio, sd=sds$Ww)
   w<-which(L<0)
   L[w]<-0
   w<-which(Ww<0)
