@@ -118,7 +118,7 @@ add.noise<-function(data, sds, params, ode.pars){
   ##print(c(alpha, gamma))
   t<-data[,'time']
   ##print(t)
-  L<-rnorm(t, data[,'L']*alpha, sd=sds$L)
+  L<-rnorm(t, data[,'L'], sd=sds$L)
 
   #wet weight. this is all hard coded now, should not be!
   w_E = 23.9 # molecular weight of reserve g mol^-1

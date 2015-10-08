@@ -18,17 +18,27 @@
 
 log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds){
 
+  ode.pars <- p #variable names need to be stream lined
   ## observation model
   alpha<-p["shape"]
   gamma<-p["gamma"]
-  l.temp<-sim.data$L*alpha
-  w.temp<-sim.data$n*gamma # shouldn't this be reproductive buffer * gamma
+
+  #length
+  l.temp<-sim.data$L
+
+  #wet weight. this is all hard coded now, should not be!
+  w_E = 23.9 # molecular weight of reserve g mol^-1
+  d_v = 0.5 # specific density of structure
+  mu_E = 550000 # chemical potential of reserve J / mol
+  wdratio = -1.37e-3 * sim.data$time + 2.09
+  omega = unname(ode.pars['p_Am'] * w_E / (ode.pars['v'] * d_v * mu_E))
+  w.temp<-sim.data$L^3 * (1 + sim.data$f_n * omega) * d_v * wdratio # shouldn't this be reproductive buffer * gamma
 
   llik.L<-sum(dnorm(data$L, mean=l.temp, sd=sds$L, log=TRUE))
   ##  print("here")
-  llik.Negg<-sum(dnorm(data$Negg, mean=n.temp, sd=sds$Negg, log=TRUE))
+  llik.Ww<-sum(dnorm(data$Ww, mean=w.temp, sd=sds$Ww, log=TRUE))
 
-  llik<-llik.L+llik.Negg
+  llik<-llik.L+llik.Ww
 
   if(length(w.p)==1) lprior<-as.numeric(log.prior.params(samp, w.p, hyper))
   else {
