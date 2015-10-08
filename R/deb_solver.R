@@ -25,7 +25,7 @@
 #'
 #' @examples example
 solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
-                    which=1, sizestep=NULL, verbose=TRUE){
+                    which=1, sizestep=NULL, verbose=FALSE){
 
   if(is.null(sizestep)) times<- seq(0, Tmax, length=numsteps)
   if(is.null(numsteps))  times<- seq(0, Tmax, by=sizestep)
@@ -196,7 +196,7 @@ make.obs<-function(dt, sds, params, w.t, Tmax, ode.pars){
 #'
 #'
 # #' @examples EXAMPLES
-make.states<-function(sim=DEB1, params, inits, Tmax, which=2, sizestep=0.01, w.t=1){
+make.states<-function(sim, params, inits, Tmax, which=1, sizestep=0.01, w.t=1){
 
   ##dt<-0
   ##print(dt)
@@ -204,7 +204,7 @@ make.states<-function(sim=DEB1, params, inits, Tmax, which=2, sizestep=0.01, w.t
 
   dt<-extract.data(dt, w.t, Tmax)
 
-  return(list(t=dt$t, l=dt$y3, n=dt$y5))
+  return(as.list(as.data.frame(head(dt)))) # this returns a list of the named vectors
 
 }
 
