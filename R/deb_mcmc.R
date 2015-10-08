@@ -64,21 +64,21 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
 
   ## for testing, I'll run things and see what the posterior prob of
   ## the real params are
-  sim.old<-make.states(sim, p.old, inits, Tmax, which=2, sizestep, w.t)
+  sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t)
   prob.old<-log.post.params(params, w.p, data, p.old, hyper, sim.old, sds)
-  print(paste("posterior likelihood of the real parameters= ", prob.old, sep=""))
+  print(paste(Sys.time(),"posterior likelihood of the real parameters= ", prob.old, sep=""))
 
   for(k in 1:np) p.old[w.p[k]]<-samps[1,k]
 
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in
   ## p.old.
-  sim.old<-make.states(sim, p.old, inits, Tmax, which=2, sizestep, w.t)
+  sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t)
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
   prob.old<-log.post.params(samps[1,], w.p, data, p.old, hyper, sim.old, sds)
-  print(paste("initial posterior likelihood = ", prob.old, sep=""))
+  print(paste(Sys.time(),"initial posterior likelihood = ", prob.old, sep=""))
 
   if(!is.finite(prob.old)){
     print("bad starting values")
@@ -88,7 +88,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
 
   for(i in 1:N){
     if(i%%cnt == 0){
-      print(paste("sample number", i, sep=" "))
+      print(paste(Sys.time(), "sample number", i, sep=" "))
       ##for(j in 1:np) print(paste(w.p[j], "=", samps[i,j], sep=" "))
       if(plot){
         if(np>1 ) par(mfrow=c(np,1), bty="n")
