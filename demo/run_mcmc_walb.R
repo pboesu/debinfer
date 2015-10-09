@@ -51,16 +51,22 @@ samps<-deb.mcmc(N, p.start, data, w.p, params, inits, sim=DEB.walb, sds, hyper, 
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
 
 samps<-samps$samps
+pdf("figs/chain_post_prior.pdf", width=12, height=8)
 par(mfrow=c(2,2))
-plot(samps$f_slope,type='l')
-hist(samps$f_slope, freq=FALSE)
-plot(density(samps$f_slope))
-plot(samps$f_intercept,type='l')
+plot(samps$f_slope,type='l', main="mcmc trace", xlab = 'iteration')
+#hist(samps$f_slope, freq=FALSE)
+plot(density(samps$f_slope),xlim=c(-.01,0), main='f_slope')
+lines(seq(-.01,0,length.out = 100),dnorm(seq(-0.01,0,length.out = 100), mean=hyper$f_slope[1], sd=hyper$f_slope[2]),col="red")
+legend("topleft",legend=c("prior PDF", "posterior KDE"), lty=1, col=c('red','black'))
+plot(samps$f_intercept,type='l', main="mcmc trace", xlab = 'iteration')
+plot(density(samps$f_intercept), main='f_intercept')
+lines(seq(0,4,length.out = 100),dnorm(seq(0,4,length.out = 100), mean=hyper$f_intercept[1], sd=hyper$f_intercept[2]),col="red")
+dev.off()
 
 #solve with estimated parameters
 new.params <- params
-new.params['f_slope'] <- min(samps$f_slope)
-new.params['f_intercept'] <- min(samps$f_intercept)
+new.params['f_slope'] <- mean(samps$f_slope[2000:5000])
+new.params['f_intercept'] <- mean(samps$f_intercept[2000:5000])
 
 new.data<-solve.DEB(DEB.walb, new.params, inits, Tmax=Tmax, numsteps=NULL,
                             which=1, sizestep=ss, verbose = FALSE)
@@ -80,6 +86,11 @@ return(Ww)
 }
 new.Ww <- get_Ww(w_E = 23.9, d_v = 0.5, mu_E = 550000, sim.data=new.data, ode.pars=new.params )
 old.Ww <- get_Ww(sim.data = old.data, ode.pars=params)
-plot(old.data[,"time"],old.Ww,type='l')
-lines(new.data[,"time"],new.Ww, col='red')
-points(data$Ww, cex=0.1,col='grey')
+
+pdf("figs/post_pred.pdf", width=12, height=8)
+par(mfrow=c(1,1))
+plot(old.data[,"time"],old.Ww,type='l',lwd=3,xlab = 'time (days since hatching)', ylab = 'wet weight (g)')
+lines(new.data[,"time"],new.Ww, col='red',lty=3,lwd=4)
+points(data$Ww, cex=1,col='grey')
+legend("topleft",lwd=c(3,4,NA), lty=c(1,3,NA), pch=c(NA,NA,1), col=c('black','red','grey'),legend=c('"true" model', 'fitted model','simulated data'))
+dev.off()
