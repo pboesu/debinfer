@@ -18,6 +18,9 @@
 
 log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds){
 
+  ##dirty fix to treat NaNs in solver output. really the model should be scaled
+  sim.data <- lapply(sim.data, function(x){ x[is.nan(x)] <- 0; return(x)})
+
   ode.pars <- p #variable names need to be stream lined
   ## observation model
   alpha<-p["shape"]

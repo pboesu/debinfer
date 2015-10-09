@@ -17,7 +17,7 @@ source("R/deb_post_prior_walb.R")
 params<-setparams.DEB.walb()
 inits<-setinits.DEB.walb()
 
-Tmax<-500
+Tmax<-250
 sds<-list(L=0.5, Ww=250)
 
 
@@ -42,10 +42,10 @@ plot(data$t,data$Ww)
 hyper<-make.hypers()
 w.p<-c("f_slope", "f_intercept") #name the parameters that are to be estimated??
 
-p.start<-c(0.01, 0.8) #what is this?
-prop.sd<-c(f_slope=0.03, f_intercept=0.4)#what is this?
+p.start<-c(-0.001, 1.06) #what is this?
+prop.sd<-c(f_slope=0.003, f_intercept=0.4)#what is this?
 
-N<-3000
+N<-5000
 
 samps<-deb.mcmc(N, p.start, data, w.p, params, inits, sim=DEB.walb, sds, hyper, prop.sd, Tmax, cnt=10, burnin=0, plot=TRUE, sizestep=ss,which = 1)
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
@@ -59,12 +59,13 @@ plot(samps$f_intercept,type='l')
 
 #solve with estimated parameters
 new.params <- params
-new.params['f_slope'] <- mean(samps$f_slope)
-new.params['f_intercept'] <- mean(samps$f_intercept)
+new.params['f_slope'] <- min(samps$f_slope)
+new.params['f_intercept'] <- min(samps$f_intercept)
 
 new.data<-solve.DEB(DEB.walb, new.params, inits, Tmax=Tmax, numsteps=NULL,
                             which=1, sizestep=ss, verbose = FALSE)
 
+plot(old.data)#plot debtool fit, which is the basis for the simulated data
 plot(new.data)
 
 get_Ww <- function(w_E = 23.9, d_v = 0.5, mu_E = 550000, sim.data=new.data, ode.pars=new.params ){
@@ -79,5 +80,6 @@ return(Ww)
 }
 new.Ww <- get_Ww(w_E = 23.9, d_v = 0.5, mu_E = 550000, sim.data=new.data, ode.pars=new.params )
 old.Ww <- get_Ww(sim.data = old.data, ode.pars=params)
-plot(new.data[,"time"],new.Ww)
 plot(old.data[,"time"],old.Ww,type='l')
+lines(new.data[,"time"],new.Ww, col='red')
+points(data$Ww, cex=0.1,col='grey')

@@ -202,9 +202,21 @@ make.states<-function(sim, params, inits, Tmax, which=1, sizestep=0.01, w.t=1){
   ##print(dt)
   dt<-solve.DEB(sim, params, inits, Tmax, numsteps=NULL, which, sizestep)
 
+  #this is a dirty solution to the situation that the ode solver terminates prematurely. all remaining timepoints are set to 0, which should badly impact the likelihood (although it might still be better than numerically valid but "bad" solutions that don't end prematurely). Ideally the MCMC sampler should reject a sample if the ode solver stops prematurely
+  if (max(dt[,"time"]) < Tmax) {
+    print(paste("integration failed prematurely at t = ", max(dt[,"time"])))
+
+    new.time <- seq(0,Tmax,by=sizestep)
+    fake.solution <- matrix(0,nrow = length(new.time),ncol = dim(dt)[2])
+    dimnames(fake.solution) <- dimnames(dt)
+    fake.solution[,'time'] <- new.time
+    matched <- which(fake.solution[,'time'] %in% dt[,'time'])
+    fake.solution[matched,2:ncol(fake.solution)]<-dt[matched,2:ncol(dt)]
+    dt <- fake.solution
+  }
   dt<-extract.data(dt, w.t, Tmax)
 
-  return(as.list(as.data.frame(head(dt)))) # this returns a list of the named vectors
+  return(as.list(as.data.frame(dt))) # this returns a list of the named vectors
 
 }
 

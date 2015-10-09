@@ -66,7 +66,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   ## the real params are
   sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t)
   prob.old<-log.post.params(params, w.p, data, p.old, hyper, sim.old, sds)
-  print(paste(Sys.time(),"posterior likelihood of the real parameters= ", prob.old, sep=""))
+  print(paste(Sys.time()," posterior likelihood of the real parameters= ", prob.old, sep=""))
 
   for(k in 1:np) p.old[w.p[k]]<-samps[1,k]
 
@@ -78,7 +78,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
   prob.old<-log.post.params(samps[1,], w.p, data, p.old, hyper, sim.old, sds)
-  print(paste(Sys.time(),"initial posterior likelihood = ", prob.old, sep=""))
+  print(paste(Sys.time()," initial posterior likelihood = ", prob.old, sep=""))
 
   if(!is.finite(prob.old)){
     print("bad starting values")
@@ -88,7 +88,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
 
   for(i in 1:N){
     if(i%%cnt == 0){
-      print(paste(Sys.time(), "sample number", i, sep=" "))
+      print(paste(Sys.time(), " sample number", i, sep=" "))
       ##for(j in 1:np) print(paste(w.p[j], "=", samps[i,j], sep=" "))
       if(plot){
         if(np>1 ) par(mfrow=c(np,1), bty="n")
@@ -110,7 +110,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
       p.new[w.p[k]]<-q$b
       samps[i+1,k]<-q$b
 
-      sim.new<-make.states(sim, p.new, inits, Tmax, which=2, sizestep, w.t)
+      sim.new<-make.states(sim, p.new, inits, Tmax, which=which, sizestep, w.t)
 
       ## currently only calculating prob.old outside the loop, and
       ## setting prob.old<-prob.new if we accpt the draw. This cuts
