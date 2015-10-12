@@ -16,18 +16,18 @@
 ## g, kap, k.J, M.HP, shape, gamma, X.h, vol. There is also a function
 ## to automatically generate the hyper parameters for the priors
 
-log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds){
+log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds, verbose.lik=TRUE){
 
   ##dirty fix to treat NaNs in solver output. really the model should be scaled
-  sim.data <- lapply(sim.data, function(x){ x[is.nan(x)] <- 0; return(x)})
+  ##penalty value 0 seems to lead to "wrong solutions", trying 1e99
+  sim.data <- lapply(sim.data, function(x){ x[is.nan(x)] <- 1e99; return(x)})
 
   ode.pars <- p #variable names need to be stream lined
   ## observation model
-  alpha<-p["shape"]
-  gamma<-p["gamma"]
+  delta_M<-p["delta_M"]
 
   #length
-  l.temp<-sim.data$L
+  l.temp<-sim.data$L/delta_M
 
   #wet weight. this is all hard coded now, should not be!
   w_E = 23.9 # molecular weight of reserve g mol^-1
@@ -42,6 +42,8 @@ log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds){
   llik.Ww<-sum(dnorm(data$Ww, mean=w.temp, sd=sds$Ww, log=TRUE))
 
   llik<-llik.L+llik.Ww
+
+  if(verbose.lik == TRUE) print(paste("lL =", llik.L, "lWw =", llik.Ww ))
 
   if(length(w.p)==1) lprior<-as.numeric(log.prior.params(samp, w.p, hyper))
   else {
