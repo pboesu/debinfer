@@ -53,7 +53,8 @@ setparams.DEB.walb<-function(L_m = 26.62883424,
                         T_b = 312.6,
                         E_G = 13072.691,
                         f_slope = -0.0019625396,
-                        f_intercept = 1.0659367){
+                        f_intercept = 1.0659367,
+                        delta_M = 1.074){
 
     params <- c(L_m = L_m,
                 p_Am = p_Am,
@@ -65,7 +66,8 @@ setparams.DEB.walb<-function(L_m = 26.62883424,
                 T_b = T_b,
                 E_G = E_G,
                 f_slope = f_slope,
-                f_intercept = f_intercept
+                f_intercept = f_intercept,
+                delta_M = delta_M
                 )
 
   return(params)
@@ -113,12 +115,12 @@ setinits.DEB.walb<-function(E_h = 2.756519348e+06,
 ## functions elsewhere call it.
 
 add.noise<-function(data, sds, params, ode.pars){
-  alpha<-params["shape"]
-  gamma<-params["gamma"]
+  delta_M<-ode.pars["delta_M"]
+
   ##print(c(alpha, gamma))
   t<-data[,'time']
   ##print(t)
-  L<-rnorm(t, data[,'L'], sd=sds$L)
+  L<-rnorm(t, data[,'L']/delta_M, sd=sds$L)
 
   #wet weight. this is all hard coded now, should not be!
   w_E = 23.9 # molecular weight of reserve g mol^-1
