@@ -1,4 +1,4 @@
-## here's code to run a sample of our nifty mcmc
+## this code estimates the f_n slope paramter (successfully) and f_n intercept (unsuccessfully, b/c the inits are not recalculated inside the macmc sampler) from simulated data
 ## run with: nohup R CMD batch run_mcmc.R &
 
 
