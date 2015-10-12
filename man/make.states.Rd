@@ -4,8 +4,7 @@
 \alias{make.states}
 \title{Title}
 \usage{
-make.states(sim = DEB1, params, inits, Tmax, which = 2, sizestep = 0.01,
-  w.t = 1)
+make.states(sim, params, inits, Tmax, which = 1, sizestep = 0.01, w.t = 1)
 }
 \arguments{
 \item{sim}{}

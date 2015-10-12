@@ -6,7 +6,7 @@
 \usage{
 deb.mcmc(N, p.start, data, w.p, params, inits, sim = DEB1, sds, hyper,
   prop.sd, Tmax, cnt, burnin = 0.1, plot = TRUE, sizestep = 0.01,
-  w.t = 1)
+  w.t = 1, which = 1)
 }
 \arguments{
 \item{N}{}
@@ -40,6 +40,8 @@ deb.mcmc(N, p.start, data, w.p, params, inits, sim = DEB1, sds, hyper,
 \item{sizestep}{}
 
 \item{w.t}{}
+
+\item{which}{which ode solver to use. 1=desolve 2=PBSdesolve}
 }
 \value{
 returns sth

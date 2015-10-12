@@ -5,7 +5,7 @@
 \title{Title}
 \usage{
 \method{solve}{DEB}(sim, params, inits, Tmax = 400, numsteps = 10000,
-  which = 1, sizestep = NULL, verbose = TRUE)
+  which = 1, sizestep = NULL, verbose = FALSE, data.times = NULL)
 }
 \arguments{
 \item{sim}{}
@@ -23,6 +23,9 @@
 \item{sizestep}{}
 
 \item{verbose}{passed to deSolve::ode}
+
+\item{data.times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
+If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.}
 }
 \value{
 integrated ode - describe structure

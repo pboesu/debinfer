@@ -28,6 +28,7 @@
 #' @param sizestep
 #' @param w.t
 #' @param which which ode solver to use. 1=desolve 2=PBSdesolve
+#' @data.times numeric vector of timepoints at which to solve the DEB model and evaluate the likelihoods. must match the timepoints for which observations are available
 #'
 #' @return returns sth
 #'
@@ -35,7 +36,7 @@
 #' @examples example
 deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
                    sds, hyper, prop.sd, Tmax, cnt, burnin=0.1,
-                   plot=TRUE, sizestep=0.01, w.t=1, which=1)
+                   plot=TRUE, sizestep=0.01, w.t=1, which=1, data.times=NULL)
 {
 
   ## first determine the number of parameters to be infered
@@ -64,7 +65,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
 
   ## for testing, I'll run things and see what the posterior prob of
   ## the real params are
-  sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t)
+  sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t, data.times=data.times)
   prob.old<-log.post.params(params, w.p, data, p.old, hyper, sim.old, sds)
   print(paste(Sys.time()," posterior likelihood of the real parameters= ", prob.old, sep=""))
 
@@ -73,7 +74,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in
   ## p.old.
-  sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t)
+  sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t, data.times=data.times)
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
@@ -107,10 +108,13 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
       ## add something here to automatically reject if the proposed
       ## parameter value is outside some limit?
 
+      #diagnostic
+      print(paste("proposing", w.p[k], " = ", q$b))
+
       p.new[w.p[k]]<-q$b
       samps[i+1,k]<-q$b
 
-      sim.new<-make.states(sim, p.new, inits, Tmax, which=which, sizestep, w.t)
+      sim.new<-make.states(sim, p.new, inits, Tmax, which=which, sizestep, w.t, data.times=data.times)
 
       ## currently only calculating prob.old outside the loop, and
       ## setting prob.old<-prob.new if we accpt the draw. This cuts
