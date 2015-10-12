@@ -19,17 +19,25 @@
 #' @param which
 #' @param sizestep
 #' @param verbose passed to deSolve::ode
+#' @param data.times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
+#' If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.
 #'
 #' @return integrated ode - describe structure
 #'
 #'
 #' @examples example
 solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
-                    which=1, sizestep=NULL, verbose=FALSE){
+                    which=1, sizestep=NULL, verbose=FALSE, data.times=NULL){
 
-  if(is.null(sizestep)) times<- seq(0, Tmax, length=numsteps)
-  if(is.null(numsteps))  times<- seq(0, Tmax, by=sizestep)
-  if(which==1){
+    if(!is.null(data.times)){
+      #this is fragile. really the data should be in a class that ensures proper times, no missing data etc. pp. Also this now assumes observations at identical times for all observed variables.
+      times <- data.times
+    } else { # currently there's no proper handling of multiple non-NULL arguments/all NULL arguments
+      if(is.null(sizestep)) times<- seq(0, Tmax, length=numsteps)
+      if(is.null(numsteps))  times<- seq(0, Tmax, by=sizestep)
+    }
+
+    if(which==1){
     require(deSolve)
     out<-ode(inits, times, sim, parms=params, verbose=verbose ,method='lsoda')
   }
@@ -191,30 +199,35 @@ make.obs<-function(dt, sds, params, w.t, Tmax, ode.pars){
 #' @param which
 #' @param sizestep
 #' @param w.t
+#' @param data.times numeric passed on to \code{solve.DEB}
 #'
 #' @return a subset of the points from the simulator (determined by w.t), without noise
 #'
 #'
 # #' @examples EXAMPLES
-make.states<-function(sim, params, inits, Tmax, which=1, sizestep=0.01, w.t=1){
+make.states<-function(sim, params, inits, Tmax, which=1, sizestep=0.01, w.t=1, data.times=NULL){
 
   ##dt<-0
   ##print(dt)
-  dt<-solve.DEB(sim, params, inits, Tmax, numsteps=NULL, which, sizestep)
+  dt<-solve.DEB(sim, params, inits, Tmax, numsteps=NULL, which, sizestep, data.times=data.times)
 
   #this is a dirty solution to the situation that the ode solver terminates prematurely. all remaining timepoints are set to 0, which should badly impact the likelihood (although it might still be better than numerically valid but "bad" solutions that don't end prematurely). Ideally the MCMC sampler should reject a sample if the ode solver stops prematurely
+
   if (max(dt[,"time"]) < Tmax) {
     print(paste("integration failed prematurely at t = ", max(dt[,"time"])))
-
-    new.time <- seq(0,Tmax,by=sizestep)
-    fake.solution <- matrix(0,nrow = length(new.time),ncol = dim(dt)[2])
+    if (!is.null(data.times)){
+      new.time <- data.times
+    } else {new.time <- seq(0,Tmax,by=sizestep)} #breaks when sizestep is NULL and numstep is specified instead
+    #0 as "penalized value" for premature termination yields weird results
+    fake.solution <- matrix(1e99,nrow = length(new.time),ncol = dim(dt)[2])
     dimnames(fake.solution) <- dimnames(dt)
     fake.solution[,'time'] <- new.time
     matched <- which(fake.solution[,'time'] %in% dt[,'time'])
     fake.solution[matched,2:ncol(fake.solution)]<-dt[matched,2:ncol(dt)]
     dt <- fake.solution
   }
-  dt<-extract.data(dt, w.t, Tmax)
+
+  if (is.null(data.times)) dt<-extract.data(dt, w.t, Tmax) #only evaluate this when no specific time points are given. again this is a dirty fix. all of this should be dealt with inside the solver function, so that solve.DEB always returns a well formed data structure containing all expected timesteps and then NAs/penalized values/NaNs as necessary.
 
   return(as.list(as.data.frame(dt))) # this returns a list of the named vectors
 
