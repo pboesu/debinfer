@@ -43,9 +43,9 @@ hyper<-make.hypers()
 w.p<-c("f_slope", "f_intercept") #name the parameters that are to be estimated??
 
 p.start<-c(-0.001, 1.06) #what is this?
-prop.sd<-c(f_slope=0.003, f_intercept=0.4)#what is this?
+prop.sd<-c(f_slope=0.0003, f_intercept=0.4)#what is this?
 
-N<-5000
+N<-500
 
 samps<-deb.mcmc(N, p.start, data, w.p, params, inits, sim=DEB.walb, sds, hyper, prop.sd, Tmax, cnt=10, burnin=0, plot=TRUE, sizestep=ss,which = 1)
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)

@@ -48,8 +48,8 @@ plot(teix.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M']))
 hyper<-make.hypers() #make the prior slightly more vague than the std. error on the fit suggests
 w.p<-c("f_slope") #name the parameters that are to be estimated??
 
-p.start<-c(-0.0015) #initial values of parameters
-prop.sd<-c(f_slope=0.00003)#what is this? Metropolis-Hastings Tuning parameter?!
+p.start<-c(-0.004) #initial values of parameters
+prop.sd<-c(f_slope=0.0001)#what is this? Metropolis-Hastings Tuning parameter?!
 
 
 sds<-list(L=0.5, Ww=250)
