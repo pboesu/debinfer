@@ -109,7 +109,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
       ## parameter value is outside some limit?
 
       #diagnostic
-      print(paste("proposing", w.p[k], " = ", q$b))
+      #print(paste("proposing", w.p[k], " = ", q$b))
 
       p.new[w.p[k]]<-q$b
       samps[i+1,k]<-q$b
