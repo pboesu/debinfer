@@ -90,7 +90,8 @@ log.prior.params<-function(samp, w.p, hyper){
     if( p == "E_G" ) "not ready yet"
     if( p == "f_uAsym" ) lp$f_uAsym <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
     if( p == "f_lAsym" ) lp$f_lAsym <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
-    if( p == "E_G" ) "not ready yet"
+    if( p == "f_rate" ) lp$f_rate <- dnorm(s, mean = hyper[[p]][1], sd = hyper[[p]][2], log=TRUE)
+    if( p == "f_xmid" ) lp$f_xmid <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
   }
 
   return(lp)
@@ -111,8 +112,8 @@ make.hypers<-function(L_m = NULL,
                       E_G = NULL,
                       f_uAsym = c(0.05,0.25),
                       f_lAsym = c(-1,0.25),
-                      f_rate = NULL,
-                      f_xmid = NULL
+                      f_rate = c(0,0.1),
+                      f_xmid = c(5, 0.5)
                       ){
 
   hyper<-list(L_m = L_m,
