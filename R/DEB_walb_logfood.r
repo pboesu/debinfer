@@ -98,7 +98,11 @@ setparams.DEB.walb_logfood<-function(L_m = 26.62883424,
 setinits.DEB.walb_logfood<-function(E_h = 2.756519348e+06,
                             L_h = 5.185484695e+00,
                             E_Hh = 2.360057500e+03,
-                            f_n = 1){
+                            f_n = 1,
+                            from.pars=NULL){
+  if (!is.null(from.pars)){
+    f_n = unname(from.pars['f_uAsym'])
+  }
 
   inits<-c(H = E_Hh, E = E_h, L = L_h, f_n = f_n)
   return(inits)

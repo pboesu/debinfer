@@ -20,7 +20,7 @@
 #' @param sim
 #' @param sds
 #' @param hyper
-#' @param prop.sd
+#' @param prop.sd tuning parameters, that is the standard deviation of the proposal distribution for each parameter
 #' @param Tmax
 #' @param cnt
 #' @param burnin
@@ -28,7 +28,8 @@
 #' @param sizestep
 #' @param w.t
 #' @param which which ode solver to use. 1=desolve 2=PBSdesolve
-#' @data.times numeric vector of timepoints at which to solve the DEB model and evaluate the likelihoods. must match the timepoints for which observations are available
+#' @param data.times numeric vector of timepoints at which to solve the DEB model and evaluate the likelihoods. must match the timepoints for which observations are available
+#' @param free.inits string, name of function to evaluate
 #'
 #' @return returns sth
 #'
@@ -36,7 +37,7 @@
 #' @examples example
 deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
                    sds, hyper, prop.sd, Tmax, cnt, burnin=0.1,
-                   plot=TRUE, sizestep=0.01, w.t=1, which=1, data.times=NULL)
+                   plot=TRUE, sizestep=0.01, w.t=1, which=1, data.times=NULL, free.inits=NULL)
 {
 
   ## first determine the number of parameters to be infered
@@ -74,6 +75,9 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in
   ## p.old.
+  if (!is.null(free.inits)){
+    inits <- do.call(free.inits, args=list(from.pars = p.old), quote=T)
+  }
   sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t, data.times=data.times)
 
   ## check the posterior probability to make sure you have reasonable
@@ -92,8 +96,8 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
       print(paste(Sys.time(), " sample number", i, sep=" "))
       ##for(j in 1:np) print(paste(w.p[j], "=", samps[i,j], sep=" "))
       if(plot){
-        if(np>1 ) par(mfrow=c(np,1), bty="n")
-        for(j in 1:np) plot(samps[0:i,j], type="l")
+        if(np>1 ) par(mfrow=c(ceiling(np/3),3), bty="n")
+        for(j in 1:np) plot(samps[0:i,j], type="l", main=w.p[j])
       }
     }
 
@@ -113,8 +117,14 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
 
       p.new[w.p[k]]<-q$b
       samps[i+1,k]<-q$b
+      #recalculate initial values from parameters
+      if (!is.null(free.inits)){
+        inits.new <- do.call(free.inits, args=list(from.pars = p.new), quote=T)
+        #diagnostic
+        #print(inits.new)
+      }
 
-      sim.new<-make.states(sim, p.new, inits, Tmax, which=which, sizestep, w.t, data.times=data.times)
+      sim.new<-make.states(sim, p.new, inits.new, Tmax, which=which, sizestep, w.t, data.times=data.times)
 
       ## currently only calculating prob.old outside the loop, and
       ## setting prob.old<-prob.new if we accpt the draw. This cuts
@@ -132,7 +142,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
       }
       if( u > A ) samps[i+1,k]<-samps[i,k]
       else{
-        sim.old<-sim.new
+        sim.old<-sim.new #is this assignment necessary?
         p.old<-p.new
         prob.old<-prob.new
       }

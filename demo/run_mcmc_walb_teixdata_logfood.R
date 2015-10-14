@@ -12,8 +12,8 @@ source("R/deb_post_prior_walb_logfood.R")
 
 ##library("coda")
 
-params<-setparams.DEB.walb_logfood(f_uAsym = 1)
-inits<-setinits.DEB.walb_logfood(f_n = unname(params['f_uAsym']))
+params<-setparams.DEB.walb_logfood(f_uAsym = 1.1)
+inits<-setinits.DEB.walb_logfood(from.pars = params)
 
 
 
@@ -46,17 +46,17 @@ plot(teix.log.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M'
 ## condition for e0 is set, so we don't need to reset the "inits"
 ## inits<-setinits.DEB()
 hyper<-make.hypers() #make the prior slightly more vague than the std. error on the fit suggests
-w.p<-c("f_lAsym", "f_rate", "f_xmid") #name the parameters that are to be estimated??
+w.p<-c("f_uAsym", "f_lAsym", "f_rate", "f_xmid") #name the parameters that are to be estimated??
 
-p.start<-c(0.4, -0.03, 80) #initial values of parameters
-prop.sd<-c(f_lAsym = 0.02, f_rate = 0.003, f_xmid = 5)#what is this? Metropolis-Hastings Tuning parameter?!
+p.start<-c(1.1, 0.4, -0.03, 80) #initial values of parameters
+prop.sd<-c(f_uAsym = 0.02, f_lAsym = 0.02, f_rate = 0.003, f_xmid = 5)#what is this? Metropolis-Hastings Tuning parameter?!
 
 
 sds<-list(L=0.5, Ww=250)
 
-N<-50000
+N<-2000
 
-log.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=walb_deb_log_food, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=2000, burnin=1000, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t)
+log.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=walb_deb_log_food, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=10, burnin=1000, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb_logfood")
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
 
 #
