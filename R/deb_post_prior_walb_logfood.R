@@ -43,7 +43,7 @@ log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds, verbose.lik=
 
   llik<-llik.L+llik.Ww
 
-  if(verbose.lik == TRUE) print(paste("lL =", llik.L, "lWw =", llik.Ww ))
+  #if(verbose.lik == TRUE) print(paste("lL =", llik.L, "lWw =", llik.Ww ))
 
   if(length(w.p)==1) lprior<-as.numeric(log.prior.params(samp, w.p, hyper))
   else {
@@ -88,8 +88,9 @@ log.prior.params<-function(samp, w.p, hyper){
     if( p == "T_ref" ) "not ready yet"
     if( p == "T_b" ) "not ready yet"
     if( p == "E_G" ) "not ready yet"
-    if( p == "f_slope" ) lp$f_slope<-dnorm(s, mean=hyper[[p]][1], sd=hyper[[p]][2], log=TRUE)
-    if( p == "f_intercept" ) lp$f_intercept<-dnorm(s, mean=hyper[[p]][1], sd=hyper[[p]][2], log=TRUE)
+    if( p == "f_uAsym" ) lp$f_uAsym <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
+    if( p == "f_lAsym" ) lp$f_lAsym <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
+    if( p == "E_G" ) "not ready yet"
   }
 
   return(lp)
@@ -108,10 +109,26 @@ make.hypers<-function(L_m = NULL,
                       T_ref = NULL,
                       T_b = NULL,
                       E_G = NULL,
-                      f_slope = c(-0.006154762,0.002985912911), #from linear fit on food data in Teixeira 2014
-                      f_intercept = c(1.561011905,0.4685600146)){
+                      f_uAsym = c(0.05,0.25),
+                      f_lAsym = c(-1,0.25),
+                      f_rate = NULL,
+                      f_xmid = NULL
+                      ){
 
-  hyper<-list(L_m = L_m, p_Am = p_Am, v = v, k_J = k_J, kap = kap, T_A = T_A, T_ref = T_ref, T_b = T_b, E_G = E_G, f_slope = f_slope, f_intercept = f_intercept)
+  hyper<-list(L_m = L_m,
+              p_Am = p_Am,
+              v = v,
+              k_J = k_J,
+              kap = kap,
+              T_A = T_A,
+              T_ref = T_ref,
+              T_b = T_b,
+              E_G = E_G,
+              f_uAsym = f_uAsym,
+              f_lAsym = f_lAsym,
+              f_rate = f_rate,
+              f_xmid = f_xmid
+              )
 
   return(hyper)
 

@@ -3,17 +3,17 @@
 
 source("R/deb_mcmc.R")
 source("R/deb_solver.R")
-source("R/DEB_walb.r")
+source("R/DEB_walb_logfood.r")
 
 ## need to source this one after deb_mcmc.R to tell it to use this
 ## versio of the prior/posterior calcs instead of the versions in
 ## deb_post_prior.R
-source("R/deb_post_prior_walb.R")
+source("R/deb_post_prior_walb_logfood.R")
 
 ##library("coda")
 
-params<-setparams.DEB.walb()
-inits<-setinits.DEB.walb()
+params<-setparams.DEB.walb_logfood()
+inits<-setinits.DEB.walb_logfood(f_n = unname(params['f_uAsym']))
 
 
 
@@ -37,35 +37,35 @@ abline(v=Tmax)
 
 
 #solve model for published pars
-teix.fit<-solve.DEB(DEB.walb, params, inits, Tmax=Tmax, numsteps=NULL,
+teix.log.fit<-solve.DEB(walb_deb_log_food, params, inits, Tmax=Tmax, numsteps=NULL,
                     which=1, sizestep=1, verbose = FALSE)
-plot(teix.fit)
-plot(teix.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M']))
+plot(teix.log.fit)
+plot(teix.log.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M']))
 ## p.start is a list giving the initial guesses for the params we want
 ## to infer since we're not currently proposing X.h, the initial
 ## condition for e0 is set, so we don't need to reset the "inits"
 ## inits<-setinits.DEB()
 hyper<-make.hypers() #make the prior slightly more vague than the std. error on the fit suggests
-w.p<-c("f_slope") #name the parameters that are to be estimated??
+w.p<-c("f_uAsym", "f_lAsym") #name the parameters that are to be estimated??
 
-p.start<-c(-0.004) #initial values of parameters
-prop.sd<-c(f_slope=0.0001)#what is this? Metropolis-Hastings Tuning parameter?!
+p.start<-c(1.7, 0.4) #initial values of parameters
+prop.sd<-c(f_uAsym = 0.001, f_lAsym = 0.001)#what is this? Metropolis-Hastings Tuning parameter?!
 
 
 sds<-list(L=0.5, Ww=250)
 
-N<-500
+N<-10000
 
-lit.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=10, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t)
+log.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=walb_deb_log_food, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=20, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t)
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
 
-lit.samps<-lit.samps$samps
+lit.samps<-log.samps$samps
 #pdf("figs/chain_post_prior.pdf", width=12, height=8)
 par(mfrow=c(1,2))
-plot(lit.samps$f_slope,type='l', main="mcmc trace", xlab = 'iteration')
+plot(lit.samps$f_uAsym,type='l', main="mcmc trace", xlab = 'iteration')
 #hist(samps$f_slope, freq=FALSE)
-plot(density(lit.samps$f_slope),xlim=c(-.01,0), main='f_slope')
-lines(seq(-.01,0,length.out = 100),dnorm(seq(-0.01,0,length.out = 100), mean=hyper$f_slope[1], sd=hyper$f_slope[2]),col="red")
+plot(density(lit.samps$f_uAsym),xlim=c(0,2), main='f_uAsym')
+lines(seq(0,2,length.out = 100),dlnorm(seq(0,2,length.out = 100), meanlog=hyper$f_uAsym[1], sdlog=hyper$f_uAsym[2]),col="red")
 #legend("topleft",legend=c("prior PDF", "posterior KDE"), lty=1, col=c('red','black'))
 #plot(samps$f_intercept,type='l', main="mcmc trace", xlab = 'iteration')
 #plot(density(samps$f_intercept), main='f_intercept')
@@ -74,11 +74,11 @@ lines(seq(-.01,0,length.out = 100),dnorm(seq(-0.01,0,length.out = 100), mean=hyp
 
 #solve with estimated parameters
 new.params <- params
-new.params['f_slope'] <- mean(lit.samps$f_slope)
+new.params['f_uAsym'] <- mean(lit.samps$f_uAsym)
 #new.params['f_intercept'] <- mean(samps$f_intercept[2000:5000])
 
-new.data<-solve.DEB(DEB.walb, new.params, inits, Tmax=Tmax, numsteps=NULL,
-                            which=1, sizestep=ss, verbose = FALSE)
+new.data<-solve.DEB(walb_deb_log_food, new.params, inits, Tmax=Tmax, numsteps=NULL,
+                            which=1, sizestep=2, verbose = FALSE)
 
 #plot(old.data)#plot debtool fit, which is the basis for the simulated data
 plot(new.data)
