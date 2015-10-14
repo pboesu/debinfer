@@ -49,23 +49,30 @@ hyper<-make.hypers() #make the prior slightly more vague than the std. error on 
 w.p<-c("f_lAsym", "f_rate", "f_xmid") #name the parameters that are to be estimated??
 
 p.start<-c(0.4, -0.03, 80) #initial values of parameters
-prop.sd<-c(f_lAsym = 0.01, f_rate = 0.001, f_xmid = 3)#what is this? Metropolis-Hastings Tuning parameter?!
+prop.sd<-c(f_lAsym = 0.02, f_rate = 0.003, f_xmid = 5)#what is this? Metropolis-Hastings Tuning parameter?!
 
 
 sds<-list(L=0.5, Ww=250)
 
-N<-100000
+N<-50000
 
 log.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=walb_deb_log_food, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=2000, burnin=1000, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t)
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
 
+#
+
 lit.samps<-log.samps$samps
+
+#the output object should also store the model (name at least) and the likelihood
+mcmc.out = list(samps = lit.samps, hyper = hyper, p.start = p.start, tuning = prop.sd)
+save(mcmc.out, file = paste("walb_deb_logfood_samples", format(Sys.time(), format = "%Y%m%d-%H%M%S"), ".RData", sep=''))
+
 #pdf("figs/chain_post_prior.pdf", width=12, height=8)
 par(mfrow=c(1,2))
-plot(lit.samps$f_uAsym,type='l', main="mcmc trace", xlab = 'iteration')
+plot(lit.samps$f_lAsym,type='l', main="mcmc trace", xlab = 'iteration')
 #hist(samps$f_slope, freq=FALSE)
-plot(density(lit.samps$f_uAsym),xlim=c(0,2), main='f_uAsym')
-lines(seq(0,2,length.out = 100),dlnorm(seq(0,2,length.out = 100), meanlog=hyper$f_uAsym[1], sdlog=hyper$f_uAsym[2]),col="red")
+plot(density(lit.samps$f_lAsym),xlim=c(0,2), main='f_uAsym')
+lines(seq(0,2,length.out = 100),dlnorm(seq(0,2,length.out = 100), meanlog=hyper$f_lAsym[1], sdlog=hyper$f_lAsym[2]),col="red")
 #legend("topleft",legend=c("prior PDF", "posterior KDE"), lty=1, col=c('red','black'))
 #plot(samps$f_intercept,type='l', main="mcmc trace", xlab = 'iteration')
 #plot(density(samps$f_intercept), main='f_intercept')
