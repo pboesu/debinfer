@@ -68,21 +68,15 @@ save(mcmc.out, file = paste("walb_deb_logfood_samples", format(Sys.time(), forma
 library(doParallel)
 registerDoParallel(cores=4)
 
-p.start.m <- matrix(c(1.1, 0.4, -0.03, 80,
-                      1.1, 0.4, -0.03, 80,
-                      1.1, 0.4, -0.03, 80,
-                      1.1, 0.4, -0.03, 80),
+p.start.m <- matrix(c(1.1, 0.4, -0.03, 120,
+                      1.0, 0.5, -0.01, 80,
+                      0.9, 0.4, -0.02, 80,
+                      1.1, 0.3, -0.03, 50),
                       ncol = 4, byrow = T)
 system.time({
-chains <-foreach(i=1:nrow(p.start.m)) %dopar% deb.mcmc(N=25000, p.start=p.start.m[i,], data=lit.data, w.p=w.p, params=params, inits=inits, sim=walb_deb_log_food, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=50, burnin=1000, plot=FALSE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb_logfood")
+chains <-foreach(i=1:nrow(p.start.m)) %dopar% deb.mcmc(N=50000, p.start=p.start.m[i,], data=lit.data, w.p=w.p, params=params, inits=inits, sim=walb_deb_log_food, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=50, burnin=1000, plot=FALSE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb_logfood")
 })
 save(chains, file = paste("walb_deb_logfood_samples_4chains", format(Sys.time(), format = "%Y%m%d-%H%M%S"), ".RData", sep=''))
-
-par(mfrow=c(2,2))
-plot(chains[[1]]$samps$f_uAsym, type = 'l', ylim = c(1,2))
-lines(chains[[2]]$samps$f_uAsym, col = 'red')
-lines(chains[[3]]$samps$f_uAsym, col = 'darkgreen')
-lines(chains[[4]]$samps$f_uAsym, col = 'cornflowerblue')
 
 plot_chains(chains, nrow = 2, ncol = 2)
 pretty_pairs(do.call('rbind', (do.call('rbind', chains))))

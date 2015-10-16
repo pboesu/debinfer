@@ -18,14 +18,14 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 ### pairwise plot of marginal densities
 ### code following a stackexchange example
 
-pretty_pairs <- function(samples){
+pretty_pairs <- function(samples, trend = FALSE, scatter = FALSE){
   np = ncol(samples)
   cors<-round(cor(samples),2) #correlations
 
   # make layout for plot layout
   laymat<-diag(1:np) #histograms
-  laymat[upper.tri(laymat)]<-(np + 1):(np + (np^2 - np) / 2) #correlations
-  laymat[lower.tri(laymat)]<-(np + (np^2 - np) / 2 + 1):np^2 #heatmaps
+  laymat[lower.tri(laymat)]<-(np + 1):(np + (np^2 - np) / 2) #correlations
+  laymat[upper.tri(laymat)]<-(np + (np^2 - np) / 2 + 1):np^2 #heatmaps
 
   layout(laymat) #define layout using laymat
 
@@ -53,13 +53,24 @@ pretty_pairs <- function(samples){
 
   ## compute 2D kernel density, see MASS book, pp. 130-131
 
+
   for(i in 2:np)
     for(j in 1:(i-1)){
+      if (scatter == TRUE){
+        plot(samples[,i],samples[,j], pch=16, cex=0.3, col='darkgrey')
+      } else {
+        plot(range(samples[,i]), range(samples[,j]), type = 'n')
+      }
       z <- kde2d(samples[,i],samples[,j], n=20)
-      contour(z, drawlabels=FALSE, nlevels=k, col=my.cols, add=FALSE)
-      abline(h=mean(samples[,i]), v=mean(samples[,j]), lwd=2, lty = 2)
+      contour(z, drawlabels=FALSE, nlevels=k, col=my.cols, add=TRUE)
+      abline(h=mean(samples[,j]), v=mean(samples[,i]), lwd=2, lty = 2)
+      if (trend == TRUE) {
+        rows <- sample(nrow(samples), ceiling(0.05*nrow(samples)))
+        loess_fit <- loess(samples[rows,j] ~ samples[rows,i])
+        points(samples[rows,i], predict(loess_fit), col = "blue", pch=16, cex=0.5)
+      }
+
     }
-  warning('layout is wrong')
-}
+  }
 
 

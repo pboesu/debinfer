@@ -122,7 +122,7 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
         inits.new <- do.call(free.inits, args=list(from.pars = p.new), quote=T)
         #diagnostic
         #print(inits.new)
-      }
+      } else {inits.new <- inits}
 
       sim.new<-make.states(sim, p.new, inits.new, Tmax, which=which, sizestep, w.t, data.times=data.times)
 

@@ -13,8 +13,7 @@ source("R/deb_post_prior_walb.R")
 ##library("coda")
 
 params<-setparams.DEB.walb()
-inits<-setinits.DEB.walb()
-
+inits<-setinits.DEB.walb(from.pars = params)
 
 
 #set sizestep for simulator
@@ -46,20 +45,22 @@ plot(teix.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M']))
 ## condition for e0 is set, so we don't need to reset the "inits"
 ## inits<-setinits.DEB()
 hyper<-make.hypers() #make the prior slightly more vague than the std. error on the fit suggests
-w.p<-c("f_slope") #name the parameters that are to be estimated??
+w.p<-c("f_slope", "f_intercept") #name the parameters that are to be estimated??
 
-p.start<-c(-0.004) #initial values of parameters
-prop.sd<-c(f_slope=0.0001)#what is this? Metropolis-Hastings Tuning parameter?!
+p.start<-c(-0.004, 1) #initial values of parameters
+prop.sd<-c(f_slope=0.0001, f_intercept = 0.01)#what is this? Metropolis-Hastings Tuning parameter?!
 
 
 sds<-list(L=0.5, Ww=250)
 
-N<-500
+N<-5000
 
-lit.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=10, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t)
+lit.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=10, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb")
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
 
 lit.samps<-lit.samps$samps
+
+pretty_pairs(lit.samps, trend = T, scatter=T)
 #pdf("figs/chain_post_prior.pdf", width=12, height=8)
 par(mfrow=c(1,2))
 plot(lit.samps$f_slope,type='l', main="mcmc trace", xlab = 'iteration')
