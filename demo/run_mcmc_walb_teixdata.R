@@ -44,23 +44,26 @@ plot(teix.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M']))
 ## to infer since we're not currently proposing X.h, the initial
 ## condition for e0 is set, so we don't need to reset the "inits"
 ## inits<-setinits.DEB()
-hyper<-make.hypers() #make the prior slightly more vague than the std. error on the fit suggests
-w.p<-c("f_slope", "f_intercept") #name the parameters that are to be estimated??
+hyper<-make.hypers(kap = c(1,1), L_m = c(2.82983379, 0.08221382), p_Am = c( 6.5506723, 0.0285656), v = c(-3.50711314,  0.03332408), k_J = c(-15.02003861,   0.03332408), E_G = c(9.47104320, 0.05764439)) #make the prior slightly more vague than the std. error on the fit suggests
+w.p<-c("f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G") #name the parameters that are to be estimated??
 
-p.start<-c(-0.004, 1) #initial values of parameters
-prop.sd<-c(f_slope=0.0001, f_intercept = 0.01)#what is this? Metropolis-Hastings Tuning parameter?!
+p.start<-c(-0.004, 0.9, 15, 700, 3e-2, 3e-7, 1.3e4) #initial values of parameters
+prop.sd<-c(f_slope=0.0001, f_intercept = 0.01, kap = 0.01, L_m = 0.2, p_Am = 10, v = 1e-3, k_J = 1e-8, E_G = 750)#what is this? Metropolis-Hastings Tuning parameter?!
 
 
 sds<-list(L=0.5, Ww=250)
 
-N<-5000
+N<-100000
 
-lit.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=10, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb")
+lit.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=1000, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb")
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
 
 lit.samps<-lit.samps$samps
 
-pretty_pairs(lit.samps, trend = T, scatter=T)
+mcmc.out = list(samps = lit.samps, hyper = hyper, p.start = p.start, tuning = prop.sd)
+save(mcmc.out, file = paste("walb_deb_teixdata_samples", format(Sys.time(), format = "%Y%m%d-%H%M%S"), ".RData", sep=''))
+
+pretty_pairs(lit.samps[runif(10000, 2000, 100000),], trend = T, scatter=T)
 #pdf("figs/chain_post_prior.pdf", width=12, height=8)
 par(mfrow=c(1,2))
 plot(lit.samps$f_slope,type='l', main="mcmc trace", xlab = 'iteration')
@@ -75,7 +78,15 @@ lines(seq(-.01,0,length.out = 100),dnorm(seq(-0.01,0,length.out = 100), mean=hyp
 
 #solve with estimated parameters
 new.params <- params
-new.params['f_slope'] <- mean(lit.samps$f_slope)
+
+#dut of burnin
+lit.samps.nib <- lit.samps[2000:100000,]
+"f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G"
+new.params['f_slope'] <- mean(lit.samps.nib$f_slope)
+for (i in w.p){
+  new.params[i] <-   mean(lit.samps.nib[,i])
+}
+
 #new.params['f_intercept'] <- mean(samps$f_intercept[2000:5000])
 
 new.data<-solve.DEB(DEB.walb, new.params, inits, Tmax=Tmax, numsteps=NULL,
@@ -111,3 +122,7 @@ lines(teix.fit[,"time"], teix.fit[,"L"]/params["delta_M"])
 
 #dev.off()
 
+par(mfrow = c(2,4))
+for (i in 1:length(w.p)){
+  plot(lit.samps[,i], main=w.p[i], type='l')
+}
