@@ -79,17 +79,17 @@ log.prior.params<-function(samp, w.p, hyper){
     p<-w.p[i]
     s<-as.numeric(samp[p])
 
-    if( p == "L_m" ) "not ready yet"
-    if( p == "p_Am" ) "not ready yet"
-    if( p == "v" ) "not ready yet"
-    if( p == "k_J" ) "not ready yet"
-    if( p == "kap" ) "not ready yet"
-    if( p == "T_A" ) "not ready yet"
-    if( p == "T_ref" ) "not ready yet"
-    if( p == "T_b" ) "not ready yet"
-    if( p == "E_G" ) "not ready yet"
-    if( p == "f_slope" ) lp$f_slope<-dnorm(s, mean=hyper[[p]][1], sd=hyper[[p]][2], log=TRUE)
-    if( p == "f_intercept" ) lp$f_intercept<-dnorm(s, mean=hyper[[p]][1], sd=hyper[[p]][2], log=TRUE)
+    if( p == "L_m" ) lp$L_m <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
+    if( p == "p_Am" ) lp$p_Am <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
+    if( p == "v" ) lp$v <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
+    if( p == "k_J" ) lp$k_J <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
+    if( p == "kap" ) lp$kap <- dbeta(s, shape1 = hyper[[p]][1], shape2 = hyper[[p]][2], log=TRUE)
+    if( p == "T_A" ) lp$T_A <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
+    if( p == "T_ref" ) lp$T_ref <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
+    if( p == "T_b" ) lp$T_b <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
+    if( p == "E_G" ) lp$E_G <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
+    if( p == "f_slope" ) lp$f_slope <- dnorm(s, mean=hyper[[p]][1], sd=hyper[[p]][2], log=TRUE)
+    if( p == "f_intercept" ) lp$f_intercept <- dnorm(s, mean=hyper[[p]][1], sd=hyper[[p]][2], log=TRUE)
   }
 
   return(lp)

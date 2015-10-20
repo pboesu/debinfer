@@ -151,6 +151,8 @@ deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   }
 
   ##plot(b[100:N],type="l")
+  #this piece of the function doesn't make sense  to me
+  #essentially the burnin argument is ignored
   lim<-min(1, burnin*N)
   samps <- samps[lim:(N+1),]
 
