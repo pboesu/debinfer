@@ -44,7 +44,7 @@ plot(teix.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M']))
 ## to infer since we're not currently proposing X.h, the initial
 ## condition for e0 is set, so we don't need to reset the "inits"
 ## inits<-setinits.DEB()
-hyper<-make.hypers(kap = c(1,1), L_m = c(2.82983379, 0.08221382), p_Am = c( 6.5506723, 0.0285656), v = c(-3.50711314,  0.03332408), k_J = c(-15.02003861,   0.03332408), E_G = c(9.47104320, 0.05764439)) #make the prior slightly more vague than the std. error on the fit suggests
+hyper<-make.hypers(kap = c(2,2), L_m = c(2.82983379, 0.08221382), p_Am = c( 6.5506723, 0.0285656), v = c(-3.50711314,  0.03332408), k_J = c(-15.02003861,   0.03332408), E_G = c(9.47104320, 0.05764439)) #make the prior slightly more vague than the std. error on the fit suggests
 w.p<-c("f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G") #name the parameters that are to be estimated??
 
 p.start<-c(-0.004, 0.9, 15, 700, 3e-2, 3e-7, 1.3e4) #initial values of parameters
@@ -53,7 +53,7 @@ prop.sd<-c(f_slope=0.0001, f_intercept = 0.01, kap = 0.01, L_m = 0.2, p_Am = 10,
 
 sds<-list(L=0.5, Ww=250)
 
-N<-100000
+N<-30000
 
 lit.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=1000, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb")
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
@@ -63,7 +63,7 @@ lit.samps<-lit.samps$samps
 mcmc.out = list(samps = lit.samps, hyper = hyper, p.start = p.start, tuning = prop.sd)
 save(mcmc.out, file = paste("walb_deb_teixdata_samples", format(Sys.time(), format = "%Y%m%d-%H%M%S"), ".RData", sep=''))
 
-pretty_pairs(lit.samps[runif(10000, 2000, 100000),], trend = T, scatter=T)
+pretty_pairs(lit.samps[runif(10000, 2000, 30000),], trend = T, scatter=T)
 #pdf("figs/chain_post_prior.pdf", width=12, height=8)
 par(mfrow=c(1,2))
 plot(lit.samps$f_slope,type='l', main="mcmc trace", xlab = 'iteration')
@@ -78,19 +78,31 @@ lines(seq(-.01,0,length.out = 100),dnorm(seq(-0.01,0,length.out = 100), mean=hyp
 
 #solve with estimated parameters
 new.params <- params
-
+mean.params <- params
+median.params <- params
 #dut of burnin
 lit.samps.nib <- lit.samps[2000:100000,]
-"f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G"
+#"f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G"
 new.params['f_slope'] <- mean(lit.samps.nib$f_slope)
 for (i in w.p){
-  new.params[i] <-   mean(lit.samps.nib[,i])
+  mean.params[i] <-   mean(lit.samps.nib[,i])
+  median.params[i] <-   median(lit.samps.nib[,i])
 }
+
 
 #new.params['f_intercept'] <- mean(samps$f_intercept[2000:5000])
 
-new.data<-solve.DEB(DEB.walb, new.params, inits, Tmax=Tmax, numsteps=NULL,
-                            which=1, sizestep=ss, verbose = FALSE)
+new.data<-solve.DEB(DEB.walb, new.params, inits, Tmax=Tmax, numsteps=NULL,which=1, sizestep=1, verbose = FALSE)
+
+mean.sim<-solve.DEB(DEB.walb, mean.params, inits, Tmax=Tmax, numsteps=NULL, which=1, sizestep=ss, verbose = FALSE)
+median.sim<-solve.DEB(DEB.walb, median.params, inits, Tmax=Tmax, numsteps=NULL, which=1, sizestep=ss, verbose = FALSE)
+
+#get credible intervals
+lapply
+
+
+
+plot(mean.sim, obs=as.data.frame(median.sim))
 
 #plot(old.data)#plot debtool fit, which is the basis for the simulated data
 plot(new.data)
@@ -125,4 +137,43 @@ lines(teix.fit[,"time"], teix.fit[,"L"]/params["delta_M"])
 par(mfrow = c(2,4))
 for (i in 1:length(w.p)){
   plot(lit.samps[,i], main=w.p[i], type='l')
+}
+
+
+sim_from_samps <- function(sim = DEB.walb, params, samps, iteration){
+
+  new.params <- params
+  slice <- samps[iteration,]
+  for (i in names(slice)) new.params[i] <- samps[iteration,i]
+
+  new.data<-solve.DEB(sim = sim, new.params, inits, Tmax=Tmax, numsteps=NULL,
+                      which=1, sizestep=ss, verbose = FALSE)
+
+  #add step to calculate Lcul and Ww
+  Ww <- get_Ww(w_E = 23.9, d_v = 0.5, mu_E = 550000, sim.data=new.data, ode.pars=new.params )
+  Lcul <- new.data[,"L"]/new.params["delta_M"]
+
+  return(cbind(new.data, Ww = Ww, Lcul = Lcul))
+
+}
+
+simlist <- plyr::llply(sample(nrow(lit.samps[2000:30000,]), 100), function(x)sim_from_samps(params = params, samps = lit.samps, iteration = x), .progress='text')
+
+sima <- simplify2array(simlist)
+dim(sima)
+
+simCI <- aaply(sima, .margins = c(1,2), quantile, probs=c(0.025,0.5,0.975))
+
+par(mfrow=c(2,3))
+for (p in 2:ncol(simlist[[1]])){
+  plot(simCI[,,3][,c(1,p)], main=dimnames(simlist[[1]])[[2]][p], type='n')
+
+  #for (i in 1:length(simlist)){
+  #  lines(simlist[[i]][,c(1,p)],lty=2,col='grey')
+  #}
+  for (i in 1:3){
+    lines(simCI[,,i][,c(1,p)], lty=1, col=c("red"))
+  }
+  if (dimnames(simlist[[1]])[[2]][p] == "Ww") points(lit.data$t,lit.data$Ww)
+  if (dimnames(simlist[[1]])[[2]][p] == "Lcul") points(lit.data$t, lit.data$L)
 }
