@@ -63,7 +63,13 @@ lit.samps<-lit.samps$samps
 mcmc.out = list(samps = lit.samps, hyper = hyper, p.start = p.start, tuning = prop.sd)
 save(mcmc.out, file = paste("walb_deb_teixdata_samples", format(Sys.time(), format = "%Y%m%d-%H%M%S"), ".RData", sep=''))
 
-pretty_pairs(lit.samps[runif(10000, 2000, 30000),], trend = T, scatter=T)
+#loading results from file
+lit.samps <- mcmc.out[['samps']]
+
+pdf("figs/pretty_pairs_full_model_teixdat.pdf", width=12, height=8)
+pretty_pairs(lit.samps[runif(10000, 2000, 30000),], trend = T)
+dev.off()
+
 #pdf("figs/chain_post_prior.pdf", width=12, height=8)
 par(mfrow=c(1,2))
 plot(lit.samps$f_slope,type='l', main="mcmc trace", xlab = 'iteration')
@@ -81,7 +87,7 @@ new.params <- params
 mean.params <- params
 median.params <- params
 #dut of burnin
-lit.samps.nib <- lit.samps[2000:100000,]
+lit.samps.nib <- lit.samps[2000:30000,]
 #"f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G"
 new.params['f_slope'] <- mean(lit.samps.nib$f_slope)
 for (i in w.p){
@@ -98,7 +104,7 @@ mean.sim<-solve.DEB(DEB.walb, mean.params, inits, Tmax=Tmax, numsteps=NULL, whic
 median.sim<-solve.DEB(DEB.walb, median.params, inits, Tmax=Tmax, numsteps=NULL, which=1, sizestep=ss, verbose = FALSE)
 
 #get credible intervals
-lapply
+#lapply
 
 
 
@@ -118,21 +124,19 @@ omega = unname(ode.pars['p_Am'] * w_E / (ode.pars['v'] * d_v * mu_E))
 Ww = sim.data[,'L']^3 * (1 + sim.data[,'f_n'] * omega) * d_v * wdratio
 return(Ww)
 }
-new.Ww <- get_Ww(w_E = 23.9, d_v = 0.5, mu_E = 550000, sim.data=new.data, ode.pars=new.params )
+new.Ww <- get_Ww(w_E = 23.9, d_v = 0.5, mu_E = 550000, sim.data=median.sim, ode.pars=median.params )
 teix.Ww <- get_Ww(sim.data = teix.fit, ode.pars=params)
 
-#pdf("figs/post_pred.pdf", width=12, height=8)
+pdf("figs/median_pred_walb_teixdata.pdf", width=12, height=8)
 par(mfrow=c(1,2))
 plot(lit.data$t, lit.data$Ww,type='p',lwd=3,xlab = 'time (days since hatching)', ylab = 'wet weight (g)', ylim = c(0, max(lit.data$Ww)), xlim = c(0, Tmax))
-lines(new.data[,"time"],new.Ww, col='red',lty=3,lwd=4)
+lines(median.sim[,"time"],new.Ww, col='red',lty=2,lwd=4)
 lines(teix.fit[,"time"], teix.Ww)
-legend("topleft",lwd=c(3,4,NA), lty=c(1,3,NA), pch=c(NA,NA,1), col=c('black','red','grey'),legend=c('Teixeira', 'MCMC fit','data'),bty='n')
+legend("topleft",lwd=c(3,4,NA), lty=c(1,2,NA), pch=c(NA,NA,1), col=c('black','red','grey'),legend=c('Teixeira et al. 2014', 'MCMC fit (median)','data'),bty='n')
 plot(lit.data$t, lit.data$L,type='p',lwd=3,xlab = 'time (days since hatching)', ylab = 'culmen length (cm)', ylim = c(0, max(lit.data$L)), xlim = c(0, Tmax))
-lines(new.data[,"time"],new.data[,"L"]/params["delta_M"], col='red',lty=3,lwd=4)
+lines(median.sim[,"time"],median.sim[,"L"]/params["delta_M"], col='red',lty=2,lwd=4)
 lines(teix.fit[,"time"], teix.fit[,"L"]/params["delta_M"])
-
-
-#dev.off()
+dev.off()
 
 par(mfrow = c(2,4))
 for (i in 1:length(w.p)){
@@ -162,7 +166,7 @@ simlist <- plyr::llply(sample(nrow(lit.samps[2000:30000,]), 100), function(x)sim
 sima <- simplify2array(simlist)
 dim(sima)
 
-simCI <- aaply(sima, .margins = c(1,2), quantile, probs=c(0.025,0.5,0.975))
+simCI <- plyr::aaply(sima, .margins = c(1,2), quantile, probs=c(0.025,0.5,0.975))
 
 par(mfrow=c(2,3))
 for (p in 2:ncol(simlist[[1]])){
