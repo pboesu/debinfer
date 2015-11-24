@@ -168,6 +168,7 @@ dim(sima)
 
 simCI <- plyr::aaply(sima, .margins = c(1,2), quantile, probs=c(0.025,0.5,0.975))
 
+pdf("figs/simCI.pdf", width = 9, height = 5)
 par(mfrow=c(2,3))
 for (p in 2:ncol(simlist[[1]])){
   plot(simCI[,,3][,c(1,p)], main=dimnames(simlist[[1]])[[2]][p], type='n')
@@ -181,3 +182,4 @@ for (p in 2:ncol(simlist[[1]])){
   if (dimnames(simlist[[1]])[[2]][p] == "Ww") points(lit.data$t,lit.data$Ww)
   if (dimnames(simlist[[1]])[[2]][p] == "Lcul") points(lit.data$t, lit.data$L)
 }
+dev.off()
