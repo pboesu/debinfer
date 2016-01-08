@@ -45,9 +45,9 @@ plot(teix.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M']))
 ## condition for e0 is set, so we don't need to reset the "inits"
 ## inits<-setinits.DEB()
 hyper<-make.hypers(kap = c(2,2), L_m = c(2.82983379, 0.08221382), p_Am = c( 6.5506723, 0.0285656), v = c(-3.50711314,  0.03332408), k_J = c(-15.02003861,   0.03332408), E_G = c(9.47104320, 0.05764439)) #make the prior slightly more vague than the std. error on the fit suggests
-w.p<-c("f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G") #name the parameters that are to be estimated??
+w.p<-c("f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G", "f_intercept") #name the parameters that are to be estimated??
 
-p.start<-c(-0.004, 0.9, 15, 700, 3e-2, 3e-7, 1.3e4) #initial values of parameters
+p.start<-c(-0.004, 0.9, 15, 700, 3e-2, 3e-7, 1.3e4, 1.5) #initial values of parameters; should be a named numeric, really
 prop.sd<-c(f_slope=0.0001, f_intercept = 0.01, kap = 0.01, L_m = 0.2, p_Am = 10, v = 1e-3, k_J = 1e-8, E_G = 750)#what is this? Metropolis-Hastings Tuning parameter?!
 
 
