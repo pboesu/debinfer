@@ -1,3 +1,5 @@
+# maybe this function should create two objects, one with the free parameters, that is then used as a template for the samples array, and one with the fixed values, that is only evaluated during the make.states call and the likelihood calculations
+
 #' setup_debinfer
 #'
 #' Creates an object of class debinfer_in containing initial values, parameters, prior distributions, hyperparameters
