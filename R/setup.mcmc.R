@@ -215,9 +215,9 @@ logd_prior <- function(x, pdf, hypers, sigma=NULL){
   if (pdf == 'mvnorm'){
       stop('multivariate priors not yet implemented')
     } else {
-     lp <- do.call(paste("d",pdf, sep=''), args=list(sample, hypers[1], hypers[2], log=TRUE))
+     lp <- do.call(paste("d",pdf, sep=''), args=list(x, hypers[1], hypers[2], log=TRUE))
      return(lp)
       }
   }
 
-#log_prior_params(sample=1, pdf='norm', hypers=c(mean=1,sd=1))
+#logd_prior(x=1, pdf='norm', hypers=c(mean=1,sd=1))
