@@ -201,7 +201,17 @@ setup_debinfer <- function(var.name, var.type, fixed, value, block, distrib, hyp
 # ..$ hyp   : num [1:2] 5 1
 # ..$ start : num 5.11
 
-log_prior_params <- function(sample, pdf, hypers, sigma=NULL){
+
+#' logd_prior
+#'
+#' Evaluates the log probability density of value given a name of a prior pdf and the corresponding hyperparameters
+#'
+#' @param x numeric; vector of values.
+#' @param pdf character; name of a probability function. must conform to base R nomenclature.
+#'
+#' @return the value of the log density function evaluated at \code{x}
+#'
+logd_prior <- function(x, pdf, hypers, sigma=NULL){
   if (pdf == 'mvnorm'){
       stop('multivariate priors not yet implemented')
     } else {
@@ -210,4 +220,4 @@ log_prior_params <- function(sample, pdf, hypers, sigma=NULL){
       }
   }
 
-log_prior_params(sample=1, pdf='norm', hypers=c(mean=1,sd=1))
+#log_prior_params(sample=1, pdf='norm', hypers=c(mean=1,sd=1))

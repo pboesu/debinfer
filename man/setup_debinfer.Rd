@@ -5,7 +5,7 @@
 \title{setup_debinfer}
 \usage{
 setup_debinfer(var.name, var.type, fixed, value, block, distrib, hypers,
-  prop.sd, sampler)
+  prop.var, samp.type)
 }
 \arguments{
 \item{var.name}{character vector; name of the variable}
@@ -22,9 +22,9 @@ setup_debinfer(var.name, var.type, fixed, value, block, distrib, hypers,
 
 \item{hypers}{list of numeric vectors, hyperparameters for the prior; mean only for mvnorm.}
 
-\item{prop.sd}{numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter}
+\item{samp.type}{character; type of sampler: "rw" random walk, "ind" = idenpendence}
 
-\item{sampler}{character; type of sampler: "rw" random walk, "ind" = idenpendence}
+\item{prop.sd}{numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter}
 }
 \value{
 returns an object of class debinfer_in to be fed to the mcmc function
