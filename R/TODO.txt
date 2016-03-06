@@ -5,3 +5,7 @@ function that takes deb.mcmc output and simulates means and cred. ints for all s
 function that plots posteriors on priors and pair plots of posteriors
 
 foreach wrapper for deb.mcmc to run multiple chains
+
+mcmc setup function should check:
+-completeness of parameters
+-start values must be in support of corresponding prior (sth like is finite(log_dprior(startvalue, hypers)))
