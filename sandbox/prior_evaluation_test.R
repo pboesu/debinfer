@@ -19,6 +19,8 @@ get_logd_prior <- function(x, pdf, ...){ #ellipsis and get more efficient, but h
   }
 }
 
+##what about assembling call from pdf & hypers at sart of mcmc, then evaluating call?
+
 
 system.time(
   for (i in 1:100000) logd_prior(x=1:25, pdf='norm', hypers=c(mean=1,sd=1))
