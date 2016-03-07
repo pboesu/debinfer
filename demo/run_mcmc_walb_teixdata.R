@@ -47,15 +47,19 @@ plot(teix.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M']))
 hyper<-make.hypers(kap = c(2,2), L_m = c(2.82983379, 0.08221382), p_Am = c( 6.5506723, 0.0285656), v = c(-3.50711314,  0.03332408), k_J = c(-15.02003861,   0.03332408), E_G = c(9.47104320, 0.05764439)) #make the prior slightly more vague than the std. error on the fit suggests
 w.p<-c("f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G", "f_intercept") #name the parameters that are to be estimated??
 
+#to do march 6th
+#write data structures for priors and hypers
+
+
 p.start<-c(-0.004, 0.9, 15, 700, 3e-2, 3e-7, 1.3e4, 1.5) #initial values of parameters; should be a named numeric, really
 prop.sd<-c(f_slope=0.0001, f_intercept = 0.01, kap = 0.01, L_m = 0.2, p_Am = 10, v = 1e-3, k_J = 1e-8, E_G = 750)#what is this? Metropolis-Hastings Tuning parameter?!
 
 
 sds<-list(L=0.5, Ww=250)
 
-N<-30000
+N<-300
 
-lit.samps<-deb.mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=1000, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb")
+lit.samps<-deb_mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=30, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb")
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
 
 lit.samps<-lit.samps$samps

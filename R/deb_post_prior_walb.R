@@ -16,7 +16,7 @@
 ## g, kap, k.J, M.HP, shape, gamma, X.h, vol. There is also a function
 ## to automatically generate the hyper parameters for the priors
 
-log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds, verbose.lik=FALSE){
+log.post.params<-function(samp, w.p, data, p, pdfs, hyper, sim.data, sds, verbose.lik=FALSE){
 
   ##dirty fix to treat NaNs in solver output. really the model should be scaled
   ##penalty value 0 seems to lead to "wrong solutions", trying 1e99
@@ -47,7 +47,7 @@ log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds, verbose.lik=
 
   if(length(w.p)==1) lprior<-as.numeric(log.prior.params(samp, w.p, hyper))
   else {
-    lprior<-sum(log.prior.params(samp, w.p, hyper))
+    lprior<-sum(log.prior.params(samp, pdfs, w.p, hyper))
     ##if(!is.finite(lprior)) break
   }
   ##print(c(b, lik, prior))
@@ -61,7 +61,7 @@ log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds, verbose.lik=
 
 
 
-log.prior.params<-function(samp, w.p, hyper){
+log.prior.params<-function(samp, pdfs, w.p, hyper){
   lp<-0
   len<-length(w.p)
   if(len==1){
@@ -79,18 +79,9 @@ log.prior.params<-function(samp, w.p, hyper){
     p<-w.p[i]
     s<-as.numeric(samp[p])
 
-    if( p == "L_m" ) lp$L_m <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
-    if( p == "p_Am" ) lp$p_Am <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
-    if( p == "v" ) lp$v <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
-    if( p == "k_J" ) lp$k_J <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
-    if( p == "kap" ) lp$kap <- dbeta(s, shape1 = hyper[[p]][1], shape2 = hyper[[p]][2], log=TRUE)
-    if( p == "T_A" ) lp$T_A <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
-    if( p == "T_ref" ) lp$T_ref <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
-    if( p == "T_b" ) lp$T_b <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
-    if( p == "E_G" ) lp$E_G <- dlnorm(s, meanlog = hyper[[p]][1], sdlog = hyper[[p]][2], log=TRUE)
-    if( p == "f_slope" ) lp$f_slope <- dnorm(s, mean=hyper[[p]][1], sd=hyper[[p]][2], log=TRUE)
-    if( p == "f_intercept" ) lp$f_intercept <- dnorm(s, mean=hyper[[p]][1], sd=hyper[[p]][2], log=TRUE)
-  }
+    lp[[p]] <- logd_prior(s, pdf[i], hypers=hyper[i])
+
+    }
 
   return(lp)
 
