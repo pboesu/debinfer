@@ -4,7 +4,7 @@
 \alias{deb_mcmc}
 \title{deb_mcmc}
 \usage{
-deb_mcmc(N, p.start, data, w.p, params, inits, sim = DEB1, sds, hyper,
+deb_mcmc(N, p.start, data, w.p, params, inits, sim = DEB1, sds, hyper, pdfs,
   prop.sd, Tmax, cnt, burnin = 0.1, plot = TRUE, sizestep = 0.01,
   w.t = 1, which = 1, data.times = NULL, free.inits = NULL)
 }
@@ -12,6 +12,8 @@ deb_mcmc(N, p.start, data, w.p, params, inits, sim = DEB1, sds, hyper,
 \item{N}{integer; Number of MCMC iterations}
 
 \item{p.start}{numeric vector; start values for free parameters}
+
+\item{data}{the data; need to formalize expected format}
 
 \item{w.p}{character vector; names of free parameters}
 
@@ -42,6 +44,8 @@ deb_mcmc(N, p.start, data, w.p, params, inits, sim = DEB1, sds, hyper,
 \item{free.inits}{string, name of function to evaluate}
 
 \item{hyper;}{list of lists(?) containing the hyperparameters for each free parameter}
+
+\item{pdfs;}{character vector containing names of prior pdfs}
 
 \item{sizestep;}{sizestep of solver [maybe change the way arguments are passed onto the solver using lists of options, and/or ellipses]}
 }

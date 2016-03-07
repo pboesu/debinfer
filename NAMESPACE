@@ -2,7 +2,6 @@
 
 S3method(solve,DEB)
 export(deb_mcmc)
-export(logd_prior)
 import(PBSddesolve)
 import(deSolve)
 importFrom(truncdist,dtrunc)

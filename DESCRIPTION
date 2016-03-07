@@ -9,7 +9,11 @@ Authors@R: c(
 Description: More about what it does (maybe more than one line)
 License: What license is it under?
 LazyData: TRUE
-RoxygenNote: 5.0.1
-Depends: deSolve, PBSddesolve
-Imports: truncdist
-Suggests: testthat
+RoxygenNote: 5.0.0
+Depends:
+    deSolve,
+    PBSddesolve
+Imports:
+    truncdist
+Suggests:
+    testthat
