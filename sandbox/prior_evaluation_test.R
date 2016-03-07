@@ -4,7 +4,7 @@ logd_prior <- function(x, pdf, hypers, sigma=NULL){
   if (pdf == 'mvnorm'){
     stop('multivariate priors not yet implemented')
   } else {
-    lp <- do.call(paste("d",pdf, sep=''), args=list(x, hypers[1], hypers[2], log=TRUE))
+    lp <- do.call(paste("d",pdf, sep=''), args=append(list(x, log=TRUE), hypers))
     return(lp)
   }
 }
