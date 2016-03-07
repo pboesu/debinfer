@@ -207,17 +207,21 @@ setup_debinfer <- function(var.name, var.type, fixed, value, block, distrib, hyp
 #' Evaluates the log probability density of value given a name of a prior pdf and the corresponding hyperparameters
 #'
 #' @param x numeric; vector of values.
-#' @param pdf character; name of a probability function. must conform to base R nomenclature.
+#' @param pdf character; name of a probability function. must conform to base R nomenclature. can include trunc for truncated pdfs from package truncdist.
+#' @param hypers list; a list of parameters to be passed to the density function.
 #'
 #' @return the value of the log density function evaluated at \code{x}
+#' @importFrom truncdist dtrunc
+#' @export
+#'
 #'
 logd_prior <- function(x, pdf, hypers, sigma=NULL){
   if (pdf == 'mvnorm'){
-      stop('multivariate priors not yet implemented')
+    stop('multivariate priors not yet implemented')
     } else {
-     lp <- do.call(paste("d",pdf, sep=''), args=list(x, hypers[1], hypers[2], log=TRUE))
-     return(lp)
-      }
-  }
+    lp <- do.call(paste("d",pdf, sep=''), args=append(list(x, log=TRUE), hypers))
+    return(lp)
+    }
+}
 
 #logd_prior(x=1, pdf='norm', hypers=c(mean=1,sd=1))
