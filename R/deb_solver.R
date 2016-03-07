@@ -11,13 +11,14 @@
 #' Title
 #'
 #' @import deSolve
-#' @param sim
-#' @param params
-#' @param inits
-#' @param Tmax
-#' @param numsteps
-#' @param which
-#' @param sizestep
+#' @import PBSddesolve
+#' @param sim function; solver compatible specification of the DE
+#' @param params numeric; named vector of parameter values
+#' @param inits numeric; initial values. Must be in the same order as specified within sim!
+#' @param Tmax numeric; maximum timestep
+#' @param numsteps numeric
+#' @param which interger. whihch solver to use 1= deSolve, 2 = PBSddesolve
+#' @param sizestep for solver
 #' @param verbose passed to deSolve::ode
 #' @param data.times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
 #' If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.
@@ -26,6 +27,7 @@
 #'
 #'
 #' @examples example
+#' @export
 solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
                     which=1, sizestep=NULL, verbose=FALSE, data.times=NULL){
 
@@ -38,11 +40,11 @@ solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
     }
 
     if(which==1){
-    require(deSolve)
-    out<-ode(inits, times, sim, parms=params, verbose=verbose ,method='lsoda')
+    #require(deSolve)
+    out<-ode(inits, times, sim, parms=params, verbose=verbose , method='lsoda')
   }
   if(which==2){
-    require(PBSddesolve)
+    #require(PBSddesolve)
     #on.exit(freeglobaldata())
     out<-dde(inits, times, sim, parms=params)
   }
