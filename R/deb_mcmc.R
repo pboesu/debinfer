@@ -9,24 +9,25 @@
 
 
 
-#' deb.mcmc
+#' deb_mcmc
 #'
-#' @param N
-#' @param p.start
-#' @param data
-#' @param w.p
-#' @param params
-#' @param inits
-#' @param sim
-#' @param sds
-#' @param hyper
-#' @param prop.sd tuning parameters, that is the standard deviation of the proposal distribution for each parameter
-#' @param Tmax
-#' @param cnt
-#' @param burnin
-#' @param plot
-#' @param sizestep
-#' @param w.t
+#' @param N integer; Number of MCMC iterations
+#' @param p.start numeric vector; start values for free parameters
+#' @param data the data; need to formalize expected format
+#' @param w.p character vector; names of free parameters
+#' @param params named numeric; vector of all parameters, i.e. free and fixed
+#' @param inits named numeric; vector of initial values of the state variable(s)
+#' @param sim function; deSolve compatible specification of the differential equation system for which parameters are to be estimated
+#' @param sds numeric; observation error variances
+#' @param hyper; list of lists(?) containing the hyperparameters for each free parameter
+#' @param pdfs; character vector containing names of prior pdfs
+#' @param prop.sd numeric vector; tuning parameters, that is the standard deviation of the proposal distribution for each parameter
+#' @param Tmax numeric; maximum timestep for the solver
+#' @param cnt numeric; interval at which to refresh MCMC chain plots
+#' @param burnin ??
+#' @param plot logical; plot snapshots of MCMC chains? Useful for tuning.
+#' @param sizestep; sizestep of solver [maybe change the way arguments are passed onto the solver using lists of options, and/or ellipses]
+#' @param w.t ???
 #' @param which which ode solver to use. 1=desolve 2=PBSdesolve
 #' @param data.times numeric vector of timepoints at which to solve the DEB model and evaluate the likelihoods. must match the timepoints for which observations are available
 #' @param free.inits string, name of function to evaluate
@@ -34,9 +35,9 @@
 #' @return returns sth
 #'
 #'
-#' @examples example
-deb.mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
-                   sds, hyper, prop.sd, Tmax, cnt, burnin=0.1,
+#' @export
+deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
+                   sds, hyper, pdfs, prop.sd, Tmax, cnt, burnin=0.1,
                    plot=TRUE, sizestep=0.01, w.t=1, which=1, data.times=NULL, free.inits=NULL)
 {
 
