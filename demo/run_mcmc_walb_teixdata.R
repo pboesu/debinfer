@@ -44,11 +44,32 @@ plot(teix.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M']))
 ## to infer since we're not currently proposing X.h, the initial
 ## condition for e0 is set, so we don't need to reset the "inits"
 ## inits<-setinits.DEB()
-hyper<-make.hypers(kap = c(2,2), L_m = c(2.82983379, 0.08221382), p_Am = c( 6.5506723, 0.0285656), v = c(-3.50711314,  0.03332408), k_J = c(-15.02003861,   0.03332408), E_G = c(9.47104320, 0.05764439)) #make the prior slightly more vague than the std. error on the fit suggests
+#hyper<-make.hypers(kap = c(2,2), L_m = c(2.82983379, 0.08221382), p_Am = c( 6.5506723, 0.0285656), v = c(-3.50711314,  0.03332408), k_J = c(-15.02003861,   0.03332408), E_G = c(9.47104320, 0.05764439)) #make the prior slightly more vague than the std. error on the fit suggests
+pdfs = list(kap = 'beta',
+            L_m = 'lnorm',
+            p_Am = 'lnorm',
+            v = 'lnorm',
+            k_J = 'lnorm',
+            T_A = 'lnorm',
+            T_ref = 'lnorm',
+            T_b = 'lnorm',
+            E_G = 'lnorm',
+            f_slope = 'norm',
+            f_intercept = 'norm'
+            )
+hyper=list(kap = list(shape1=2, shape2=2),
+           L_m = list(meanlog = 2.82983379, sdlog = 0.08221382),
+           p_Am = list(meanlog = 6.5506723, sdlog = 0.0285656),
+           v = list(meanlog = -3.50711314,  sdlog = 0.03332408),
+           k_J = list(meanlog = -15.02003861, sdlog = 0.03332408),
+           E_G = list( meanlog = 9.47104320, sdlog = 0.05764439),
+           f_slope = list(mean = -0.006154762,sd = 0.002985912911), #from linear fit on food data in Teixeira 2014
+           f_intercept = list(mean = 1.561011905, sd = 0.4685600146)
+           )
 w.p<-c("f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G", "f_intercept") #name the parameters that are to be estimated??
 
 #to do march 6th
-#write data structures for priors and hypers
+#write data structures for priors and hypers. done!
 #in deb_mcmc split up data and prior likelihoods, so that only the former is evaluated from a user spec function
 
 
@@ -60,7 +81,7 @@ sds<-list(L=0.5, Ww=250)
 
 N<-300
 
-lit.samps<-deb_mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, prop.sd=prop.sd, Tmax=Tmax, cnt=30, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb")
+lit.samps<-deb_mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, pdfs = pdfs, prop.sd=prop.sd, Tmax=Tmax, cnt=30, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb")
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
 
 lit.samps<-lit.samps$samps
