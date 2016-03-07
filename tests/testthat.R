@@ -1,4 +1,4 @@
 library(testthat)
-library(DEBinfer)
+library(deBInfer)
 
-test_check("DEBinfer")
+test_check("deBInfer")

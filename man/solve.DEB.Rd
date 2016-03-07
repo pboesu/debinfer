@@ -8,6 +8,20 @@
   which = 1, sizestep = NULL, verbose = FALSE, data.times = NULL)
 }
 \arguments{
+\item{sim}{function; solver compatible specification of the DE}
+
+\item{params}{numeric; named vector of parameter values}
+
+\item{inits}{numeric; initial values. Must be in the same order as specified within sim!}
+
+\item{Tmax}{numeric; maximum timestep}
+
+\item{numsteps}{numeric}
+
+\item{which}{interger. whihch solver to use 1= deSolve, 2 = PBSddesolve}
+
+\item{sizestep}{for solver}
+
 \item{verbose}{passed to deSolve::ode}
 
 \item{data.times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
