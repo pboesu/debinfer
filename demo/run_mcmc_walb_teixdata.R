@@ -49,6 +49,7 @@ w.p<-c("f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G", "f_intercept") #name 
 
 #to do march 6th
 #write data structures for priors and hypers
+#in deb_mcmc split up data and prior likelihoods, so that only the former is evaluated from a user spec function
 
 
 p.start<-c(-0.004, 0.9, 15, 700, 3e-2, 3e-7, 1.3e4, 1.5) #initial values of parameters; should be a named numeric, really
