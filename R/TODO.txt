@@ -9,3 +9,7 @@ foreach wrapper for deb.mcmc to run multiple chains
 mcmc setup function should check:
 -completeness of parameters
 -start values must be in support of corresponding prior (sth like is finite(log_dprior(startvalue, hypers)))
+
+create a set of convenience functions for data simulation from det + obs model
+i.e. generalised version of add noise
+
