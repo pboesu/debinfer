@@ -83,7 +83,7 @@ prop.sd<-c(f_slope=0.0001, f_intercept = 0.01, kap = 0.01, L_m = 0.2, p_Am = 10,
 
 sds<-list(L=0.5, Ww=250)
 
-N<-300
+N<-1000
 
 lit.samps<-deb_mcmc(N=N, p.start=p.start, data=lit.data, w.p=w.p, params=params, inits=inits, sim=DEB.walb, sds=sds, hyper=hyper, pdfs = pdfs, prop.sd=prop.sd, Tmax=Tmax, cnt=30, burnin=200, plot=TRUE, sizestep=ss, which = 1, data.times = lit.data$t, free.inits = "setinits.DEB.walb")
 ##out<-mcmc(N=N, p.start=p.start, data, params, inits, sim=DEB1, sds, Tmax, burnin=0, cnt=50)
@@ -97,7 +97,7 @@ save(mcmc.out, file = paste("walb_deb_teixdata_samples", format(Sys.time(), form
 lit.samps <- mcmc.out[['samps']]
 
 pdf("figs/pretty_pairs_full_model_teixdat.pdf", width=12, height=8)
-pretty_pairs(lit.samps[runif(10000, 2000, 30000),], trend = T)
+pretty_pairs(lit.samps[runif(1000, 200, 3000),], trend = T)
 dev.off()
 
 #pdf("figs/chain_post_prior.pdf", width=12, height=8)
@@ -117,7 +117,7 @@ new.params <- params
 mean.params <- params
 median.params <- params
 #dut of burnin
-lit.samps.nib <- lit.samps[2000:30000,]
+lit.samps.nib <- lit.samps[200:3000,]
 #"f_slope", "kap", "L_m", "p_Am", "v", "k_J", "E_G"
 new.params['f_slope'] <- mean(lit.samps.nib$f_slope)
 for (i in w.p){
@@ -128,10 +128,10 @@ for (i in w.p){
 
 #new.params['f_intercept'] <- mean(samps$f_intercept[2000:5000])
 
-new.data<-solve.DEB(DEB.walb, new.params, inits, Tmax=Tmax, numsteps=NULL,which=1, sizestep=1, verbose = FALSE)
+new.data<-solve_de(DEB.walb, new.params, inits, Tmax=Tmax, numsteps=NULL,which=1, sizestep=1, verbose = FALSE)
 
-mean.sim<-solve.DEB(DEB.walb, mean.params, inits, Tmax=Tmax, numsteps=NULL, which=1, sizestep=ss, verbose = FALSE)
-median.sim<-solve.DEB(DEB.walb, median.params, inits, Tmax=Tmax, numsteps=NULL, which=1, sizestep=ss, verbose = FALSE)
+mean.sim<-solve_de(DEB.walb, mean.params, inits, Tmax=Tmax, numsteps=NULL, which=1, sizestep=ss, verbose = FALSE)
+median.sim<-solve_de(DEB.walb, median.params, inits, Tmax=Tmax, numsteps=NULL, which=1, sizestep=ss, verbose = FALSE)
 
 #get credible intervals
 #lapply
