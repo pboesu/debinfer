@@ -79,7 +79,7 @@ log.prior.params<-function(samp, pdfs, w.p, hyper){
     p<-w.p[i]
     s<-as.numeric(samp[p])
 
-    lp[[p]] <- logd_prior(s, pdf[[p]], hypers=hyper[[p]])
+    lp[[p]] <- logd_prior(s, pdfs[[p]], hypers=hyper[[p]])
 
     }
 
