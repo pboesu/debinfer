@@ -1,16 +1,20 @@
 ## this script runs mcmc inference on the actual data used by Teixeira et al in their paper
 ## run with: nohup R CMD batch run_mcmc.R &
 
-source("R/deb_mcmc.R")
-source("R/deb_solver.R")
-source("R/DEB_walb.r")
+#source("R/deb_mcmc.R")
+#source("R/deb_solver.R")
+library("deBInfer")
+
+#load DE model
+source("demo/DEB_walb.r")
 
 ## need to source this one after deb_mcmc.R to tell it to use this
 ## versio of the prior/posterior calcs instead of the versions in
 ## deb_post_prior.R
-source("R/deb_post_prior_walb.R")
+source("demo/deb_post_prior_walb.R")
 
-##library("coda")
+library("coda")
+
 
 params<-setparams.DEB.walb()
 inits<-setinits.DEB.walb(from.pars = params)
@@ -36,7 +40,7 @@ abline(v=Tmax)
 
 
 #solve model for published pars
-teix.fit<-solve.DEB(DEB.walb, params, inits, Tmax=Tmax, numsteps=NULL,
+teix.fit<-solve_de(DEB.walb, params, inits, Tmax=Tmax, numsteps=NULL,
                     which=1, sizestep=1, verbose = FALSE)
 plot(teix.fit)
 plot(teix.fit, obs=data.frame(time=lit.data$t, L=lit.data$L*params['delta_M']))
