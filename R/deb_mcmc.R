@@ -68,7 +68,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   ## for testing, I'll run things and see what the posterior prob of
   ## the real params are
   sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t, data.times=data.times)
-  prob.old<-log.post.params(params, w.p, data, p.old, hyper, sim.old, sds)
+  prob.old<-log.post.params(samp=params, w.p=w.p, data=data, p=p.old, pdfs=pdfs, hyper=hyper, sim.data=sim.old, sds=sds)
   print(paste(Sys.time()," posterior likelihood of the real parameters= ", prob.old, sep=""))
 
   for(k in 1:np) p.old[w.p[k]]<-samps[1,k]
@@ -83,7 +83,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
-  prob.old<-log.post.params(samps[1,], w.p, data, p.old, hyper, sim.old, sds)
+  prob.old<-log.post.params(samp=samps[1,], w.p=w.p, data=data, p=p.old, pdfs=pdfs, hyper=hyper, sim.data=sim.old, sds=sds)
   print(paste(Sys.time()," initial posterior likelihood = ", prob.old, sep=""))
 
   if(!is.finite(prob.old)){
@@ -132,7 +132,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
       ## down on total number of calculations
       ## prob.old<-log.post.params(samps[i,k], w.p, data, p.old,
       ## hyper, sim.old, sds)
-      prob.new<-log.post.params(samps[i+1,], w.p, data, p.new, hyper, sim.new, sds)
+      prob.new<-log.post.params(samp=samps[i+1,], w.p=w.p, data=data, p=p.new, pdfs=pdfs, hyper=hyper, sim.data=sim.new, sds=sds)
       if(i%%cnt==0) print(paste("prob.old = ", prob.old, "; prob.new = ", prob.new, sep=""))
       if(is.finite(prob.new) && is.finite(prob.old)){
         A<-exp( prob.new + q$lbak - prob.old - q$lfwd )

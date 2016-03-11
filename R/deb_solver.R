@@ -8,7 +8,7 @@
 #library(PBSddesolve)
 
 
-#' Title
+#' solve_de
 #'
 #' @import deSolve
 #' @import PBSddesolve
@@ -28,7 +28,7 @@
 #'
 #' @examples example
 #' @export
-solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
+solve_de<-function(sim, params, inits, Tmax=400, numsteps=10000,
                     which=1, sizestep=NULL, verbose=FALSE, data.times=NULL){
 
     if(!is.null(data.times)){
@@ -53,7 +53,7 @@ solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
 
 
 
-#' Title
+#' test_sim
 #'
 #' @param sim
 #' @param params
@@ -68,10 +68,10 @@ solve.DEB<-function(sim, params, inits, Tmax=400, numsteps=10000,
 #'
 #'
 #' @examples example
-test.sim <- function(sim, params, inits, ylim=c(0,600), Tmax=200,
+test_sim <- function(sim, params, inits, ylim=c(0,600), Tmax=200,
                   numsteps=10000, which=2, scale=10){
 
-  out<-solve.DEB(sim, params, inits, Tmax, numsteps, which)
+  out<-solve_de(sim, params, inits, Tmax, numsteps, which)
 
   plot.DEB(out, scale)
   return(out)
@@ -211,7 +211,7 @@ make.states<-function(sim, params, inits, Tmax, which=1, sizestep=0.01, w.t=1, d
 
   ##dt<-0
   ##print(dt)
-  dt<-solve.DEB(sim, params, inits, Tmax, numsteps=NULL, which, sizestep, data.times=data.times)
+  dt<-solve_de(sim, params, inits, Tmax, numsteps=NULL, which, sizestep, data.times=data.times)
 
   #this is a dirty solution to the situation that the ode solver terminates prematurely. all remaining timepoints are set to 0, which should badly impact the likelihood (although it might still be better than numerically valid but "bad" solutions that don't end prematurely). Ideally the MCMC sampler should reject a sample if the ode solver stops prematurely
 
