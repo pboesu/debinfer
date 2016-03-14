@@ -3,6 +3,7 @@
 export(deb_mcmc)
 export(log_prior_params)
 export(logd_prior)
+export(pretty_pairs)
 export(solve_de)
 import(PBSddesolve)
 import(deSolve)
