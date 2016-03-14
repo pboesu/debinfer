@@ -18,6 +18,11 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 ### pairwise plot of marginal densities
 ### code following a stackexchange example
 
+
+#' pretty_pairs
+#'
+#'
+#' @export
 pretty_pairs <- function(samples, trend = FALSE, scatter = FALSE){
   np = ncol(samples)
   cors<-round(cor(samples),2) #correlations
