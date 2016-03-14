@@ -45,9 +45,9 @@ log.post.params<-function(samp, w.p, data, p, pdfs, hyper, sim.data, sds, verbos
 
   if(verbose.lik == TRUE) print(paste("lL =", llik.L, "lWw =", llik.Ww ))
 
-  if(length(w.p)==1) lprior<-as.numeric(log.prior.params(samp, w.p, hyper))
+  if(length(w.p)==1) lprior<-as.numeric(log_prior_params(samp, w.p, hyper))
   else {
-    lprior<-sum(log.prior.params(samp, pdfs, w.p, hyper))
+    lprior<-sum(log_prior_params(samp, pdfs, w.p, hyper))
     ##if(!is.finite(lprior)) break
   }
   ##print(c(b, lik, prior))
@@ -61,31 +61,7 @@ log.post.params<-function(samp, w.p, data, p, pdfs, hyper, sim.data, sds, verbos
 
 
 
-log.prior.params<-function(samp, pdfs, w.p, hyper){
-  lp<-0
-  len<-length(w.p)
-  if(len==1){
-    ##print(paste("w.p =", w.p, "samp =", samp[w.p[1]], sep=" "))
-    lp<-list(NULL)
-    names(lp)<-w.p
-  }
-  else{
-    lp<-data.frame(matrix(0, nrow=1, ncol=len))
-    names(lp)<-w.p
-  }
 
-  ##print(c(as.numeric(samp), w.p, hyper[1]))
-  for(i in 1:len){
-    p<-w.p[i]
-    s<-as.numeric(samp[p])
-
-    lp[[p]] <- logd_prior(s, pdfs[[p]], hypers=hyper[[p]])
-
-    }
-
-  return(lp)
-
-}
 
 
 ## here's a function to make the hyper params in the correct format
