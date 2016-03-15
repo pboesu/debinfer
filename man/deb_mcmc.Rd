@@ -6,7 +6,7 @@
 \usage{
 deb_mcmc(N, p.start, data, w.p, params, inits, sim = DEB1, sds, hyper, pdfs,
   prop.sd, Tmax, cnt, burnin = 0.1, plot = TRUE, sizestep = 0.01,
-  w.t = 1, which = 1, data.times = NULL, free.inits = NULL)
+  w.t = 1, which = 1, data.times = NULL, free.inits = NULL, obs.model)
 }
 \arguments{
 \item{N}{integer; Number of MCMC iterations}
