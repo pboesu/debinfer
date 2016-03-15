@@ -17,7 +17,4 @@ This function takes data from a forward simulation,
 extracts a subset of the data points using extract.data,
 and adds observational noise using add.noise
 }
-\examples{
-examples
-}
 

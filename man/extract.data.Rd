@@ -17,7 +17,4 @@ The following functions extract time series observations from the
 forward simulation. In particular, it extracts only those data
 points which are zero mod w.t
 }
-\examples{
-examples
-}
 
