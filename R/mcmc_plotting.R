@@ -27,6 +27,9 @@ pretty_pairs <- function(samples, trend = FALSE, scatter = FALSE){
   np = ncol(samples)
   cors<-round(cor(samples),2) #correlations
 
+  # store old par
+  old.par <- par()
+
   # make layout for plot layout
   laymat<-diag(1:np) #histograms
   laymat[lower.tri(laymat)]<-(np + 1):(np + (np^2 - np) / 2) #correlations
@@ -76,6 +79,8 @@ pretty_pairs <- function(samples, trend = FALSE, scatter = FALSE){
       }
 
     }
+  # restore old par
+  par(old.par)
   }
 
 
