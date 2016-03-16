@@ -15,3 +15,5 @@ i.e. generalised version of add noise
 
 
 What's up with the burnin argument in MCMC function?
+
+Store desolve model and obs model in results list
