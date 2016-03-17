@@ -54,7 +54,7 @@ test_that("Inference on simulated data returns simulation parameters.", {
 
   # do inference with deBInfer
   # MCMC iterations
-  iter = 4000
+  iter = 5000
   # define burnin
   burnin = 2000
   # inference call
@@ -63,5 +63,7 @@ test_that("Inference on simulated data returns simulation parameters.", {
                            K=list(meanlog=1, sdlog=1)), pdfs = list(r='norm', K='lnorm'), prop.sd=c(r=0.001, K=0.1),
                            Tmax=max(N_obs$time), cnt=iter+1, burnin=200, plot=FALSE, sizestep=0.1, which = 1,
                            data.times = N_obs$time, obs.model=logistic_obs_model)
-  expect_equal(colMeans(mcmc_samples$samps[burnin:iter,]),parms,tolerance = 1e-2)
+  #add more tests here checking the integrity & contents of the returned data structure
+  #check accuracy of estimation (threshold is 0.5% of true parameter value)
+  expect_equal(unname(colMeans(mcmc_samples$samps[burnin:iter,])/parms),c(1,1),tolerance = 5e-3)
 })
