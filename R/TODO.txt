@@ -17,3 +17,6 @@ i.e. generalised version of add noise
 What's up with the burnin argument in MCMC function?
 
 Store desolve model and obs model in results list
+
+befor starting the actual mcmc the mcmc function should validate a few things:
+-does the obs.model have the correct named arguments to pass in data, simulated states and parameters (use formals())

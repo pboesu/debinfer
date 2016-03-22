@@ -41,8 +41,8 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
                    plot=TRUE, sizestep=0.01, w.t=1, which=1, data.times=NULL,
                    free.inits=NULL, obs.model)
 {
-  #assign observation model function
-  if (is.function(obs.model))  { log_post_params <- obs.model } else {stop("obs.model must be a function")}
+  #check observation model function
+  if (is.function(obs.model)) else {stop("obs.model must be a function")}
   ## first determine the number of parameters to be infered
   np<-length(p.start)
   if(np!=length(w.p)) {
@@ -70,7 +70,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   ## for testing, I'll run things and see what the posterior prob of
   ## the real params are
   sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t, data.times=data.times)
-  prob.old<-log_post_params(samp=params, w.p=w.p, data=data, p=p.old, pdfs=pdfs, hyper=hyper, sim.data=sim.old, sds=sds)
+  prob.old<-log_post_params(samp=params, w.p=w.p, data=data, p=p.old, pdfs=pdfs, hyper=hyper, sim.data=sim.old, sds=sds, obs.model=obs.model)
   print(paste(Sys.time()," posterior likelihood of the real parameters= ", prob.old, sep=""))
 
   for(k in 1:np) p.old[w.p[k]]<-samps[1,k]
@@ -85,7 +85,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
-  prob.old<-log_post_params(samp=samps[1,], w.p=w.p, data=data, p=p.old, pdfs=pdfs, hyper=hyper, sim.data=sim.old, sds=sds)
+  prob.old <- log_post_params(samp=samps[1,], w.p=w.p, data=data, p=p.old, pdfs=pdfs, hyper=hyper, sim.data=sim.old, sds=sds, obs.model=obs.model)
   print(paste(Sys.time()," initial posterior likelihood = ", prob.old, sep=""))
 
   if(!is.finite(prob.old)){
@@ -134,7 +134,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
       ## down on total number of calculations
       ## prob.old<-log_post_params(samps[i,k], w.p, data, p.old,
       ## hyper, sim.old, sds)
-      prob.new<-log_post_params(samp=samps[i+1,], w.p=w.p, data=data, p=p.new, pdfs=pdfs, hyper=hyper, sim.data=sim.new, sds=sds)
+      prob.new <- log_post_params(samp=samps[i+1,], w.p=w.p, data=data, p=p.new, pdfs=pdfs, hyper=hyper, sim.data=sim.new, sds=sds, obs.model=obs.model)
       if(i%%cnt==0) print(paste("prob.old = ", prob.old, "; prob.new = ", prob.new, sep=""))
       if(is.finite(prob.new) && is.finite(prob.old)){
         A<-exp( prob.new + q$lbak - prob.old - q$lfwd )
@@ -223,6 +223,28 @@ log_prior_params<-function(samp, pdfs, w.p, hyper){
 
 }
 
+#' log_posterior
+#'
+#'
+#'
+#'
+#' @export
+log_poste_params <- function(samp, w.p, data, p, pdfs, hyper, sim.data, sds, verbose.lik=FALSE, obs.model){
 
+  log_data <- obs.model
 
+  llik <- log_data(data=data, sim.data=sim.data, samp)
+
+  #if(length(w.p)==1) lprior<-as.numeric(log_prior_params(samp, w.p, hyper))
+  #else {
+    lprior<-sum(log_prior_params(samp, pdfs, w.p, hyper))
+    ##if(!is.finite(lprior)) break
+  #}
+  ##print(c(b, lik, prior))
+
+  if(is.na(llik)) break
+  if(is.na(lprior)) break
+
+  return( llik + lprior )
+}
 
