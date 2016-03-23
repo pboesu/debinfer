@@ -42,7 +42,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
                    free.inits=NULL, obs.model)
 {
   #check observation model function
-  if (is.function(obs.model)) else {stop("obs.model must be a function")}
+  if (!is.function(obs.model)) stop("obs.model must be a function")
   ## first determine the number of parameters to be infered
   np<-length(p.start)
   if(np!=length(w.p)) {
@@ -223,17 +223,17 @@ log_prior_params<-function(samp, pdfs, w.p, hyper){
 
 }
 
-#' log_posterior
+#' log_post_params
 #'
 #'
 #'
 #'
 #' @export
-log_poste_params <- function(samp, w.p, data, p, pdfs, hyper, sim.data, sds, verbose.lik=FALSE, obs.model){
+log_post_params <- function(samp, w.p, data, p, pdfs, hyper, sim.data, sds, verbose.lik=FALSE, obs.model){
 
   log_data <- obs.model
 
-  llik <- log_data(data=data, sim.data=sim.data, samp)
+  llik <- log_data(data=data, sim.data=sim.data, samp=samp, sds=sds)
 
   #if(length(w.p)==1) lprior<-as.numeric(log_prior_params(samp, w.p, hyper))
   #else {
