@@ -20,3 +20,5 @@ Store desolve model and obs model in results list
 
 befor starting the actual mcmc the mcmc function should validate a few things:
 -does the obs.model have the correct named arguments to pass in data, simulated states and parameters (use formals())
+
+shift current changes into the chytrid version of the mcmc code
