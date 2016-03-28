@@ -252,12 +252,34 @@ log_post_params <- function(samp, w.p, data, p, pdfs, hyper, sim.data, sds, verb
 ###### code from chytrid branch here ######
 ###########################################
 
-## Bayesian inference for a deterministic DEB model (with models
-## solved via an ode solver in the function specified with argument
-## "sim") with an observation model, and with observation error
-## variances specified in sds.
 
-dde.mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
+##' Bayesian inference for a deterministic DEB model (with models
+##' solved via an ode solver in the function specified with argument
+##' "sim") with an observation model, and with observation error
+##' variances specified in sds.
+##'
+##'
+##' @title dde_mcmc
+##' @param N
+##' @param data
+##' @param all.params
+##' @param inits
+##' @param sim
+##' @param samp.p
+##' @param Tmax
+##' @param cnt
+##' @param burnin
+##' @param plot
+##' @param sizestep
+##' @param w.t
+##' @param which
+##' @param test
+##' @param my.par
+##' @param myswitch
+##' @param mymap
+##' @return
+##' @author Philipp Boersch-Supan
+dde_mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
                    Tmax, cnt=10, burnin=0.1,
                    plot=TRUE, sizestep=0.01, w.t=1, which=2,
                    test=TRUE, my.par=c(1,1),  myswitch=NULL,
@@ -354,7 +376,26 @@ dde.mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
 
 
 
-update.sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
+##' @title update_sample
+##' @param samps
+##' @param samp.p
+##' @param data
+##' @param sim
+##' @param inits
+##' @param out
+##' @param Tmax
+##' @param sizestep
+##' @param w.t
+##' @param l
+##' @param which
+##' @param i
+##' @param cnt
+##' @param myswitch
+##' @param mymap
+##' @param test
+##' @return
+##' @author Philipp Boersch-Supan
+update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
                         w.t, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE)
 {
   ## read in some bits
@@ -429,8 +470,15 @@ update.sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
 
 }
 
-
-check.zeros<-function(s.p, q.b){
+##' utility function to check for negative proposals when parameter is not allowed to be negative (e.g. because it's a variance)
+##'
+##'
+##' @title check_zeros
+##' @param s.p
+##' @param q.b
+##' @return
+##' @author Philipp Boersch-Supan
+check_zeros<-function(s.p, q.b){
   z<-0
   for(j in 1:length(s.p$params)){
     if(s.p$params[j]=="l.M.HP") next
@@ -444,8 +492,15 @@ check.zeros<-function(s.p, q.b){
 
 
 
-
-propose.params<-function(samps, s.p)
+##' single proposal function
+##'
+##' individual paramater proposal
+##' @title propose_params
+##' @param samps
+##' @param s.p
+##' @return
+##' @author Philipp Boersch-Supan
+propose_params<-function(samps, s.p)
 {
   if(length(s.p$params)==1){
     ##print(paste(s.p$params, " proposing single ", sep=" "))
@@ -459,9 +514,17 @@ propose.params<-function(samps, s.p)
 
 }
 
-## I'm feeding in the variance, so I need to take the square root....
-propose.single<-function(samps, s.p)##, i, freq=50, size=50 )##l=5, h=6)
-{
+
+##' .. content for \description{} (no empty lines) ..
+##'
+##' .. content for \details{} ..
+##' @title propose_single
+##' @param samps
+##' @param s.p
+##' @return
+##' @author Philipp Boersch-Supan
+propose_single<-function(samps, s.p)##, i, freq=50, size=50 )##l=5, h=6)
+{ ## I'm feeding in the variance, so I need to take the square root....
 
   b<-as.numeric(samps[s.p$params])
   var<-s.p$var
@@ -492,8 +555,15 @@ propose.single<-function(samps, s.p)##, i, freq=50, size=50 )##l=5, h=6)
 }
 
 
-
-propose.joint<-function(samp, samp.p){
+##' joint proposal function
+##'
+##' Function to jointly propose parameters using a multivariate normal proposal distribution
+##' @title propose_joint
+##' @param samp
+##' @param samp.p
+##' @return
+##' @author Philipp Boersch-Supan
+propose_joint<-function(samp, samp.p){
 
 
   b<-NULL
@@ -526,9 +596,20 @@ propose.joint<-function(samp, samp.p){
 
 }
 
-
-
-plot.output<-function(i, samps, samp.p, l, ltot, my.par=c(2,4), plot.post=TRUE){
+##' a plotting function
+##'
+##' .. content for \details{} ..
+##' @title plot_output
+##' @param i
+##' @param samps
+##' @param samp.p
+##' @param l
+##' @param ltot
+##' @param my.par
+##' @param plot.post
+##' @return
+##' @author Philipp Boersch-Supan
+plot_output<-function(i, samps, samp.p, l, ltot, my.par=c(2,4), plot.post=TRUE){
 
   if( ltot > 1 ) par(mfrow=my.par, bty="n")
   for( j in 1:l ){
@@ -547,7 +628,16 @@ plot.output<-function(i, samps, samp.p, l, ltot, my.par=c(2,4), plot.post=TRUE){
 }
 
 
-prior.draw<-function(b, hyp, p){
+##' draw from prior
+##'
+##' details of this function
+##' @title prior_draw
+##' @param b
+##' @param hyp
+##' @param p
+##' @return
+##' @author Philipp Boersch-Supan
+prior_draw<-function(b, hyp, p){
 
   param1<-hyp[1]
   param2<-hyp[2]
