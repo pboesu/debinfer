@@ -16,7 +16,7 @@
 #' @param samp.type character; type of sampler: "rw" random walk, "ind" = idenpendence
 #'
 #' @return returns an object of class debinfer_in to be fed to the mcmc function
-#'
+#' @export
 setup_debinfer <- function(var.name, var.type, fixed, value, block, distrib, hypers, prop.var, samp.type)
 {
 #this function should combine the make.hypers and log.prior.params
@@ -225,3 +225,44 @@ logd_prior <- function(x, pdf, hypers, sigma=NULL){
 }
 
 #logd_prior(x=1, pdf='norm', hypers=c(mean=1,sd=1))
+
+#' debinfer_par
+#'
+#' Creates an object containing all the necessary bits for a parameter i.e. initial values, prior distributions,
+#' hyper-parameters, tuning parameters etc. to set up a debinfer analysis
+#'
+#' @param name character vector; name of the variable
+#' @param par.type character vector; type of the variable "de" = parameter for the differential equation, "obs" = parameter of the observation model, "init" = initial condition for a state variable in the differential equation
+#' @param fixed boolean; TRUE = parameter is taken to be fixed, FALSE = parameter is to be estimated by MCMC
+#' @param value numeric; parameter value. For fixed parameters this is the value used in the analysis for free parameters this is the starting value used when setting up the MCMC chain
+#' @param block integer; number of block for jont proposal; NULL means the parameter is not to be jointly proposed
+#' @param prior character; name of the probability distribution for the prior on the parameter. must conform to standard R naming i.e. beta ( foo = beta), binomial binom, Cauchy cauchy, chi-squared chisq, exponential exp, Fisher F f, gamma gamma, geometric geom, hypergeometric hyper, logistic logis, lognormal lnorm, negative binomial nbinom, normal norm, Poisson pois, Student t t, uniform unif, Weibull weibull, mvnorm
+#' @param hypers list of numeric vectors, hyperparameters for the prior; mean only for mvnorm.
+#' @param prop.sd numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter
+#' @param samp.type character; type of sampler: "rw" random walk, "ind" = idenpendence
+#'
+#' @return returns an object of class debinfer_par to be fed to the mcmc setup function
+#' @export
+debinfer_par <- function(name, var.type, fixed, value, block=NULL, prior=NULL, hypers=NULL, prop.var=NULL, samp.type=NULL){
+  #check inputs
+  if(!is.character(name)) stop("name must be of type character")
+  if(!var.type %in% c("de","obs","init")) stop('var.type must be one of c("de","obs","init")')
+  if(!is.logical(fixed)) stop("fixed must be boolean")
+  if(!is.numeric(value)) stop("value must be numeric")
+  if(!fixed & (is.null(prior) | is.null(hypers) | is.null(prop.var) | is.null(samp.type))) stop("free parameters require a specification of prior, hypers, prop.var and samp.type")
+  if(fixed & !(is.null(prior) | is.null(hypers) | is.null(prop.var) | is.null(samp.type))) warning(paste(name, "is treated as a fixed parameters. Ignoring prior, hypers, prop.var and samp.type specification."))
+  if(!fixed & !samp.type %in% c("rw","ind")) stop('samp.type must be one of c("rw","ind)')
+  if(!fixed & (!is.numeric(prop.var) | prop.var < 0)) stop("prop.var must be a numeric > 0")
+  #checks for prior and hypers?
+  if(!is.null(block)) stop("joint proposals are not yet implemented")
+
+  structure(list(name = name,
+              var.type = var.type,
+              fixed = fixed,
+              value = value,
+              block = block,
+              prior = prior,
+              hypers = hypers,
+              prop.var = prop.var,
+              samp.type = samp.type), class = "debinfer_par")
+}
