@@ -515,9 +515,8 @@ propose_params<-function(samps, s.p)
 }
 
 
-##' .. content for \description{} (no empty lines) ..
+##' propose a parameter individually
 ##'
-##' .. content for \details{} ..
 ##' @title propose_single
 ##' @param samps
 ##' @param s.p
@@ -598,7 +597,6 @@ propose_joint<-function(samp, samp.p){
 
 ##' a plotting function
 ##'
-##' .. content for \details{} ..
 ##' @title plot_output
 ##' @param i
 ##' @param samps

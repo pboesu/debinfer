@@ -9,9 +9,6 @@ plot_output(i, samps, samp.p, l, ltot, my.par = c(2, 4), plot.post = TRUE)
 \description{
 a plotting function
 }
-\details{
-.. content for \details{} ..
-}
 \author{
 Philipp Boersch-Supan
 }

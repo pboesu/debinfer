@@ -7,10 +7,7 @@
 propose_single(samps, s.p)
 }
 \description{
-.. content for \description{} (no empty lines) ..
-}
-\details{
-.. content for \details{} ..
+propose a parameter individually
 }
 \author{
 Philipp Boersch-Supan

@@ -18,7 +18,7 @@ solve_de(sim, params, inits, Tmax = 400, numsteps = 10000, which = 1,
 
 \item{numsteps}{numeric}
 
-\item{which}{interger. whihch solver to use 1= deSolve, 2 = PBSddesolve}
+\item{which}{Choice of solver to use 1 = deSolve::ode, 2 = PBSddesolve::dde}
 
 \item{sizestep}{for solver}
 
