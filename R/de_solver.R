@@ -17,7 +17,7 @@
 #' @param inits numeric; initial values. Must be in the same order as specified within sim!
 #' @param Tmax numeric; maximum timestep
 #' @param numsteps numeric
-#' @param which interger. whihch solver to use 1= deSolve, 2 = PBSddesolve
+#' @param which Choice of solver to use 1 = deSolve::ode, 2 = PBSddesolve::dde
 #' @param sizestep for solver
 #' @param verbose passed to deSolve::ode
 #' @param data.times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.

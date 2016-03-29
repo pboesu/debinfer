@@ -6,7 +6,7 @@
 \usage{
 dde_mcmc(N, data, all.params, inits, sim = DEB1, samp.p, Tmax, cnt = 10,
   burnin = 0.1, plot = TRUE, sizestep = 0.01, w.t = 1, which = 2,
-  test = TRUE, my.par = c(1, 1), myswitch = NULL, mymap = NULL)
+  test = TRUE, my.par = c(1, 1), myswitch = NULL, mymap = NULL, ...)
 }
 \description{
 Bayesian inference for a deterministic DEB model (with models

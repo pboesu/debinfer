@@ -5,7 +5,7 @@
 \title{solve_de}
 \usage{
 solve_de(sim, params, inits, Tmax = 400, numsteps = 10000, which = 1,
-  sizestep = NULL, verbose = FALSE, data.times = NULL)
+  sizestep = NULL, verbose = FALSE, data.times = NULL, ...)
 }
 \arguments{
 \item{sim}{function; solver compatible specification of the DE}
@@ -24,7 +24,9 @@ solve_de(sim, params, inits, Tmax = 400, numsteps = 10000, which = 1,
 
 \item{verbose}{passed to deSolve::ode}
 
-\item{data.times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
+\item{data.times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.}
+
+\item{...}{additional arguments to solver
 If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.}
 }
 \value{

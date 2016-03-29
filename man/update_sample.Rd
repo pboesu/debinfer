@@ -5,7 +5,7 @@
 \title{update_sample}
 \usage{
 update_sample(samps, samp.p, data, sim, inits, out, Tmax, sizestep, w.t, l,
-  which, i, cnt, myswitch = NULL, mymap = NULL, test = TRUE)
+  which, i, cnt, myswitch = NULL, mymap = NULL, test = TRUE, ...)
 }
 \author{
 Philipp Boersch-Supan
