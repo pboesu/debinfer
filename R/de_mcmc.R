@@ -283,7 +283,7 @@ dde_mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
                    Tmax, cnt=10, burnin=0.1,
                    plot=TRUE, sizestep=0.01, w.t=1, which=2,
                    test=TRUE, my.par=c(1,1),  myswitch=NULL,
-                   mymap=NULL)
+                   mymap=NULL, ...)
 {
 
   ## first we calculate a few lengths, etc, that we use for the for
@@ -301,7 +301,7 @@ dde_mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
 
   if(test){
     sim.old<-make.states(sim, all.params, inits, Tmax, which=which, sizestep, w.t,
-                         myswitch=myswitch, mymap=mymap)
+                         myswitch=myswitch, mymap=mymap, ...)
     prob.old<-log.post.params(all.params, data, samp.p, sim.old)
     print(paste("(unnormalized) posterior probability of the real parameters= ",
                 prob.old, sep=""))
@@ -331,7 +331,7 @@ dde_mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
   ## determining the likelihoods) using the parameters stored in p.
 
   sim.old<-make.states(sim, p, inits, Tmax, which=which, sizestep, w.t,
-                       myswitch=myswitch, mymap=mymap)
+                       myswitch=myswitch, mymap=mymap, ...)
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
@@ -396,7 +396,7 @@ dde_mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
 ##' @return
 ##' @author Philipp Boersch-Supan
 update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
-                        w.t, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE)
+                        w.t, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE, ...)
 {
   ## read in some bits
   s<-samps
@@ -433,7 +433,7 @@ update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
 
     ## simulate the dynamics forward with the new parameters
     sim.new<-make.states(sim, p.new, inits, Tmax, which=which, sizestep, w.t,
-                         myswitch=myswitch, mymap=mymap)
+                         myswitch=myswitch, mymap=mymap, ...)
 
     ## The posteriorprob of the previous sample is saved as
     ## s$lpost. If we accept a draw, we will set s$lpost<-s.new$lpost

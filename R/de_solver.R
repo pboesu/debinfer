@@ -21,6 +21,7 @@
 #' @param sizestep for solver
 #' @param verbose passed to deSolve::ode
 #' @param data.times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
+#' @param ... additional arguments to solver
 #' If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.
 #'
 #' @return integrated ode - describe structure
@@ -29,7 +30,7 @@
 #' @examples example
 #' @export
 solve_de<-function(sim, params, inits, Tmax=400, numsteps=10000,
-                    which=1, sizestep=NULL, verbose=FALSE, data.times=NULL){
+                    which=1, sizestep=NULL, verbose=FALSE, data.times=NULL, ...){
 
     if(!is.null(data.times)){
       #this is fragile. really the data should be in a class that ensures proper times, no missing data etc. pp. Also this now assumes observations at identical times for all observed variables.
@@ -41,12 +42,12 @@ solve_de<-function(sim, params, inits, Tmax=400, numsteps=10000,
 
     if(which==1){
     #require(deSolve)
-    out<-ode(inits, times, sim, parms=params, verbose=verbose , method='lsoda')
+    out<-ode(inits, times, sim, parms=params, verbose=verbose , method='lsoda', ...)
   }
   if(which==2){
     #require(PBSddesolve)
     #on.exit(freeglobaldata())
-    out<-dde(inits, times, sim, parms=params)
+    out<-dde(inits, times, sim, parms=params, ...)
   }
   return(out)
 }
