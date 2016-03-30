@@ -4,33 +4,13 @@
 \alias{setup_debinfer}
 \title{setup_debinfer}
 \usage{
-setup_debinfer(var.name, var.type, fixed, value, block, distrib, hypers,
-  prop.var, samp.type)
-}
-\arguments{
-\item{var.name}{character vector; name of the variable}
-
-\item{var.type}{character vector; type of the variable "de.par" = parameter for the differential equation, "obs.par" = parameter of the observation model, "init" = initial condition for a state variable in the differential equation}
-
-\item{fixed}{boolean; TRUE = parameter is taken to be fixed, FALSE = parameter is to be estimated by MCMC}
-
-\item{value}{numeric; parameter value. For fixed parameters this is the value used in the analysis for free parameters this is the starting value used when setting up the MCMC chain}
-
-\item{block}{integer; number of block for jont proposal; 0 or NA mean the parameter is not to be jointly proposed}
-
-\item{distrib}{character; name of the probability distribution for the prior on the parameter. must conform to standard R naming i.e. beta ( foo = beta), binomial binom, Cauchy cauchy, chi-squared chisq, exponential exp, Fisher F f, gamma gamma, geometric geom, hypergeometric hyper, logistic logis, lognormal lnorm, negative binomial nbinom, normal norm, Poisson pois, Student t t, uniform unif, Weibull weibull, mvnorm}
-
-\item{hypers}{list of numeric vectors, hyperparameters for the prior; mean only for mvnorm.}
-
-\item{samp.type}{character; type of sampler: "rw" random walk, "ind" = idenpendence}
-
-\item{prop.sd}{numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter}
+setup_debinfer(...)
 }
 \value{
-returns an object of class debinfer_in to be fed to the mcmc function
+returns an S3 object of class debinfer_parlist to be fed to the mcmc function
 }
 \description{
-Creates an object of class debinfer_in containing initial values, parameters, prior distributions, hyperparameters
+Creates an object of class debinfer_parlist containing initial values, parameters, prior distributions, hyperparameters
 tuning parameters etc. to set up a debinfer analysis
 }
 
