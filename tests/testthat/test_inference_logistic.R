@@ -42,7 +42,7 @@ test_that("Inference on simulated data w/ estimated obs. error returns simulatio
 
   # do inference with deBInfer
   # MCMC iterations
-  iter = 50000
+  iter = 5000
   # define burnin
   burnin = 2000
   # inference call
