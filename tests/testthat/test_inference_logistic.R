@@ -50,7 +50,7 @@ test_that("Inference on simulated data w/ unknown obs. error returns simulation 
                            inits=c(N=0.1), sim=logistic_model, sds=list(N=0.01), hyper=list(r=list(mean=0, sd=1),
                            K=list(meanlog=1, sdlog=1), loglogsd.N=list(mean=-2, sd=1)), pdfs = list(r='norm', K='lnorm', loglogsd.N='norm'),
                            prop.sd=c(r=0.005, K=0.1, loglogsd.N=0.5),
-                           Tmax=max(N_obs$time), cnt=500, burnin=200, plot=TRUE, sizestep=0.1, which = 1,
+                           Tmax=max(N_obs$time), cnt=iter, burnin=200, plot=FALSE, sizestep=0.1, which = 1,
                            data.times = N_obs$time, obs.model=logistic_obs_model)
   #add more tests here checking the integrity & contents of the returned data structure
   #check accuracy of estimation (threshold is 0.5% of true parameter value)
@@ -104,7 +104,7 @@ test_that("Inference on simulated data w/ known obs. error returns simulation pa
   mcmc_samples <- dde_mcmc(N=iter, p.start=list(r=0.5, K=5), data=N_obs, w.p=c("r", "K"), params=parms,
                            inits=c(N=0.1), sim=logistic_model, sds=list(N=0.01), hyper=list(r=list(mean=0, sd=1),
                                                                                             K=list(meanlog=1, sdlog=1)), pdfs = list(r='norm', K='lnorm'), prop.sd=c(r=0.001, K=0.1),
-                           Tmax=max(N_obs$time), cnt=iter+1, burnin=200, plot=FALSE, sizestep=0.1, which = 1,
+                           Tmax=max(N_obs$time), cnt=iter, burnin=200, plot=FALSE, sizestep=0.1, which = 1,
                            data.times = N_obs$time, obs.model=logistic_obs_model)
   #add more tests here checking the integrity & contents of the returned data structure
   #check accuracy of estimation (threshold is 0.5% of true parameter value)
