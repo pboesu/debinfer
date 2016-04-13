@@ -113,7 +113,7 @@ test_that("Inference on simulated data w/ known obs. error returns simulation pa
 
 
 
-test_that("Inference on simulated data w/ known obs. error returns simulation parameters.", {
+test_that("Inference on simulated data w/ known obs. error returns simulation parameters. DEB version.", {
   #testthat::skip_on_cran()
   # define logistic model
   logistic_model <- function(time, y, parms) {
