@@ -1,4 +1,4 @@
-*This is a placeholder repository for an R package implementing Bayesian inference for dynamic energy budget models. The package is derived from methods and code published in [Johnson et al. 2013 Ecology, 94(4)](http://doi.org/10.1890/12-0650.1), and is scheduled to be publicly released in April 2016. For more information please get in touch with pboesu@gmail.com*
+*This is a placeholder repository for an R package implementing Bayesian inference for dynamic energy budget models. The package is derived from methods and code published in [Voyles et al. 2012 Ecology and Evolution, 2(9)](http://dx.doi.org/10.1002%2Fece3.334) and  [Johnson et al. 2013 Ecology, 94(4)](http://doi.org/10.1890/12-0650.1), and is scheduled to be publicly released in April 2016. For more information please get in touch with pboesu@gmail.com*
 
 
 ## deBInfer: Bayesian inference for dynamical models of biological systems in R
