@@ -45,8 +45,8 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params,
   data.times
 
   samps <- deb_mcmc(N=N, p.start=list(r=0.5, K=5, loglogsd.N=-2), data=data, w.p=c("r", "K", "loglogsd.N"), params=parms,
-           inits=c(N=0.1), sim=de.model, sds=list(N=0.01), hyper=list(r=list(mean=0, sd=1),
-                                                                            K=list(meanlog=1, sdlog=1), loglogsd.N=list(mean=-2, sd=1)), pdfs = list(r='norm', K='lnorm', loglogsd.N='norm'),
+           inits=c(N=0.1), sim=de.model, sds=list(N=0.01), hyper=list(r=list(mean=0, sd=1),K=list(meanlog=1, sdlog=1), loglogsd.N=list(mean=-2, sd=1)),
+           pdfs = list(r='norm', K='lnorm', loglogsd.N='norm'),
            prop.sd=c(r=0.005, K=0.1, loglogsd.N=0.5),
            Tmax=Tmax, cnt=cnt, burnin=burnin, plot=plot, sizestep=sizestep, which = which,
            data.times = N_obs$time, obs.model=obs.model)
