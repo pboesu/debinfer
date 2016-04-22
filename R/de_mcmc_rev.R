@@ -69,7 +69,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params,
 
 
 
-  mcmc_samples <- deb_mcmc(N=N, p.start=p.start, data=data, w.p=w.p, params=parms,
+  mcmc_samples <- deb_mcmc(N=N, p.start=p.start, data=data, w.p=w.p, params=params,
                            inits=inits, sim=de.model, sds=NULL,
                            hyper=hyper,
                            pdfs = pdfs,
