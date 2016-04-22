@@ -4,9 +4,9 @@
 \alias{de_mcmc}
 \title{de_mcmc}
 \usage{
-de_mcmc(N, data, de.model, obs.model, all.params, Tmax, cnt = 10,
-  burnin = 0.1, plot = TRUE, sizestep = 0.01, w.t = 1, which = 2,
-  test = TRUE, my.par = c(1, 1), myswitch = NULL, mymap = NULL, ...)
+de_mcmc(N, data, de.model, obs.model, all.params, Tmax, data.times, cnt = 10,
+  burnin = 0.1, plot = TRUE, sizestep = 0.01, which = 1,
+  myswitch = NULL, mymap = NULL, verbose = FALSE, ...)
 }
 \description{
 Bayesian inference for a deterministic differential equation model
@@ -16,6 +16,5 @@ variances specified in sds.
 }
 \author{
 Philipp Boersch-Supan
-de_mcmc(N = 5000, data = N_obs, sim = logistic_model, obs.model = logistic_obs_model, r, K, sigma_obs, ...
 }
 
