@@ -16,4 +16,7 @@ Depends:
 Imports:
     truncdist
 Suggests:
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
