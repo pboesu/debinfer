@@ -1,8 +1,8 @@
-*This is the development version of an R package implementing Bayesian inference for differential equation models. The package is derived from methods and code published in [Voyles et al. (2012)](http://dx.doi.org/10.1002%2Fece3.334) and  [Johnson et al. (2013)](http://doi.org/10.1890/12-0650.1). Software is supported by [NSF grant PLR-1341649](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1341649).*
+*This is the development version of an R package implementing [Bayesian inference for differential equation models](https://arxiv.org/abs/1605.00021). The package is derived from methods and code published in [Voyles et al. (2012)](http://dx.doi.org/10.1002%2Fece3.334) and  [Johnson et al. (2013)](http://doi.org/10.1890/12-0650.1). Software development is supported by [NSF grant PLR-1341649](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1341649).*
 
 *The code is fragile, and top-level function and argument names are liable to change.*
 
-*For more information please get in touch with pboesu@gmail.com*
+*For more information read our [preprint](https://arxiv.org/abs/1605.00021) or get in touch with pboesu@gmail.com*
 
 
 ## deBInfer: Bayesian inference for dynamical models of biological systems in R
