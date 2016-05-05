@@ -4,6 +4,8 @@
 
 *For more information read our [preprint](https://arxiv.org/abs/1605.00021) or get in touch with pboesu@gmail.com*
 
+[![DOI](https://zenodo.org/badge/21877/pboesu/debinfer.svg)](https://zenodo.org/badge/latestdoi/21877/pboesu/debinfer)
+
 
 ## deBInfer: Bayesian inference for dynamical models of biological systems in R
 
