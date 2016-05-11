@@ -2,12 +2,12 @@ Package: deBInfer
 Type: Package
 Title: Bayesian Inference for Differential Equations
 Version: 0.1
-Date: 2015-10-05
+Date: 2016-04-22
 Authors@R: c(
     person("Philipp H", "Boersch-Supan", email = "pboesu@gmail.com", role = c("aut","cre")),
     person("Leah R", "Johnson", email = "lrjohnson0@gmail.com", role = "aut"))
 Description: More about what it does (maybe more than one line)
-License: What license is it under?
+License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Depends:
@@ -16,4 +16,7 @@ Depends:
 Imports:
     truncdist
 Suggests:
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

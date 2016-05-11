@@ -1,0 +1,24 @@
+---
+title: "Notes on the conversion of the DEBinfer code into a package"
+author: "phbs"
+date: "10/5/2015"
+output: html_document
+---
+
+##Run scripts
+run_deb_mcmc.R was moved to /demo as it is not a function per se, but rather a template for how the user should use the package. In the long run this should be re-implemented as a vignette.
+
+##Wishlist
+1) make sure MCMC output is coda-compliant, so one can use std functions for plotting, convergence checking etc.
+2) A function to print the fit, i.e. parameter estimates and corresponding credible intervals
+3) A set of functions to extract prior and posterior distributions for parameters and to plot them.
+4) implement multiple chains?
+5) add.noise function, name should not be fixed, implement do.call procedure, also, make sure this function only accepts the output from deSolve
+6) all plotting routines need to be changed to dynamically plot whatever vatriables are contained in the underlying data structure. currently variable names are hardcoded.
+7)need to assert in extract.data (and hence solve.DEB), that the time vector is actually evaluated at integer values, which may not be the case when it is created using the numsteps argument in solve.DEB
+8) parameter names are currently hard coded separately in make.hypers, log.post.priors, setparams and possibly other functions. ideally one could extract them from the ODE specification, or at least have a test that assures that the names and count of parameters are equivalent in all those places.
+##The DEB model specification
+
+rather than using `dy1, dy2` etc. for the derivatives in the ODE specifications it would be more clear to use the actual notation for the state variables. 
+
+When using deSolve passing in the initial states in a named vector enables propagation of the variable names in the output object which then simplifies plotting etc later

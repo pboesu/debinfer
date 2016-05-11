@@ -1,3 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-conversion_notes.Rmd
+^TODO\.txt$
+^data-raw$
+^sandbox$
+^conversion_notes\.Rmd$
+^conversion_notes\.html$

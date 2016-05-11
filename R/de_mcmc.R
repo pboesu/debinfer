@@ -39,7 +39,7 @@
 deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
                    sds, hyper, pdfs, prop.sd, Tmax, cnt, burnin=0.1,
                    plot=TRUE, sizestep=0.01, w.t=1, which=1, data.times=NULL,
-                   free.inits=NULL, obs.model)
+                   free.inits=NULL, obs.model, verbose=FALSE)
 {
   #check observation model function
   if (!is.function(obs.model)) stop("obs.model must be a function")
@@ -98,6 +98,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
     if(i%%cnt == 0){
       print(paste(Sys.time(), " sample number", i, sep=" "))
       ##for(j in 1:np) print(paste(w.p[j], "=", samps[i,j], sep=" "))
+      if(verbose) print(samps[i,])
       if(plot){
         if(np>1 ) par(mfrow=c(ceiling(np/3),3), bty="n")
         for(j in 1:np) plot(samps[0:i,j], type="l", main=w.p[j])
@@ -110,7 +111,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
       p.new<-p.old
 
       u<-runif(1)
-      q<-propose(samps[i,k], prop.sd[w.p[k]])##, i)
+      q<-propose(b=samps[i,k], sd=prop.sd[w.p[k]])##, i)
 
       ## add something here to automatically reject if the proposed
       ## parameter value is outside some limit?
