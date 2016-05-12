@@ -114,6 +114,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params,
 ##' @param mymap
 ##' @return
 ##' @author Philipp Boersch-Supan
+##' @export
 de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
                               Tmax, data.times, cnt=10, burnin=0.1,
                               plot=TRUE, sizestep=0.01, which=1,
@@ -153,19 +154,20 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
   ## first we calculate a few lengths, etc, that we use for the for
   ## loops later.
 
-  l<-length(samp.p)
+  n.free <- sum(is.free)
   np<-length(all.params)
 
-  ltot<-0
-  for(i in 1:l) ltot<-ltot+length(samp.p[[i]]$params)
+
+  #This only seems to be used in the trace plotting subroutine
+  #ltot<-0
+  #for(i in 1:l) ltot<-ltot+length(samp.p[[i]]$params)
 
   ## for testing, here is code that calculates (and prints out) the
   ## posterior prob of the reference parameters, which can be passed in
   ## through ref.params
 
   if(!is.null(ref.params) && !is.null(ref.inits)){
-    sim.ref<-make.states(sim, ref.params, ref.inits, Tmax, which=which, sizestep, w.t,
-                         myswitch=myswitch, mymap=mymap, ...)
+    sim.ref<-make.states(sim = de.model, params = ref.params, inits = ref.inits, Tmax = Tmax, which=which, sizestep = sizestep, w.t = data.times, ...)
     prob.ref<-log.post.params(ref.params, data, samp.p, sim.ref)
     print(paste("(unnormalized) posterior probability of the reference parameters= ",
                 prob.old, sep=""))
@@ -177,7 +179,7 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
   ## useful for debugging. The samps structure will also keep track of
   ## the log posterior probability of that particular sample.
 
-  samps <- mcmc(matrix(numeric((np+1)*N), ncol=np+1, nrow=N, dimnames = list(NULL, c(p.names, "lpost"))))
+  samps <- coda::mcmc(matrix(numeric((np+1)*N), ncol=np+1, nrow=N, dimnames = list(NULL, c(p.names, "lpost"))))
 
   return(samps)
 }

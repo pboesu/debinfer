@@ -14,7 +14,8 @@ Depends:
     deSolve,
     PBSddesolve
 Imports:
-    truncdist
+    truncdist,
+    coda
 Suggests:
     testthat,
     knitr,
