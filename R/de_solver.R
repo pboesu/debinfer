@@ -29,7 +29,7 @@
 #'
 #' @examples example
 #' @export
-solve_de<-function(sim, params, inits, Tmax=400, numsteps=10000,
+solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
                     which=1, sizestep=NULL, verbose=FALSE, data.times=NULL, ...){
 
     if(!is.null(data.times)){
