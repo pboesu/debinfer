@@ -404,6 +404,7 @@ update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
   sim.old<-out$sim.old
   p<-out$p
 
+  #randomize updating order
   x<-1:l
   s.x<-sample(x)
 
@@ -412,7 +413,7 @@ update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
     s.new<-s
     p.new<-p
 
-    q<-propose.params(s, samp.p[[k]])
+    q<-propose_params(s, samp.p[[k]])
 
     ## automatically reject if the proposed parameter value is
     ## outside of the reasonable limits (i.e. < 0 )
@@ -505,11 +506,11 @@ propose_params<-function(samps, s.p)
 {
   if(length(s.p$params)==1){
     ##print(paste(s.p$params, " proposing single ", sep=" "))
-    q<-propose.single(samps, s.p)
+    q<-propose_single(samps, s.p)
   }
   else{
     ##print(paste(s.p$params, " proposing jointly ", sep=" "))
-    q<-propose.joint(samps, s.p)
+    q<-propose_joint(samps, s.p)
   }
   return(q)
 
@@ -548,7 +549,7 @@ propose_single<-function(samps, s.p)##, i, freq=50, size=50 )##l=5, h=6)
     return(list(b=b.new, lfwd=lfwd, lbak=lbak))
   }
   else if(type=="ind"){
-    out<-prior.draw(b, hyps, s.p$params)
+    out<-prior_draw(b, hyps, s.p$params)
     return(out)
   }
 
