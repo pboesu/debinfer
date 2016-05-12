@@ -51,7 +51,7 @@ lines(out)
 # the observation model
 logistic_obs_model<-function(data, sim.data, sds, samp){
 
-  llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data$N + 1e-6),
+  llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6),
                      sdlog=exp(samp[['loglogsd.N']]), log=TRUE)
   )
 
@@ -85,15 +85,11 @@ mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
 ## ----deBinfer, results="hide"--------------------------------------------
 # do inference with deBInfer
 # MCMC iterations
-iter = 5000
-# inference call
-
-# do inference with deBInfer
-# MCMC iterations
-iter = 5000
+iter = 50
 
 mcmc_rev <- de_mcmc_rev(N = iter, data=N_obs, de.model=logistic_model,
                         obs.model=logistic_obs_model, all.params=mcmc.pars,
-                        Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter,
+                        Tmax = max(N_obs$time), data.times=N_obs$time, cnt=5,
                         burnin=0.1, plot=FALSE, sizestep=0.1, which=1,
                         ref.params = parms, ref.inits = y)
+

@@ -4,7 +4,7 @@
 \alias{solve_de}
 \title{solve_de}
 \usage{
-solve_de(sim, params, inits, Tmax = 400, numsteps = 10000, which = 1,
+solve_de(sim, params, inits, Tmax, numsteps = 10000, which = 1,
   sizestep = NULL, verbose = FALSE, data.times = NULL, ...)
 }
 \arguments{

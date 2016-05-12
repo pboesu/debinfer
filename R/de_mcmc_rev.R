@@ -93,6 +93,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params,
 ##'
 ##'
 ##' @title de_mcmc_rev
+##' @import coda
 ##' @param N
 ##' @param data
 ##' @param all.params
@@ -167,10 +168,10 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
   ## through ref.params
 
   if(!is.null(ref.params) && !is.null(ref.inits)){
-    sim.ref<-make.states(sim = de.model, params = ref.params, inits = ref.inits, Tmax = Tmax, which=which, sizestep = sizestep, w.t = data.times, ...)
-    prob.ref<-log.post.params(ref.params, data, samp.p, sim.ref)
+    sim.ref<-solve_de(sim = de.model, params = ref.params, inits = ref.inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
+    prob.ref<-log_post_params(samp = ref.params, data = data, sim.data = sim.ref, sds =NULL, w.p = w.p, obs.model = obs.model, pdfs = pdfs, hyper = hyper)
     print(paste("(unnormalized) posterior probability of the reference parameters= ",
-                prob.old, sep=""))
+                prob.ref, sep=""))
   }
 
   ## build an mcmc object to hold the posterior samples. These include
@@ -180,6 +181,48 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
   ## the log posterior probability of that particular sample.
 
   samps <- coda::mcmc(matrix(numeric((np+1)*N), ncol=np+1, nrow=N, dimnames = list(NULL, c(p.names, "lpost"))))
+
+  #initialize the mcmc structure with the starting values
+  samps[1,1:np] <- params
+
+  ## run the data simulation to make the underlying states (for
+  ## determining the likelihoods) using the parameters stored in p.
+
+  sim.start<-solve_de(sim = de.model, params = params, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
+
+
+  ## check the posterior probability to make sure you have reasonable
+  ## starting values, and to initialize prob.old
+  samps[1,"lpost"] <- log_post_params(samp = params, data = data, sim.data = sim.start, sds =NULL, w.p = w.p, obs.model = obs.model, pdfs = pdfs, hyper = hyper)
+
+  if(!is.finite(samps[1,"lpost"])) stop("Infinite log likelihood with current starting values")
+
+  print(paste("initial posterior probability = ", samps[1,"lpost"], sep=""))
+
+  ## now we begin the MCMC
+
+  out <- list(s=samps[1,], p=params, sim.old=sim.start)
+
+  for(i in 2:N){
+    ## printing and plotting output so we can watch the progress
+    if(i%%cnt == 0){
+      print(paste("sample number", i, sep=" "))
+      if(plot) plot(samps[1:N,], density=FALSE, ask=FALSE)
+    }
+
+    ## the meat of the MCMC is found in the function update.samps (see below)
+
+    out <- update_sample(samps[i-1,], samp.p, data, sim, inits, out,
+                       Tmax, sizestep, w.t, l=n.free, which, i, cnt,
+                       myswitch=myswitch, mymap=mymap)
+    samps[i,] <- out$s
+    if(test){
+      if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
+        stop("we've had a really large swing in the posterior prob")
+      }
+    }
+
+  }
 
   return(samps)
 }
