@@ -212,8 +212,8 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
 
     ## the meat of the MCMC is found in the function update.samps (see below)
 
-    out <- update_sample(samps[i-1,], samp.p, data, sim, inits, out,
-                       Tmax, sizestep, w.t, l=n.free, which, i, cnt,
+    out <- update_sample(samps = samps[i-1,], samp.p = samp.p, data = data, sim = de.model, inits = inits, out = out,
+                       Tmax = Tmax, sizestep = sizestep, w.t = w.t, l=n.free, which=which, i=i, cnt=cnt,
                        myswitch=myswitch, mymap=mymap)
     samps[i,] <- out$s
     if(test){

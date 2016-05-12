@@ -51,7 +51,18 @@ lines(out)
 # the observation model
 logistic_obs_model<-function(data, sim.data, sds, samp){
 
-  llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6),
+  llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data$N + 1e-6), #here sim.data is the output of make.states, i.e. a list
+                     sdlog=exp(samp[['loglogsd.N']]), log=TRUE)
+  )
+
+  llik<-llik.N
+
+  return(llik)
+}
+# the observation model
+logistic_obs_model_rev<-function(data, sim.data, sds, samp){
+
+  llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6), #here sim.data is the output from ode/dde i.e. a dataframe or matrix
                      sdlog=exp(samp[['loglogsd.N']]), log=TRUE)
   )
 
@@ -87,8 +98,21 @@ mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
 # MCMC iterations
 iter = 50
 
-mcmc_rev <- de_mcmc_rev(N = iter, data=N_obs, de.model=logistic_model,
+#original mcmc function
+
+#library(profvis)
+
+#profvis(
+mcmc_samples <- de_mcmc(N = 500, data=N_obs, de.model=logistic_model,
                         obs.model=logistic_obs_model, all.params=mcmc.pars,
+                        Tmax = max(N_obs$time), data.times=N_obs$time, cnt=5,
+                        burnin=0.1, plot=TRUE, sizestep=0.1, which=1)
+#)
+
+
+#revised mcmc function
+mcmc_rev <- de_mcmc_rev(N = iter, data=N_obs, de.model=logistic_model,
+                        obs.model=logistic_obs_model_rev, all.params=mcmc.pars,
                         Tmax = max(N_obs$time), data.times=N_obs$time, cnt=5,
                         burnin=0.1, plot=FALSE, sizestep=0.1, which=1,
                         ref.params = parms, ref.inits = y)
