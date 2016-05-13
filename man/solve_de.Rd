@@ -5,7 +5,8 @@
 \title{solve_de}
 \usage{
 solve_de(sim, params, inits, Tmax, numsteps = 10000, which = 1,
-  sizestep = NULL, verbose = FALSE, data.times = NULL, ...)
+  sizestep = NULL, verbose = FALSE, data.times = NULL, method = "lsoda",
+  ...)
 }
 \arguments{
 \item{sim}{function; solver compatible specification of the DE}

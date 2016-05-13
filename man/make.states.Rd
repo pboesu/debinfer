@@ -5,7 +5,7 @@
 \title{Title}
 \usage{
 make.states(sim, params, inits, Tmax, which = 1, sizestep = 0.01, w.t = 1,
-  data.times = NULL)
+  data.times = NULL, method = "lsoda", ...)
 }
 \arguments{
 \item{data.times}{numeric passed on to \code{solve.DEB}}

@@ -7,7 +7,7 @@
 deb_mcmc(N, p.start, data, w.p, params, inits, sim = DEB1, sds, hyper, pdfs,
   prop.sd, Tmax, cnt, burnin = 0.1, plot = TRUE, sizestep = 0.01,
   w.t = 1, which = 1, data.times = NULL, free.inits = NULL, obs.model,
-  verbose = FALSE)
+  verbose = FALSE, method = "lsoda")
 }
 \arguments{
 \item{N}{integer; Number of MCMC iterations}
@@ -43,6 +43,8 @@ deb_mcmc(N, p.start, data, w.p, params, inits, sim = DEB1, sds, hyper, pdfs,
 \item{data.times}{numeric vector of timepoints at which to solve the DEB model and evaluate the likelihoods. must match the timepoints for which observations are available}
 
 \item{free.inits}{string, name of function to evaluate}
+
+\item{method}{ode method, see ?deSolve::ode}
 
 \item{hyper;}{list of lists(?) containing the hyperparameters for each free parameter}
 

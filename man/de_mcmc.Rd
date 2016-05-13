@@ -6,7 +6,7 @@
 \usage{
 de_mcmc(N, data, de.model, obs.model, all.params, Tmax, data.times, cnt = 10,
   burnin = 0.1, plot = TRUE, sizestep = 0.01, which = 1,
-  myswitch = NULL, mymap = NULL, verbose = FALSE, ...)
+  myswitch = NULL, mymap = NULL, verbose = FALSE, method = "lsoda", ...)
 }
 \description{
 Bayesian inference for a deterministic differential equation model
