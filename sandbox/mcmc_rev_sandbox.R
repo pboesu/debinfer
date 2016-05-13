@@ -109,11 +109,11 @@ mcmc_samples <- de_mcmc(N = 200, data=N_obs, de.model=logistic_model,
                         obs.model=logistic_obs_model, all.params=mcmc.pars,
                         Tmax = max(N_obs$time), data.times=N_obs$time, cnt=5,
                         burnin=0.1, plot=TRUE, sizestep=0.1, which=1),
-mcmc_samples <- de_mcmc(N = 200, data=N_obs, de.model=logistic_model,
+mcmc_samples <- de_mcmc(N = 10000, data=N_obs, de.model=logistic_model,
                         obs.model=logistic_obs_model, all.params=mcmc.pars,
                         Tmax = max(N_obs$time), data.times=N_obs$time, cnt=5,
                         burnin=0.1, plot=TRUE, sizestep=0.1, which=1, method = "euler")
-, times=10)
+, times=1)
 
 
 #revised mcmc function
