@@ -33,7 +33,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params,
                    Tmax, data.times, cnt=10, burnin=0.1,
                    plot=TRUE, sizestep=0.01, which=1,
                    myswitch=NULL,
-                   mymap=NULL, verbose =FALSE, ...)
+                   mymap=NULL, verbose =FALSE, method = "lsoda", ...)
 
 { #right now this is just a wrapper for the old function, reassigning inputs from the debinfer_parlist object to dde_mcmc
   ##remapping here
@@ -75,7 +75,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params,
                            pdfs = pdfs,
                            prop.sd=prop.sd,
                            Tmax=Tmax, cnt=cnt, burnin=burnin, plot=plot, sizestep=sizestep, which = which,
-                           data.times = data.times, obs.model=obs.model, verbose = verbose, ...)
+                           data.times = data.times, obs.model=obs.model, verbose = verbose, method = method, ...)
   return(mcmc_samples)
 
 }

@@ -30,7 +30,7 @@
 #' @examples example
 #' @export
 solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
-                    which=1, sizestep=NULL, verbose=FALSE, data.times=NULL, ...){
+                    which=1, sizestep=NULL, verbose=FALSE, data.times=NULL, method = "lsoda", ...){
 
     if(!is.null(data.times)){
       #this is fragile. really the data should be in a class that ensures proper times, no missing data etc. pp. Also this now assumes observations at identical times for all observed variables.
@@ -42,7 +42,6 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 
     if(which==1){
     #require(deSolve)
-    if missing(method) method <- "lsoda"
     out<-ode(inits, times, sim, parms=params, verbose=verbose , method=method, ...)
   }
   if(which==2){
@@ -134,11 +133,11 @@ make.obs<-function(dt, sds, params, w.t, Tmax, ode.pars){
 #'
 #'
 # #' @examples EXAMPLES
-make.states<-function(sim, params, inits, Tmax, which=1, sizestep=0.01, w.t=1, data.times=NULL, ...){
+make.states<-function(sim, params, inits, Tmax, which=1, sizestep=0.01, w.t=1, data.times=NULL, method = "lsoda", ...){
 
   ##dt<-0
   ##print(dt)
-  dt<-solve_de(sim, params, inits, Tmax, numsteps=NULL, which, sizestep, data.times=data.times, ...)
+  dt<-solve_de(sim, params, inits, Tmax, numsteps=NULL, which, sizestep, data.times=data.times, method = method, ...)
 
   #this is a dirty solution to the situation that the ode solver terminates prematurely. all remaining timepoints are set to 0, which should badly impact the likelihood (although it might still be better than numerically valid but "bad" solutions that don't end prematurely). Ideally the MCMC sampler should reject a sample if the ode solver stops prematurely
 

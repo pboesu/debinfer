@@ -31,6 +31,7 @@
 #' @param which which ode solver to use. 1=desolve 2=PBSdesolve
 #' @param data.times numeric vector of timepoints at which to solve the DEB model and evaluate the likelihoods. must match the timepoints for which observations are available
 #' @param free.inits string, name of function to evaluate
+#' @param method ode method, see ?deSolve::ode
 #'
 #' @return returns sth
 #'
@@ -39,7 +40,7 @@
 deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
                    sds, hyper, pdfs, prop.sd, Tmax, cnt, burnin=0.1,
                    plot=TRUE, sizestep=0.01, w.t=1, which=1, data.times=NULL,
-                   free.inits=NULL, obs.model, verbose=FALSE)
+                   free.inits=NULL, obs.model, verbose=FALSE, method = "lsoda")
 {
   #check observation model function
   if (!is.function(obs.model)) stop("obs.model must be a function")
@@ -69,7 +70,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
 
   ## for testing, I'll run things and see what the posterior prob of
   ## the real params are
-  sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t, data.times=data.times)
+  sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t, data.times=data.times, method=method)
   prob.old<-log_post_params(samp=params, w.p=w.p, data=data, p=p.old, pdfs=pdfs, hyper=hyper, sim.data=sim.old, sds=sds, obs.model=obs.model)
   print(paste(Sys.time()," posterior likelihood of the real parameters= ", prob.old, sep=""))
 
@@ -81,7 +82,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   if (!is.null(free.inits)){
     inits <- do.call(free.inits, args=list(from.pars = p.old), quote=T)
   }
-  sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t, data.times=data.times)
+  sim.old<-make.states(sim, p.old, inits, Tmax, which=which, sizestep, w.t, data.times=data.times, method=method)
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
@@ -128,7 +129,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
         #print(inits.new)
       } else {inits.new <- inits}
 
-      sim.new<-make.states(sim, p.new, inits.new, Tmax, which=which, sizestep, w.t, data.times=data.times)
+      sim.new<-make.states(sim, p.new, inits.new, Tmax, which=which, sizestep, w.t, data.times=data.times, method=method)
 
       ## currently only calculating prob.old outside the loop, and
       ## setting prob.old<-prob.new if we accpt the draw. This cuts
