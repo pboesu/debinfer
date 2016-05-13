@@ -34,7 +34,7 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 
     if(!is.null(data.times)){
       #this is fragile. really the data should be in a class that ensures proper times, no missing data etc. pp. Also this now assumes observations at identical times for all observed variables.
-      times <- data.times
+      times <- data.times #this shouldn't be done every time the solver is called. solver times should be set up at the start of the mcmc procedure and then passed in through times argument
     } else { # currently there's no proper handling of multiple non-NULL arguments/all NULL arguments
       if(is.null(sizestep)) times<- seq(0, Tmax, length=numsteps)
       if(is.null(numsteps))  times<- seq(0, Tmax, by=sizestep)
