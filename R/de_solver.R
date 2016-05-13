@@ -134,11 +134,11 @@ make.obs<-function(dt, sds, params, w.t, Tmax, ode.pars){
 #'
 #'
 # #' @examples EXAMPLES
-make.states<-function(sim, params, inits, Tmax, which=1, sizestep=0.01, w.t=1, data.times=NULL){
+make.states<-function(sim, params, inits, Tmax, which=1, sizestep=0.01, w.t=1, data.times=NULL, ...){
 
   ##dt<-0
   ##print(dt)
-  dt<-solve_de(sim, params, inits, Tmax, numsteps=NULL, which, sizestep, data.times=data.times)
+  dt<-solve_de(sim, params, inits, Tmax, numsteps=NULL, which, sizestep, data.times=data.times, ...)
 
   #this is a dirty solution to the situation that the ode solver terminates prematurely. all remaining timepoints are set to 0, which should badly impact the likelihood (although it might still be better than numerically valid but "bad" solutions that don't end prematurely). Ideally the MCMC sampler should reject a sample if the ode solver stops prematurely
 
@@ -148,7 +148,7 @@ make.states<-function(sim, params, inits, Tmax, which=1, sizestep=0.01, w.t=1, d
       new.time <- data.times
     } else {new.time <- seq(0,Tmax,by=sizestep)} #breaks when sizestep is NULL and numstep is specified instead
     #0 as "penalized value" for premature termination yields weird results
-    fake.solution <- matrix(1e99,nrow = length(new.time),ncol = dim(dt)[2])
+    fake.solution <- matrix(NA,nrow = length(new.time),ncol = dim(dt)[2])
     dimnames(fake.solution) <- dimnames(dt)
     fake.solution[,'time'] <- new.time
     matched <- which(fake.solution[,'time'] %in% dt[,'time'])
