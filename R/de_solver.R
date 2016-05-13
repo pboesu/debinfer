@@ -42,7 +42,8 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 
     if(which==1){
     #require(deSolve)
-    out<-ode(inits, times, sim, parms=params, verbose=verbose , method='lsoda', ...)
+    if missing(method) method <- "lsoda"
+    out<-ode(inits, times, sim, parms=params, verbose=verbose , method=method, ...)
   }
   if(which==2){
     #require(PBSddesolve)
@@ -54,79 +55,7 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 
 
 
-#' test_sim
-#'
-#' @param sim
-#' @param params
-#' @param inits
-#' @param ylim
-#' @param Tmax
-#' @param numsteps
-#' @param which
-#' @param scale
-#'
-#' @return simulated ODE and a plot
-#'
-#'
-#' @examples example
-test_sim <- function(sim, params, inits, ylim=c(0,600), Tmax=200,
-                  numsteps=10000, which=2, scale=10){
 
-  out<-solve_de(sim, params, inits, Tmax, numsteps, which)
-
-  plot.DEB(out, scale)
-  return(out)
-
-}
-
-
-#' Title
-#'
-#' @param out
-#' @param scale
-#' @param scaled.length
-#'
-#' @return plot
-#'
-#'
-#' @examples plot
-plot.DEB<-function(out, scale=100, scaled.length=TRUE){
-
-  par(mfrow=c(2,2))
-   plot(out[,1],out[,2], type="l", lty=5, col="blue",
-        lwd=2, xlab="time", ylab="Food")
-   plot(out[,1],out[,3], type="l", col="red",  lty=4, lwd=2, xlab="time",
-        ylab="scaled reserves")
-  if(scaled.length){
-    plot(out[,1],out[,4], type="l", col="green",lwd=2, xlab="time",
-         ylab="scaled length")
-  }
-  else{
-    plot(out[,1],out[,4], type="l", col="green",lwd=2, xlab="time",
-         ylab="length")
-  }
-   plot(out[,1],out[,6]/scale, type="l", col=1, xlab="time",
-        ylab=paste("maturity & reproduction/", scale, sep=""))
-   lines(out[,1],out[,5], lty=2, col=2)
-}
-
-
-#' Title
-#'
-#' @param out
-#'
-#' @return plots
-#'
-#'
-#' @examples plot
-plot.DEB.red<-function(out){
-
-  par(mfrow=c(2,1))
-   plot(out$t,out$L, lty=5, col="blue",
-        lwd=2, xlab="time", ylab="Length", pch=19)
-   plot(out$t,out$Negg, col="red",  lty=4, lwd=2, xlab="time",
-        ylab="Number of Eggs", pch=19)
-}
 
 
 
