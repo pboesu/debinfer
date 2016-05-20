@@ -15,7 +15,7 @@ library(deBInfer)
 ## ----ode-def, message=FALSE,warning=FALSE--------------------------------
 library(deSolve)
 logistic_model <- function (time, y, parms) {
-  with(as.list(c(y, parms)), {
+  with(as.list(c(y, parms)), {#maybe not do the list coercion, and also the with() statement to save time?
     dN <- r * N * (1 - N / K)
     list(dN)
   })
