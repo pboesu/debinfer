@@ -126,10 +126,6 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
   is.free <- !sapply(all.params, function(x) x$fixed)
   is.init <- sapply(all.params, function(x) x$var.type)=="init"
 
-  #inits are matched by order in deSolve --> how to ensure they are in the correct order?? add init.order variable to parameter declaration?
-
-
-
   #get all start values
   p.start <- lapply(all.params, function(x) x$value)[is.free]
   names(p.start) = p.names[is.free]
@@ -138,9 +134,11 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
   #check what this is needed for, except for the "true" likelihood calculation
   params <- unlist(lapply(all.params, function(x) x$value))
   names(params) <-  p.names
-  #initial values for DE (no ordering!)
+  #initial values for DE (no re-ordering!)
   inits <- sapply(all.params, function(x) x$value)[is.init]
   names(inits) <- p.names[is.init]
+  #inits are matched by order in deSolve. inform user of input order
+  print(paste("Order of initial conditions is ", names(inits)))
 
   # sds <- NULL# is this obsolete if it is not used in the obs model?
   hyper = lapply(all.params, function(x) x$hyper)[is.free]
@@ -190,6 +188,9 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
 
   sim.start<-solve_de(sim = de.model, params = params, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
 
+  ## check that solver provides simulation values for all observations
+  if(!all(data.times %in% sim.start[,"time"])) stop("solver times do not cover all data times")
+
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
@@ -198,6 +199,8 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
   if(!is.finite(samps[1,"lpost"])) stop("Infinite log likelihood with current starting values")
 
   print(paste("initial posterior probability = ", samps[1,"lpost"], sep=""))
+
+
 
   ## now we begin the MCMC
 
@@ -225,4 +228,148 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
   }
 
   return(samps)
+}
+
+##' @title update_sample_rev
+##' @param samps
+##' @param samp.p
+##' @param data
+##' @param sim
+##' @param inits
+##' @param out
+##' @param Tmax
+##' @param sizestep
+##' @param w.t
+##' @param l
+##' @param which
+##' @param i
+##' @param cnt
+##' @param myswitch
+##' @param mymap
+##' @param test
+##' @return
+##' @author Philipp Boersch-Supan
+update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
+                        w.t, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE, ...)
+{
+  ## read in some bits
+  s<-samps
+  sim.old<-out$sim.old
+  p<-out$p
+
+  #randomize updating order
+  x<-1:l
+  s.x<-sample(x)
+
+  for(k in s.x){
+
+    s.new<-s
+    p.new<-p
+
+    if(length(s.p$params)==1){
+      ##print(paste(s.p$params, " proposing single ", sep=" "))
+      q<-propose_single_rev(samps, s.p)
+    }
+    else{
+      ##print(paste(s.p$params, " proposing jointly ", sep=" "))
+      q<-propose_joint_rev(samps, s.p)
+    }
+
+    ## automatically reject if the proposed parameter value is
+    ## outside of the reasonable limits (i.e. < 0 )
+    zeros<-0
+    zeros<-check.zeros(samp.p[[k]], q$b)
+    if(zeros){
+      if(length(samp.p[[k]]$params)>=2){
+        print("proposed one of the joint params outside of the range. Moving on.")
+      }
+      else print(paste("proposed ", samp.p[[k]]$params, " outside of the range. moving on", sep=""))
+      next
+    }
+    ## write the proposed params into the p.new and s.new.
+
+    for(j in 1:length(samp.p[[k]]$params)){
+      ww<-samp.p[[k]]$params[j]
+      p.new[ww]<-s.new[ww]<-q$b[j]
+    }
+
+    ## simulate the dynamics forward with the new parameters
+    sim.new<-make.states(sim, p.new, inits, Tmax, which=which, sizestep, w.t,
+                         myswitch=myswitch, mymap=mymap, ...)
+
+    ## The posteriorprob of the previous sample is saved as
+    ## s$lpost. If we accept a draw, we will set s$lpost<-s.new$lpost
+
+    s.new$lpost<-log.post.params(s.new, data, samp.p, sim.new)
+
+    if(is.finite(s.new$lpost) && is.finite(s$lpost)){
+      A<-exp( s.new$lpost + q$lbak - s$lpost - q$lfwd )
+    }
+    else{
+      A<-0
+      print("whoops! must have proposed outside the correct region")
+    }
+
+    ## print some output so we can follow the progress
+    if(i%%cnt==0){
+      print(paste("proposing " , samp.p[[k]]$params, ": prob.old = ",
+                  signif(s$lpost, digits=5),
+                  "; prob.new = ", signif(s.new$lpost, digits=5), "; A = ",
+                  signif(A, digits=5),
+                  sep=""))
+    }
+
+    ## take a draw from a unif distrib, and use it to accept/reject
+    u<-runif(1)
+    if( u < A ){ ## accept
+      sim.old<-sim.new
+      p<-p.new
+      s<-s.new
+    }
+  }
+
+  return(list(s=s, p=p, sim.old=sim.old))
+
+}
+
+
+
+
+
+##' propose a parameter individually
+##'
+##' @title propose_single_rev
+##' @param samps
+##' @param s.p
+##' @return
+##' @author Philipp Boersch-Supan
+propose_single_rev<-function(samps, s.p)##, i, freq=50, size=50 )##l=5, h=6)
+{ ## I'm feeding in the variance, so I need to take the square root....
+
+  b<-as.numeric(samps[s.p$params])
+  var<-s.p$var
+  type<-s.p$type
+  hyps<-s.p$hyp
+
+  if(type=="rw"){
+    if(length(var)>1){#this silently switches to uniform proposals when the proposal variance is a two-element vector
+      l<-var[1]
+      h<-var[2]
+      b.new<-runif(1, l/h*b, h/l*b)
+      lfwd<-dunif(b.new, l/h*b, h/l*b, log=TRUE)
+      lbak<-dunif(b, l/h*b.new, h/l*b.new, log=TRUE)
+    }
+    else{
+      sd<-sqrt(var)
+      b.new<-rnorm(1, b, sd=sd)
+      lfwd<-dnorm(b.new, b, sd=sd, log=TRUE)
+      lbak<-dnorm(b, b.new, sd=sd, log=TRUE)
+    }
+    return(list(b=b.new, lfwd=lfwd, lbak=lbak))
+  }
+  else if(type=="ind"){
+    out<-prior_draw(b, hyps, s.p$params)
+    return(out)
+  }
+
 }
