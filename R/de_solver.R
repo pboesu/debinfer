@@ -17,7 +17,7 @@
 #' @param inits numeric; initial values. Must be in the same order as specified within sim!
 #' @param Tmax numeric; maximum timestep
 #' @param numsteps numeric
-#' @param which Choice of solver to use 1 = deSolve::ode, 2 = PBSddesolve::dde
+#' @param which Choice of solver to use 1 or "ode" = deSolve::ode, 2 or "dde" = PBSddesolve::dde, 3 or "dede" = deSolve::dede
 #' @param sizestep for solver
 #' @param verbose passed to deSolve::ode
 #' @param data.times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
@@ -40,14 +40,20 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
       if(is.null(numsteps))  times<- seq(0, Tmax, by=sizestep)
     }
 
-    if(which==1){
+    if(which == 1 || which == "ode"){
     #require(deSolve)
     out<-ode(inits, times, sim, parms=params, verbose=verbose , method=method, ...)
   }
-  if(which==2){
+  if(which == 2 || which == "dde"){
     #require(PBSddesolve)
     #on.exit(freeglobaldata())
     out<-dde(inits, times, sim, parms=params, ...)
+  }
+  if(which == 3 || which == "dede"){
+    #require(PBSddesolve)
+    #on.exit(freeglobaldata())
+    out <- dede(y=inits, times=times, func=sim, parms=params)
+    out <- as.data.frame(out)
   }
   return(out)
 }
