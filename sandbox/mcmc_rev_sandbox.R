@@ -99,15 +99,13 @@ iter = 50
 
 #original mcmc function
 
-library(profvis)
-library(microbenchmark)
+#library(profvis)
+#library(microbenchmark)
 
-
-
-mcmc_samples <- de_mcmc(N = 2000, data=N_obs, de.model=logistic_model,
-                        obs.model=logistic_obs_model, all.params=mcmc.pars,
-                        Tmax = max(N_obs$time), data.times=N_obs$time, cnt=2000,
-                        burnin=0.1, plot=TRUE, sizestep=0.1, which=1)
+# mcmc_samples <- de_mcmc(N = 2000, data=N_obs, de.model=logistic_model,
+#                         obs.model=logistic_obs_model, all.params=mcmc.pars,
+#                         Tmax = max(N_obs$time), data.times=N_obs$time, cnt=2000,
+#                         burnin=0.1, plot=TRUE, sizestep=0.1, which=1)
 
 #revised mcmc function
 mcmc_rev <- de_mcmc_rev(N = iter, data=N_obs, de.model=logistic_model,

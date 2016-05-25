@@ -194,7 +194,7 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
-  samps[1,"lpost"] <- log_post_params(samp = params, data = data, sim.data = sim.start, sds =NULL, w.p = w.p, obs.model = obs.model, pdfs = pdfs, hyper = hyper)
+  samps[1,"lpost"] <- log_post_params(samp = params, data = data, sim.data = sim.start, sds =NULL, obs.model = obs.model, pdfs = pdfs, hyper = hyper)
 
   if(!is.finite(samps[1,"lpost"])) stop("Infinite log likelihood with current starting values")
 
@@ -215,8 +215,9 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
 
     ## the meat of the MCMC is found in the function update.samps (see below)
 
-    out <- update_sample(samps = samps[i-1,], samp.p = samp.p, data = data, sim = de.model, inits = inits, out = out,
-                       Tmax = Tmax, sizestep = sizestep, w.t = w.t, l=n.free, which=which, i=i, cnt=cnt,
+    out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, inits = inits, out = out,
+                       Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, which=which, i=i, cnt=cnt, w.p = w.p,
+                       obs.model = obs.model, pdfs = pdfs, hyper = hyper,
                        myswitch=myswitch, mymap=mymap)
     samps[i,] <- out$s
     if(test){
@@ -231,10 +232,10 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
 }
 
 ##' @title update_sample_rev
-##' @param samps
-##' @param samp.p
+##' @param samps row vector of samples from the previous mcmc iteration
+##' @param samp.p the parlist created by setup_debinfer
 ##' @param data
-##' @param sim
+##' @param sim the de model
 ##' @param inits
 ##' @param out
 ##' @param Tmax
@@ -250,7 +251,7 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
 ##' @return
 ##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
-                        w.t, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE, ...)
+                        data.times, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE, obs.model, pdfs, hyper, w.p...)
 {
   ## read in some bits
   s<-samps
@@ -263,29 +264,31 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
 
   for(k in s.x){
 
-    s.new<-s
-    p.new<-p
+    s.new<-s #sample vector
+    p.new<-p #parameter vector
 
-    if(length(s.p$params)==1){
+    #pick
+
+    if(is.null(samp.p[[k]]$joint)){
       ##print(paste(s.p$params, " proposing single ", sep=" "))
-      q<-propose_single_rev(samps, s.p)
+      q<-propose_single_rev(samps = s, s.p = samp.p[[k]])
     }
     else{
       ##print(paste(s.p$params, " proposing jointly ", sep=" "))
-      q<-propose_joint_rev(samps, s.p)
+      q<-propose_joint_rev(samps = s, s.p = samp.p[[k]])
     }
 
     ## automatically reject if the proposed parameter value is
-    ## outside of the reasonable limits (i.e. < 0 )
-    zeros<-0
-    zeros<-check.zeros(samp.p[[k]], q$b)
-    if(zeros){
-      if(length(samp.p[[k]]$params)>=2){
-        print("proposed one of the joint params outside of the range. Moving on.")
-      }
-      else print(paste("proposed ", samp.p[[k]]$params, " outside of the range. moving on", sep=""))
-      next
-    }
+    ## outside of the reasonable limits (i.e. < 0 ) replace with prior support
+#     zeros<-0
+#     zeros<-check.zeros(samp.p[[k]], q$b)
+#     if(zeros){
+#       if(length(samp.p[[k]]$params)>=2){
+#         print("proposed one of the joint params outside of the range. Moving on.")
+#       }
+#       else print(paste("proposed ", samp.p[[k]]$params, " outside of the range. moving on", sep=""))
+#       next
+#     }
     ## write the proposed params into the p.new and s.new.
 
     for(j in 1:length(samp.p[[k]]$params)){
@@ -294,13 +297,14 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
     }
 
     ## simulate the dynamics forward with the new parameters
-    sim.new<-make.states(sim, p.new, inits, Tmax, which=which, sizestep, w.t,
-                         myswitch=myswitch, mymap=mymap, ...)
+    sim.new<-solve_de(sim = sim , params = p.new, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
+    #sim.new<-make.states(sim, p.new, inits, Tmax, which=which, sizestep, w.t,...)
 
     ## The posteriorprob of the previous sample is saved as
     ## s$lpost. If we accept a draw, we will set s$lpost<-s.new$lpost
 
-    s.new$lpost<-log.post.params(s.new, data, samp.p, sim.new)
+    s.new$lpost<-log_post_params(s.new, data, samp.p, sim.new)
+    s.new$lpost <- log_post_params(samp = s.new, data = data, sim.data = sim.new, sds =NULL, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
 
     if(is.finite(s.new$lpost) && is.finite(s$lpost)){
       A<-exp( s.new$lpost + q$lbak - s$lpost - q$lfwd )
@@ -312,7 +316,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
 
     ## print some output so we can follow the progress
     if(i%%cnt==0){
-      print(paste("proposing " , samp.p[[k]]$params, ": prob.old = ",
+      print(paste("proposing " , samp.p[[k]]$name, ": prob.old = ",
                   signif(s$lpost, digits=5),
                   "; prob.new = ", signif(s.new$lpost, digits=5), "; A = ",
                   signif(A, digits=5),
@@ -343,16 +347,16 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
 ##' @param s.p
 ##' @return
 ##' @author Philipp Boersch-Supan
-propose_single_rev<-function(samps, s.p)##, i, freq=50, size=50 )##l=5, h=6)
+propose_single_rev<-function(samps, s.p)
 { ## I'm feeding in the variance, so I need to take the square root....
 
-  b<-as.numeric(samps[s.p$params])
-  var<-s.p$var
-  type<-s.p$type
-  hyps<-s.p$hyp
+  b<-as.numeric(samps[s.p$name])
+  var<-s.p$prop.var
+  type<-s.p$samp.type
+  hyps<-s.p$hypers
 
   if(type=="rw"){
-    if(length(var)>1){#this silently switches to uniform proposals when the proposal variance is a two-element vector
+    if(length(var)>1){#this silently switches to uniform proposals when the proposal variance is a two-element vector. this should be handled by a different sampler-type
       l<-var[1]
       h<-var[2]
       b.new<-runif(1, l/h*b, h/l*b)
@@ -368,8 +372,33 @@ propose_single_rev<-function(samps, s.p)##, i, freq=50, size=50 )##l=5, h=6)
     return(list(b=b.new, lfwd=lfwd, lbak=lbak))
   }
   else if(type=="ind"){
-    out<-prior_draw(b, hyps, s.p$params)
+    out<-prior_draw_rev(b, hyps, s.p$prior)
     return(out)
   }
 
 }
+
+##' draw from prior
+##'
+##' details of this function
+##' @title prior_draw_rev
+##' @param b current value of a parameter
+##' @param hypers list of hyper parameters, named appropriately for the corresponding prior.pdf
+##' @param prior.pdf string name of probability distribution following base R conventions, or those of additionally loaded packages
+##' @return
+##' @author Philipp Boersch-Supan
+prior_draw_rev<-function(b, hypers, prior.pdf){
+    #assemble random number generator function name
+    rand <- paste("r", prior.pdf, sep="")
+    #assemble arguments
+    rand.args <- c(n=1, hypers)
+    #draw from prior
+    b.new<- do.call(rand, rand.args)
+    #assemble density function name
+    dens <- paste("d", prior.pdf, sep="")
+    lfwd<-do.call(dens, c(x=b.new,  hypers, log=TRUE))
+    lbak<-do.call(dens, c(x=b,  hypers, log=TRUE))
+
+  return(list(b=b.new, lfwd=lfwd, lbak=lbak))
+}
+
