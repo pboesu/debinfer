@@ -104,13 +104,13 @@ iter = 5000
 ode_noplot <- microbenchmark::microbenchmark(
  mcmc_samples <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model,
                          obs.model=logistic_obs_model, all.params=mcmc.pars,
-                         Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 10,
+                         Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 20,
                          burnin=0.1, plot=FALSE, sizestep=0.1, which=1),
 
 #revised mcmc function
 mcmc_rev <- de_mcmc_rev(N = iter, data=N_obs, de.model=logistic_model,
                         obs.model=logistic_obs_model_rev, all.params=mcmc.pars,
-                        Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 10,
+                        Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 20,
                         burnin=0.1, plot=FALSE, sizestep=0.1, which=1,
                         ref.params = parms, ref.inits = y),
 times = 10)
@@ -118,18 +118,20 @@ times = 10)
 ode_plot <- microbenchmark::microbenchmark(
   mcmc_samples <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model,
                           obs.model=logistic_obs_model, all.params=mcmc.pars,
-                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 10,
+                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 20,
                           burnin=0.1, plot=TRUE, sizestep=0.1, which=1),
 
   #revised mcmc function
   mcmc_rev <- de_mcmc_rev(N = iter, data=N_obs, de.model=logistic_model,
                           obs.model=logistic_obs_model_rev, all.params=mcmc.pars,
-                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 10,
+                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 20,
                           burnin=0.1, plot=TRUE, sizestep=0.1, which=1,
                           ref.params = parms, ref.inits = y),
   times = 10)
 
 
+par(mfrow=c(1,2))
+plot_benchmark(ode_plot, time.units = "min", ylim =c(0,2), main = "5000, plot at 500")
+plot_benchmark(ode_noplot, time.units = "min", ylim =c(0,2),main = "5000, no plots")
 
-plot_benchmark(ode_plot, time.units = "min")
-plot_benchmark(ode_noplot, time.units = "min")
+saveRDS(list(plot = ode_plot, noplot = ode_noplot, session = sessionInfo()), file="sandbox/benchmarks-always-solve.RDS")
