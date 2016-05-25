@@ -291,10 +291,10 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
 #     }
     ## write the proposed params into the p.new and s.new.
 
-    for(j in 1:length(samp.p[[k]]$params)){
-      ww<-samp.p[[k]]$params[j]
-      p.new[ww]<-s.new[ww]<-q$b[j]
-    }
+    #for(j in 1:length(samp.p[[k]]$name)){#this will need to be able to handle joint proposals
+      ww<-samp.p[[k]]$name
+      p.new[ww]<-s.new[ww]<-q$b#[j]
+    #}
 
     ## simulate the dynamics forward with the new parameters
     sim.new<-solve_de(sim = sim , params = p.new, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)

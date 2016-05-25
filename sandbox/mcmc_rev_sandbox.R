@@ -75,11 +75,11 @@ logistic_obs_model_rev<-function(data, sim.data, sds, samp){
 library(deBInfer)
 r <- debinfer_par(name = "r", var.type = "de", fixed = FALSE,
                   value = 0.5, prior="norm", hypers=list(mean = 0, sd = 1),
-                  prop.var=0.005, samp.type="rw")
+                  prop.var=0.00003, samp.type="rw")
 
 K <- debinfer_par(name = "K", var.type = "de", fixed = FALSE,
                   value = 5, prior="lnorm", hypers=list(meanlog = 1, sdlog = 1),
-                  prop.var=0.1, samp.type="rw")
+                  prop.var=0.01, samp.type="rw")
 
 loglogsd.N <- debinfer_par(name = "loglogsd.N", var.type = "obs", fixed = FALSE,
                            value = -2, prior="norm", hypers=list(mean = 0, sd = 1),
@@ -95,7 +95,7 @@ mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
 ## ----deBinfer, results="hide"--------------------------------------------
 # do inference with deBInfer
 # MCMC iterations
-iter = 50
+iter = 5000
 
 #original mcmc function
 
@@ -110,7 +110,7 @@ iter = 50
 #revised mcmc function
 mcmc_rev <- de_mcmc_rev(N = iter, data=N_obs, de.model=logistic_model,
                         obs.model=logistic_obs_model_rev, all.params=mcmc.pars,
-                        Tmax = max(N_obs$time), data.times=N_obs$time, cnt=5,
+                        Tmax = max(N_obs$time), data.times=N_obs$time, cnt=500,
                         burnin=0.1, plot=TRUE, sizestep=0.1, which=1,
                         ref.params = parms, ref.inits = y)
 
