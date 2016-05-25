@@ -4,7 +4,7 @@
 \alias{debinfer_par}
 \title{debinfer_par}
 \usage{
-debinfer_par(name, var.type, fixed, value, block = NULL, prior = NULL,
+debinfer_par(name, var.type, fixed, value, joint = NULL, prior = NULL,
   hypers = NULL, prop.var = NULL, samp.type = NULL)
 }
 \arguments{
@@ -14,7 +14,7 @@ debinfer_par(name, var.type, fixed, value, block = NULL, prior = NULL,
 
 \item{value}{numeric; parameter value. For fixed parameters this is the value used in the analysis for free parameters this is the starting value used when setting up the MCMC chain}
 
-\item{block}{integer; number of block for jont proposal; NULL means the parameter is not to be jointly proposed}
+\item{joint}{integer; number of block for joint proposal; NULL means the parameter is not to be jointly proposed}
 
 \item{prior}{character; name of the probability distribution for the prior on the parameter. must conform to standard R naming i.e. beta ( foo = beta), binomial binom, Cauchy cauchy, chi-squared chisq, exponential exp, Fisher F f, gamma gamma, geometric geom, hypergeometric hyper, logistic logis, lognormal lnorm, negative binomial nbinom, normal norm, Poisson pois, Student t t, uniform unif, Weibull weibull, mvnorm}
 

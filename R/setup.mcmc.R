@@ -11,6 +11,7 @@
 setup_debinfer <- function(...)
 { parlist <- list(...)
   if (!all(sapply(parlist, class) == "debinfer_par")) stop("input arguments need to be of class debinfer_par")
+  names(parlist)<-sapply(parlist, function(x)x$name)
   structure(parlist, class="debinfer_parlist")
 }
 
@@ -231,7 +232,7 @@ logd_prior <- function(x, pdf, hypers, sigma=NULL){
 #' @param par.type character vector; type of the variable "de" = parameter for the differential equation, "obs" = parameter of the observation model, "init" = initial condition for a state variable in the differential equation
 #' @param fixed boolean; TRUE = parameter is taken to be fixed, FALSE = parameter is to be estimated by MCMC
 #' @param value numeric; parameter value. For fixed parameters this is the value used in the analysis for free parameters this is the starting value used when setting up the MCMC chain
-#' @param block integer; number of block for jont proposal; NULL means the parameter is not to be jointly proposed
+#' @param joint integer; number of block for joint proposal; NULL means the parameter is not to be jointly proposed
 #' @param prior character; name of the probability distribution for the prior on the parameter. must conform to standard R naming i.e. beta ( foo = beta), binomial binom, Cauchy cauchy, chi-squared chisq, exponential exp, Fisher F f, gamma gamma, geometric geom, hypergeometric hyper, logistic logis, lognormal lnorm, negative binomial nbinom, normal norm, Poisson pois, Student t t, uniform unif, Weibull weibull, mvnorm
 #' @param hypers list of numeric vectors, hyperparameters for the prior; mean only for mvnorm.
 #' @param prop.sd numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter
@@ -239,7 +240,7 @@ logd_prior <- function(x, pdf, hypers, sigma=NULL){
 #'
 #' @return returns an object of class debinfer_par to be fed to the mcmc setup function
 #' @export
-debinfer_par <- function(name, var.type, fixed, value, block=NULL, prior=NULL, hypers=NULL, prop.var=NULL, samp.type=NULL){
+debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, hypers=NULL, prop.var=NULL, samp.type=NULL){
   #check inputs
   if(!is.character(name)) stop("name must be of type character")
   if(!var.type %in% c("de","obs","init")) stop('var.type must be one of c("de","obs","init")')
@@ -250,13 +251,13 @@ debinfer_par <- function(name, var.type, fixed, value, block=NULL, prior=NULL, h
   if(!fixed) if(!samp.type %in% c("rw","ind")) stop('samp.type must be one of c("rw","ind)')
   if(!fixed) if(!is.numeric(prop.var) | prop.var < 0) stop("prop.var must be a numeric > 0")
   #checks for prior and hypers?
-  if(!is.null(block)) stop("joint proposals are not yet implemented")
+  if(!is.null(joint)) stop("joint proposals are not yet implemented")
 
   structure(list(name = name,
               var.type = var.type,
               fixed = fixed,
               value = value,
-              block = block,
+              joint = joint,
               prior = prior,
               hypers = hypers,
               prop.var = prop.var,
