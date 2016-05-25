@@ -210,7 +210,7 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
     ## printing and plotting output so we can watch the progress
     if(i%%cnt == 0){
       print(paste("sample number", i, sep=" "))
-      if(plot) plot(samps, density=FALSE, ask=FALSE)
+      if(plot) plot(samps, density=FALSE, ask=FALSE)#use window.mcmc
     }
 
     ## the meat of the MCMC is found in the function update.samps (see below)
