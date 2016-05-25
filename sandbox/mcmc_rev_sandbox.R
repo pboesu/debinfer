@@ -95,7 +95,7 @@ mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
 ## ----deBinfer, results="hide"--------------------------------------------
 # do inference with deBInfer
 # MCMC iterations
-iter = 50
+iter = 5000
 
 #original mcmc function
 
@@ -129,3 +129,7 @@ ode_plot <- microbenchmark::microbenchmark(
                           ref.params = parms, ref.inits = y),
   times = 10)
 
+
+
+plot_benchmark(ode_plot, time.units = "min")
+plot_benchmark(ode_noplot, time.units = "min")
