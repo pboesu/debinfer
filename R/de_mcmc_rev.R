@@ -297,8 +297,13 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
       p.new[ww]<-s.new[ww]<-q$b#[j]
     #}
 
-    ## simulate the dynamics forward with the new parameters
-    sim.new<-solve_de(sim = sim , params = p.new, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
+    ## simulate the dynamics forward with the new parameters, but only if parameter in question is not an observation parameter
+    if (samp.p[[k]]$var.type == "obs"){
+      sim.new <- sim.old #keep using last available de solution
+    } else { #compute new solution
+     sim.new<-solve_de(sim = sim , params = p.new, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
+    }
+
     #sim.new<-make.states(sim, p.new, inits, Tmax, which=which, sizestep, w.t,...)
 
     ## The posteriorprob of the previous sample is saved as
