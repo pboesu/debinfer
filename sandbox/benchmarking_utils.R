@@ -4,9 +4,14 @@
 #explore_units()
 
 
-plot_benchmark <- function(input, time.units="s", ...){
+plot_benchmark <- function(input, time.units="s", expr.levels = "auto", ...){
   #rename levels
-  levels(input$expr) <- ifelse(grepl("de_mcmc_rev", levels(input$expr)), "de_mcmc_rev", "de_mcmc")
+  if(expr.levels =="auto") {levels(input$expr) <- ifelse(grepl("de_mcmc_rev", levels(input$expr)), "de_mcmc_rev", "de_mcmc")
+  } else {
+    levels(input$expr) <- expr.levels
+  }
+
+
   #convert time units
   input$time <- convertr::convert(input$time, "ns", time.units)
   #calculate plotting range
