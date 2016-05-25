@@ -6,7 +6,7 @@
 \usage{
 update_sample_rev(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
   data.times, l, which, i, cnt, myswitch = NULL, mymap = NULL,
-  test = TRUE, obs.model, pdfs, hyper, w.p...)
+  test = TRUE, obs.model, pdfs, hyper, w.p, ...)
 }
 \arguments{
 \item{samps}{row vector of samples from the previous mcmc iteration}

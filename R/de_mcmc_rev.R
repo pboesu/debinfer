@@ -194,7 +194,7 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
-  samps[1,"lpost"] <- log_post_params(samp = params, data = data, sim.data = sim.start, sds =NULL, obs.model = obs.model, pdfs = pdfs, hyper = hyper)
+  samps[1,"lpost"] <- log_post_params(samp = params, data = data, sim.data = sim.start, sds =NULL, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
 
   if(!is.finite(samps[1,"lpost"])) stop("Infinite log likelihood with current starting values")
 
@@ -210,7 +210,7 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
     ## printing and plotting output so we can watch the progress
     if(i%%cnt == 0){
       print(paste("sample number", i, sep=" "))
-      if(plot) plot(samps[1:N,], density=FALSE, ask=FALSE)
+      if(plot) plot(samps, density=FALSE, ask=FALSE)
     }
 
     ## the meat of the MCMC is found in the function update.samps (see below)
@@ -219,12 +219,12 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
                        Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, which=which, i=i, cnt=cnt, w.p = w.p,
                        obs.model = obs.model, pdfs = pdfs, hyper = hyper,
                        myswitch=myswitch, mymap=mymap)
-    samps[i,] <- out$s
-    if(test){
-      if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
-        stop("we've had a really large swing in the posterior prob")
-      }
-    }
+    samps[i,] <- out$s #make sure order is matched
+#     if(test){
+#       if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
+#         stop("we've had a really large swing in the posterior prob")
+#       }
+#     }
 
   }
 
@@ -251,7 +251,7 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
 ##' @return
 ##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
-                        data.times, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE, obs.model, pdfs, hyper, w.p...)
+                        data.times, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE, obs.model, pdfs, hyper, w.p, ...)
 {
   ## read in some bits
   s<-samps
@@ -303,11 +303,11 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
     ## The posteriorprob of the previous sample is saved as
     ## s$lpost. If we accept a draw, we will set s$lpost<-s.new$lpost
 
-    s.new$lpost<-log_post_params(s.new, data, samp.p, sim.new)
-    s.new$lpost <- log_post_params(samp = s.new, data = data, sim.data = sim.new, sds =NULL, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
+    #s.new$lpost<-log_post_params(s.new, data, samp.p, sim.new)
+    s.new["lpost"] <- log_post_params(samp = s.new, data = data, sim.data = sim.new, sds =NULL, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
 
-    if(is.finite(s.new$lpost) && is.finite(s$lpost)){
-      A<-exp( s.new$lpost + q$lbak - s$lpost - q$lfwd )
+    if(is.finite(s.new["lpost"]) && is.finite(s["lpost"])){
+      A<-exp( s.new["lpost"] + q$lbak - s["lpost"] - q$lfwd )
     }
     else{
       A<-0
@@ -317,8 +317,8 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
     ## print some output so we can follow the progress
     if(i%%cnt==0){
       print(paste("proposing " , samp.p[[k]]$name, ": prob.old = ",
-                  signif(s$lpost, digits=5),
-                  "; prob.new = ", signif(s.new$lpost, digits=5), "; A = ",
+                  signif(s["lpost"], digits=5),
+                  "; prob.new = ", signif(s.new["lpost"], digits=5), "; A = ",
                   signif(A, digits=5),
                   sep=""))
     }

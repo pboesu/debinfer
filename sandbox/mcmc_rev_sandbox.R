@@ -111,6 +111,6 @@ iter = 50
 mcmc_rev <- de_mcmc_rev(N = iter, data=N_obs, de.model=logistic_model,
                         obs.model=logistic_obs_model_rev, all.params=mcmc.pars,
                         Tmax = max(N_obs$time), data.times=N_obs$time, cnt=5,
-                        burnin=0.1, plot=FALSE, sizestep=0.1, which=1,
+                        burnin=0.1, plot=TRUE, sizestep=0.1, which=1,
                         ref.params = parms, ref.inits = y)
 
