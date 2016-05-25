@@ -207,11 +207,6 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
   out <- list(s=samps[1,], p=params, sim.old=sim.start)
 
   for(i in 2:N){
-    ## printing and plotting output so we can watch the progress
-    if(i%%cnt == 0){
-      print(paste("sample number", i, sep=" "))
-      if(plot) plot(samps, density=FALSE, ask=FALSE)#use window.mcmc
-    }
 
     ## the meat of the MCMC is found in the function update.samps (see below)
 
@@ -225,6 +220,12 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
 #         stop("we've had a really large swing in the posterior prob")
 #       }
 #     }
+
+    ## printing and plotting output so we can watch the progress
+    if(i%%cnt == 0){
+      print(paste("sample number", i, sep=" "))
+      if(plot) plot(window(samps, 1, i), density=FALSE, ask=FALSE)#use window.mcmc
+    }
 
   }
 
