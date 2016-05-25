@@ -1,5 +1,5 @@
 ##traceplot for multiple chains
-
+#obsolete when using plot.mcmc.list
 plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen','cornflowerblue')){
   nch = length(chains)
   np = ncol(chains[[1]]$samps)
@@ -17,18 +17,25 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 
 ### pairwise plot of marginal densities
 ### code following a stackexchange example
-
+## check out the function in rethinking
 
 #' pretty_pairs
 #'
+#' Plots pairwise correlations of posterior marginals
 #'
+#' @param result a deBInfer_result object
+#' @param trend logical, add loess smooth
+#' @param scatter logical, add scatterplot of posterior samples
+#' @import MASS
+#' @import RColorBrewer
 #' @export
-pretty_pairs <- function(samples, trend = FALSE, scatter = FALSE){
-  np = ncol(samples)
-  cors<-round(cor(samples),2) #correlations
+pretty_pairs <- function(result, trend = FALSE, scatter = FALSE, burnin=NULL){
+  if(!is.null(burnin)) result$samples <- window(result$samples, burnin, nrow(result$samples))
+  np = ncol(result$samples)
+  cors<-round(cor(result$samples),2) #correlations
 
   # store old par
-  old.par <- par()
+  old.par <- par(no.readonly=TRUE)
 
   # make layout for plot layout
   laymat<-diag(1:np) #histograms
@@ -41,7 +48,7 @@ pretty_pairs <- function(samples, trend = FALSE, scatter = FALSE){
 
   # Draw histograms, tweak arguments of hist to make nicer figures
   for(i in 1:np)
-    hist(samples[,i],main=names(samples)[i])
+    hist(result$samples[,i],main=names(result$samples)[i])
 
   # Write correlations to upper diagonal part of the graph
   # Again, tweak accordingly
@@ -53,11 +60,11 @@ pretty_pairs <- function(samples, trend = FALSE, scatter = FALSE){
 
   # Plot heatmaps, here I use kde2d function for density estimation
   # image function for generating heatmaps
-  library(MASS)
+  #library(MASS)
   ## some pretty colors
-  library(RColorBrewer)
+  #library(RColorBrewer)
   k <- 7
-  my.cols <- (brewer.pal(9, "Blues")[3:9])
+  my.cols <- (RColorBrewer::brewer.pal(9, "Blues")[3:9])
 
   ## compute 2D kernel density, see MASS book, pp. 130-131
 
@@ -65,17 +72,17 @@ pretty_pairs <- function(samples, trend = FALSE, scatter = FALSE){
   for(i in 2:np)
     for(j in 1:(i-1)){
       if (scatter == TRUE){
-        plot(samples[,i],samples[,j], pch=16, cex=0.3, col='darkgrey')
+        plot.default(result$samples[,i],result$samples[,j], pch=16, cex=0.3, col='darkgrey')
       } else {
-        plot(range(samples[,i]), range(samples[,j]), type = 'n')
+        plot.default(range(result$samples[,i]), range(result$samples[,j]), type = 'n')
       }
-      z <- kde2d(samples[,i],samples[,j], n=20)
+      z <- MASS::kde2d(result$samples[,i],result$samples[,j], n=20)
       contour(z, drawlabels=FALSE, nlevels=k, col=my.cols, add=TRUE)
-      abline(h=mean(samples[,j]), v=mean(samples[,i]), lwd=2, lty = 2)
+      abline(h=mean(result$samples[,j]), v=mean(result$samples[,i]), lwd=2, lty = 2)
       if (trend == TRUE) {
-        rows <- sample(nrow(samples), ceiling(0.05*nrow(samples)))
-        loess_fit <- loess(samples[rows,j] ~ samples[rows,i])
-        points(samples[rows,i], predict(loess_fit), col = "blue", pch=16, cex=0.5)
+        rows <- sample(nrow(result$samples), ceiling(0.05*nrow(result$samples)))
+        loess_fit <- loess(result$samples[rows,j] ~ result$samples[rows,i])
+        points(result$samples[rows,i], predict(loess_fit), col = "blue", pch=16, cex=0.5)
       }
 
     }

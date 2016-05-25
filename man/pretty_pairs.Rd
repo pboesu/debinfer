@@ -4,9 +4,16 @@
 \alias{pretty_pairs}
 \title{pretty_pairs}
 \usage{
-pretty_pairs(samples, trend = FALSE, scatter = FALSE)
+pretty_pairs(result, trend = FALSE, scatter = FALSE, burnin = NULL)
+}
+\arguments{
+\item{result}{a deBInfer_result object}
+
+\item{trend}{logical, add loess smooth}
+
+\item{scatter}{logical, add scatterplot of posterior samples}
 }
 \description{
-pretty_pairs
+Plots pairwise correlations of posterior marginals
 }
 

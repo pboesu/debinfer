@@ -229,7 +229,25 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
 
   }
 
-  return(samps)
+  #make a data structure that returns all parts of the analysis
+#   function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
+#            Tmax, data.times, cnt=10, burnin=0.1,
+#            plot=TRUE, sizestep=0.01, which=1,
+#            myswitch=NULL,
+#            mymap=NULL, verbose =FALSE, ...)
+  result <- list(
+    de.model = de.model,
+    obs.model = obs.model,
+    all.params = all.params,
+    ref.params = ref.params,
+    ref.inits = ref.inits,
+    iter = N,
+    data = data,
+    samples = as.mcmc(samps[,w.p]),
+    lpost = samps[,"lpost"]
+  )
+  structure(result, class="debinfer_result")
+  return(result)
 }
 
 ##' @title update_sample_rev
