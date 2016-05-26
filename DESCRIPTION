@@ -23,7 +23,11 @@ Imports:
     truncdist,
     coda,
     RColorBrewer,
-    MASS
+    MASS,
+    stats,
+    mvtnorm,
+    graphics,
+    grDevices
 Suggests:
     testthat,
     knitr,

@@ -2,7 +2,6 @@
 
 S3method(pairs,debinfer_result)
 export(de_mcmc)
-export(de_mcmc_old)
 export(debinfer_par)
 export(logd_prior)
 export(post_prior_densplot)
