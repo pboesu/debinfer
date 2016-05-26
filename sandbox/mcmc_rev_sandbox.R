@@ -136,3 +136,7 @@ plot_benchmark(ode_plot, time.units = "min", ylim =c(0,2), main = "5000, plot at
 plot_benchmark(ode_noplot, time.units = "min", ylim =c(0,2),main = "5000, no plots")
 
 saveRDS(list(plot = ode_plot, noplot = ode_noplot, session = sessionInfo()), file="sandbox/benchmarks-dont-solve-obs.RDS")
+
+notobs <- readRDS("sandbox/benchmarks-dont-solve-obs.RDS")
+plot_benchmark(notobs$plot, time.units = "min", ylim =c(0,1.5), main = "5000, plot at 500")
+plot_benchmark(notobs$noplot, time.units = "min", ylim =c(0,2),main = "5000, no plots")
