@@ -4,6 +4,7 @@
 
 *For more information read our [preprint](https://arxiv.org/abs/1605.00021) or get in touch with pboesu@gmail.com*
 
+[![Travis-CI Build Status](https://travis-ci.org/pboesu/debinfer.svg?branch=master)](https://travis-ci.org/pboesu/debinfer)
 [![DOI](https://zenodo.org/badge/21877/pboesu/debinfer.svg)](https://zenodo.org/badge/latestdoi/21877/pboesu/debinfer)
 
 
