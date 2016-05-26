@@ -21,7 +21,7 @@ library(devtools)
 ```
 
 Then you install deBInfer from github
-```{r install2}
+```{r install2, eval=FALSE}
 install_github("pboesu/debinfer")
 ```
 
@@ -80,7 +80,7 @@ We also use an epsilon correction for the meanlog, as the DE model can return va
   # the observation model
   logistic_obs_model<-function(data, sim.data, sds, samp){
 
-    llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data$N + 1e-6), 
+    llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6), 
                        sdlog=exp(samp[['loglogsd.N']]), log=TRUE)
                 )
 
@@ -133,15 +133,14 @@ Finally we use deBInfer to estimate the parameters of the original model.
 We plot the results
 ```{r message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8}
 burnin = 1500
-pretty_pairs(mcmc_samples$samps[burnin:iter,], scatter=TRUE, trend=TRUE)
+pairs(mcmc_samples, burnin = burnin, scatter=TRUE, trend=TRUE)
 
 library(coda)
-coda.samples <- as.mcmc(mcmc_samples$samps[burnin:iter,])
-plot(coda.samples)
-summary(coda.samples)
+plot(mcmc_samples$samples)
+summary(mcmc_samples$samples)
 #plot(N_obs$time,N_obs$N_noisy)
 
-posterior.mean.sim <- solve_de(logistic_model, params=c(r=mean(mcmc_samples$samps$r[burnin:iter]),K=mean(mcmc_samples$samps$K[burnin:iter])), Tmax=max(N_obs$time), inits=c(N=0.1))
+posterior.mean.sim <- solve_de(logistic_model, params=c(r=mean(mcmc_samples$samples[,"r"][burnin:iter]),K=mean(mcmc_samples$samples[,"K"][burnin:iter])), Tmax=max(N_obs$time), inits=c(N=0.1))
 plot(posterior.mean.sim)
 points(N_obs$time,N_obs$N_noisy)
 ```
@@ -149,8 +148,8 @@ points(N_obs$time,N_obs$N_noisy)
 Posterior credible interval (equal-tailed)
 ```{r}
 library(plyr)
-simlist <- llply(sample(nrow(mcmc_samples$samps[burnin:iter,]), 1000),
-                 function(x)solve_de(logistic_model, mcmc_samples$samps[burnin:iter,][x,],
+simlist <- llply(sample(nrow(mcmc_samples$samples[burnin:iter,]), 1000),
+                 function(x)solve_de(logistic_model, mcmc_samples$samples[burnin:iter,][x,],
                                      inits=c(N = 0.1), Tmax=120, numsteps=100))
 
 sima <- simplify2array(simlist)
