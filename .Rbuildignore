@@ -6,3 +6,4 @@
 ^conversion_notes\.Rmd$
 ^conversion_notes\.html$
 ^\.travis\.yml$
+^codecov\.yml$
