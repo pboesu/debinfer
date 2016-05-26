@@ -383,3 +383,27 @@ prior_draw_rev<-function(b, hypers, prior.pdf){
   return(list(b=b.new, lfwd=lfwd, lbak=lbak))
 }
 
+#' log_post_params
+#'
+#' evaluate the likelihood given the data, the current deterministic model solution and the observation model
+#'
+#'
+#' @export
+log_post_params <- function(samp, w.p, data, p, pdfs, hyper, sim.data, sds, verbose.lik=FALSE, obs.model){
+
+  log_data <- obs.model
+
+  llik <- log_data(data=data, sim.data=sim.data, samp=samp, sds=sds)
+
+  #if(length(w.p)==1) lprior<-as.numeric(log_prior_params(samp, w.p, hyper))
+  #else {
+  lprior<-sum(log_prior_params(samp, pdfs, w.p, hyper))
+  ##if(!is.finite(lprior)) break
+  #}
+  ##print(c(b, lik, prior))
+
+  if(is.na(llik)) break #break doesn't work when it's inside a function
+  if(is.na(lprior)) break
+
+  return( llik + lprior )
+}
