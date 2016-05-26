@@ -15,7 +15,9 @@ Depends:
     PBSddesolve
 Imports:
     truncdist,
-    coda
+    coda,
+    RColorBrewer,
+    MASS
 Suggests:
     testthat,
     knitr,

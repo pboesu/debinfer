@@ -12,6 +12,8 @@ post_prior_densplot(result, burnin = NULL, prior.range = "post", ...)
 \item{burnin}{numeric, number of samples to discard before plotting}
 
 \item{prior.range}{character, range to calculate prior density "xlim" plot limits; "post" posterior range (default) #this should be a function on a single parameter, then a corresponding method for all pars, also need smarter way of feeding in xlims separately for each par}
+
+\item{...}{further arguments to coda::densplot}
 }
 \description{
 Plots posterior densities and the densities of the corresponding priors
