@@ -106,7 +106,7 @@ chytrid_obs_model<-function(data, sim.data, sds, samp){
   ec<-0.01
   llik.Z<-0
   for(i in unique(data$time)){
-    llik.Z<-llik.Z + sum(dpois(data$count[data$time==i], lambda=(sim.data$Z[sim.data$time==i]+ec), log=TRUE))
+    try(llik.Z<-llik.Z + sum(dpois(data$count[data$time==i], lambda=(sim.data$Z[sim.data$time==i]+ec), log=TRUE)))
   }
   llik<-llik.Z
   return(llik)
@@ -169,23 +169,8 @@ dede_rev <- de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dede,
                                burnin=0.1, plot=TRUE, sizestep=0.1, which="dede", verbose = TRUE),
 times = 10)
 
-dde_noplot <- microbenchmark::microbenchmark(
-  dde_old = de_mcmc(N = iter, data=chytrid, de.model=CSZ.dde,
-                    obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                    Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                    burnin=0.1, plot=FALSE, sizestep=0.1, which=2, verbose = TRUE),
 
-
-  dde_rev = de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dde,
-                        obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                        Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                        burnin=0.1, plot=FALSE, sizestep=0.1, which=2, verbose = TRUE),
-
-  dede_rev <- de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dede,
-                          obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                          Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                          burnin=0.1, plot=FALSE, sizestep=0.1, which="dede", verbose = TRUE),
-  times = 10)
+plot_benchmark(dde_plot, expr.levels = c("dde", "dde-rev", "dede"))
 saveRDS(list(plot = dde_plot, noplot = dde_noplot, session = sessionInfo()), file="sandbox/benchmarks-dont-solve-obs-dde.RDS")
 
 ## ----solve-dde-----------------------------------------------------------
