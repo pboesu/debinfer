@@ -30,9 +30,9 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 #' @import RColorBrewer
 #' @export
 pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL, ...){
-  if(!is.null(burnin)) result$samples <- window(result$samples, burnin, nrow(result$samples))
-  np = ncol(result$samples)
-  cors<-round(cor(result$samples),2) #correlations
+  if(!is.null(burnin)) x$samples <- window(x$samples, burnin, nrow(x$samples))
+  np = ncol(x$samples)
+  cors<-round(cor(x$samples),2) #correlations
 
   # store old par
   old.par <- par(no.readonly=TRUE)
@@ -48,7 +48,7 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
 
   # Draw histograms, tweak arguments of hist to make nicer figures
   for(i in 1:np)
-    hist(result$samples[,i],main=names(result$samples)[i])
+    hist(x$samples[,i],main=names(x$samples)[i])
 
   # Write correlations to upper diagonal part of the graph
   # Again, tweak accordingly
@@ -72,17 +72,17 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
   for(i in 2:np)
     for(j in 1:(i-1)){
       if (scatter == TRUE){
-        plot.default(result$samples[,i],result$samples[,j], pch=16, cex=0.3, col='darkgrey')
+        plot.default(x$samples[,i],x$samples[,j], pch=16, cex=0.3, col='darkgrey')
       } else {
-        plot.default(range(result$samples[,i]), range(result$samples[,j]), type = 'n')
+        plot.default(range(x$samples[,i]), range(x$samples[,j]), type = 'n')
       }
-      z <- MASS::kde2d(result$samples[,i],result$samples[,j], n=20)
+      z <- MASS::kde2d(x$samples[,i],x$samples[,j], n=20)
       contour(z, drawlabels=FALSE, nlevels=k, col=my.cols, add=TRUE)
-      abline(h=mean(result$samples[,j]), v=mean(result$samples[,i]), lwd=2, lty = 2)
+      abline(h=mean(x$samples[,j]), v=mean(x$samples[,i]), lwd=2, lty = 2)
       if (trend == TRUE) {
-        rows <- sample(nrow(result$samples), ceiling(0.05*nrow(result$samples)))
-        loess_fit <- loess(result$samples[rows,j] ~ result$samples[rows,i])
-        points(result$samples[rows,i], predict(loess_fit), col = "blue", pch=16, cex=0.5)
+        rows <- sample(nrow(x$samples), ceiling(0.05*nrow(x$samples)))
+        loess_fit <- loess(x$samples[rows,j] ~ x$samples[rows,i])
+        points(x$samples[rows,i], predict(loess_fit), col = "blue", pch=16, cex=0.5)
       }
 
     }

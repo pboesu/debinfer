@@ -4,11 +4,11 @@
 \alias{pairs.debinfer_result}
 \title{Pairwise posterior marginals}
 \usage{
-\method{pairs}{debinfer_result}(result, trend = FALSE, scatter = FALSE,
-  burnin = NULL)
+\method{pairs}{debinfer_result}(x, trend = FALSE, scatter = FALSE,
+  burnin = NULL, ...)
 }
 \arguments{
-\item{result}{a deBInfer_result object}
+\item{x}{a deBInfer_result object}
 
 \item{trend}{logical, add loess smooth}
 
