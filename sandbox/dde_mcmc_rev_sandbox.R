@@ -169,7 +169,25 @@ dede_rev <- de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dede,
                                burnin=0.1, plot=TRUE, sizestep=0.1, which="dede", verbose = TRUE),
 times = 10)
 
+dde_noplot <- microbenchmark::microbenchmark(
+  dde_old = de_mcmc(N = iter, data=chytrid, de.model=CSZ.dde,
+                    obs.model=chytrid_obs_model, all.params=mcmc.pars,
+                    Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
+                    burnin=0.1, plot=FALSE, sizestep=0.1, which=2, verbose = TRUE),
 
+
+  dde_rev = de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dde,
+                        obs.model=chytrid_obs_model, all.params=mcmc.pars,
+                        Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
+                        burnin=0.1, plot=FALSE, sizestep=0.1, which=2, verbose = TRUE),
+
+  dede_rev <- de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dede,
+                          obs.model=chytrid_obs_model, all.params=mcmc.pars,
+                          Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
+                          burnin=0.1, plot=FALSE, sizestep=0.1, which="dede", verbose = TRUE),
+  times = 10)
+par(mfrow=c(1,2))
+plot_benchmark(dde_noplot, expr.levels = c("dde", "dde-rev", "dede"))
 plot_benchmark(dde_plot, expr.levels = c("dde", "dde-rev", "dede"))
 saveRDS(list(plot = dde_plot, noplot = dde_noplot, session = sessionInfo()), file="sandbox/benchmarks-dont-solve-obs-dde.RDS")
 
