@@ -365,6 +365,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
 ##' @title propose_single_rev
 ##' @param samps
 ##' @param s.p
+##' @import stats
 ##' @return
 ##' @author Philipp Boersch-Supan
 propose_single_rev<-function(samps, s.p)
@@ -398,6 +399,49 @@ propose_single_rev<-function(samps, s.p)
 
 }
 
+##' joint proposal function
+##'
+##' Function to jointly propose parameters using a multivariate normal proposal distribution
+##' @title propose_joint
+##' @param samp
+##' @param samp.p
+##' @import stats
+##' @import mvtnorm
+##' @return
+##' @author Philipp Boersch-Supan
+propose_joint_rev<-function(samp, samp.p){
+
+
+  b<-NULL
+  if(samp.p$type=="rw"){
+    b<-as.numeric(samp[samp.p$params])
+    sigma<-samp.p$var
+
+    b.new<-rmvnorm(1, mean=b, sigma=sigma)
+    lfwd<-dmvnorm(b.new, b, sigma, log=TRUE)
+    lbak<-dmvnorm(b, b.new, sigma, log=TRUE)
+  }
+  else if(samp.p$type=="ind"){
+    if(is.null(samp.p$mean)) stop("not enough info for the independence sampler")
+    mean<-as.numeric(samp.p$mean)
+    b<-as.numeric(samp[samp.p$params])
+    sigma<-samp.p$var
+
+    b.new<-rmvnorm(1, mean=mean, sigma=sigma)
+    lfwd<-dmvnorm(b.new, mean, sigma, log=TRUE)
+    lbak<-dmvnorm(b, mean, sigma, log=TRUE)
+  }
+
+  ##print(c(b, b.new, lfwd, lbak))
+
+
+  ##samp[s]<-b.new
+
+  ##stop()
+  return(list(b=b.new, lfwd=lfwd, lbak=lbak))
+
+}
+
 ##' draw from prior
 ##'
 ##' details of this function
@@ -405,6 +449,7 @@ propose_single_rev<-function(samps, s.p)
 ##' @param b current value of a parameter
 ##' @param hypers list of hyper parameters, named appropriately for the corresponding prior.pdf
 ##' @param prior.pdf string name of probability distribution following base R conventions, or those of additionally loaded packages
+##' @import stats
 ##' @return
 ##' @author Philipp Boersch-Supan
 prior_draw_rev<-function(b, hypers, prior.pdf){

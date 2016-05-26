@@ -28,6 +28,8 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 #' @param scatter logical, add scatterplot of posterior samples
 #' @import MASS
 #' @import RColorBrewer
+#' @importFrom graphics abline contour hist layout lines par plot plot.default points text
+#' @importFrom stats cor loess predict window
 #' @export
 pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL, ...){
   if(!is.null(burnin)) x$samples <- window(x$samples, burnin, nrow(x$samples))
@@ -99,6 +101,8 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
 #' @param prior.range character, range to calculate prior density "xlim" plot limits; "post" posterior range (default) #this should be a function on a single parameter, then a corresponding method for all pars, also need smarter way of feeding in xlims separately for each par
 #' @param ... further arguments to coda::densplot
 #' @import coda
+#' @importFrom graphics abline contour hist layout lines par plot plot.default points text
+#' @importFrom grDevices n2mfrow
 #' @export
 post_prior_densplot <- function(result, burnin=NULL, prior.range="post", ...){
   # store old par
