@@ -90,4 +90,44 @@ pairs.debinfer_result <- function(result, trend = FALSE, scatter = FALSE, burnin
   par(old.par)
   }
 
+#' Plot posterior marginals and corresponding priors
+#'
+#' Plots posterior densities and the densities of the corresponding priors
+#'
+#' @param result a deBInfer_result object
+#' @param burnin numeric, number of samples to discard before plotting
+#' @param prior.range character, range to calculate prior density "xlim" plot limits; "post" posterior range (default) #this should be a function on a single parameter, then a corresponding method for all pars, also need smarter way of feeding in xlims separately for each par
+#' @param ... further arguments to coda::densplot
+#' @import coda
+#' @export
+post_prior_densplot <- function(result, burnin=NULL, prior.range="post", ...){
+  # store old par
+  old.par <- par(no.readonly=TRUE)
+  #remove burnin if supplied
+  if(!is.null(burnin)) result$samples <- window(result$samples, burnin, nrow(result$samples))
+  #get number of parameters
+  n <- ncol(result$samples)
+  par(mfrow=n2mfrow(n))
+  for (i in colnames(result$samples)){
 
+    #construct prior densities
+    dprior <- paste("d", result$all.params[[i]]$prior, sep="")
+    if (prior.range=="post"){
+      coda::densplot(result$samples[,i],...)
+      post.range <- seq(min(result$samples[,i]), max(result$samples[,i]), length.out = 100)
+      prior.dens <- do.call(dprior, c(list(x=post.range), result$all.params[[i]]$hypers))
+      lines(post.range, prior.dens, col="red")
+    } else {
+      if (prior.scale=="xlim"){
+        coda::densplot(result$samples[,i], ...)
+        post.range <- seq(min(xlim), max(xlim), length.out = 100)
+        prior.dens <- do.call(dprior, c(list(x=post.range), result$all.params[[i]]$hypers))
+        lines(post.range, prior.dens, col="red")
+    }
+
+
+    }
+  }
+  # restore old par
+  par(old.par)
+}
