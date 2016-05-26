@@ -2,7 +2,7 @@
 
 S3method(pairs,debinfer_result)
 export(de_mcmc)
-export(de_mcmc_rev)
+export(de_mcmc_old)
 export(deb_mcmc)
 export(debinfer_par)
 export(log_post_params)

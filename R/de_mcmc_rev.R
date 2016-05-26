@@ -6,7 +6,10 @@
 ##' variances specified in sds.
 ##'
 ##'
-##' @title de_mcmc
+##' @title de_mcmc old
+##'
+##'  this is just a wrapper for the old function, reassigning inputs from the debinfer_parlist object to dde_mcmc
+##'
 ##' @param N
 ##' @param data
 ##' @param all.params
@@ -29,7 +32,7 @@
 ##'
 ##' @export
 ##'
-de_mcmc <- function(N, data, de.model, obs.model, all.params,
+de_mcmc_old <- function(N, data, de.model, obs.model, all.params,
                    Tmax, data.times, cnt=10, burnin=0.1,
                    plot=TRUE, sizestep=0.01, which=1,
                    myswitch=NULL,
@@ -92,7 +95,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params,
 ##' variances specified in sds.
 ##'
 ##'
-##' @title de_mcmc_rev
+##' @title de_mcmc
 ##' @import coda
 ##' @param N
 ##' @param data
@@ -116,7 +119,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params,
 ##' @return
 ##' @author Philipp Boersch-Supan
 ##' @export
-de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
+de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
                               Tmax, data.times, cnt=10, burnin=0.1,
                               plot=TRUE, sizestep=0.01, which=1,
                               myswitch=NULL,

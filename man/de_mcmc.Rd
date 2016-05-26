@@ -4,14 +4,20 @@
 \alias{de_mcmc}
 \title{de_mcmc}
 \usage{
-de_mcmc(N, data, de.model, obs.model, all.params, Tmax, data.times, cnt = 10,
-  burnin = 0.1, plot = TRUE, sizestep = 0.01, which = 1,
-  myswitch = NULL, mymap = NULL, verbose = FALSE, method = "lsoda", ...)
+de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
+  ref.inits = NULL, Tmax, data.times, cnt = 10, burnin = 0.1,
+  plot = TRUE, sizestep = 0.01, which = 1, myswitch = NULL,
+  mymap = NULL, verbose = FALSE, ...)
+}
+\arguments{
+\item{ref.params}{an optional named vector containing a set of reference parameters, e.g. the true paramaters underlying a simulated data set}
+
+\item{ref.inits}{an optional named vector containing a set of reference initial values, e.g. the true initial values underlying a simulated data set}
 }
 \description{
-Bayesian inference for a deterministic differential equation model
- (with models solved via an ode or dde solver in the function specified with argument
-"de.model") with an observation model, and with observation error
+Bayesian inference for a deterministic DEB model (with models
+solved via an ode solver in the function specified with argument
+"sim") with an observation model, and with observation error
 variances specified in sds.
 }
 \author{
