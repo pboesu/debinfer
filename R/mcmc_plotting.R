@@ -29,7 +29,7 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 #' @import MASS
 #' @import RColorBrewer
 #' @export
-pretty_pairs <- function(result, trend = FALSE, scatter = FALSE, burnin=NULL){
+pairs.debinfer_result <- function(result, trend = FALSE, scatter = FALSE, burnin=NULL){
   if(!is.null(burnin)) result$samples <- window(result$samples, burnin, nrow(result$samples))
   np = ncol(result$samples)
   cors<-round(cor(result$samples),2) #correlations
