@@ -10,15 +10,33 @@ de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
   mymap = NULL, verbose = FALSE, ...)
 }
 \arguments{
+\item{N}{integer, number of MCMC iterations}
+
+\item{data}{data.frame observations to fit the model to}
+
+\item{de.model}{a function defining a DE model, compliant with the solvers in deSolve or PBSddesolve}
+
+\item{obs.model}{a function defining an observation model}
+
+\item{all.params}{debinfer_parlist containing all model, MCMC, and observation}
+
 \item{ref.params}{an optional named vector containing a set of reference parameters, e.g. the true paramaters underlying a simulated data set}
 
 \item{ref.inits}{an optional named vector containing a set of reference initial values, e.g. the true initial values underlying a simulated data set}
+
+\item{cnt}{integer interval at which to print and possibly plot information on the current state of the MCMC chain}
+
+\item{plot}{logical, plot traces for all parameters at the interval defined by \code{cnt}}
+
+\item{which}{the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde}
+
+\item{verbose}{logical}
+
+\item{...}{further arguments to the solver}
 }
 \description{
-Bayesian inference for a deterministic DEB model (with models
-solved via an ode solver in the function specified with argument
-"sim") with an observation model, and with observation error
-variances specified in sds.
+Bayesian inference for a deterministic DE model (with models
+solved via an DE solver) with an observation model.
 }
 \author{
 Philipp Boersch-Supan
