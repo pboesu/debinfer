@@ -246,7 +246,7 @@ de_mcmc_rev <- function(N, data, de.model, obs.model, all.params, ref.params=NUL
     samples = as.mcmc(samps[,w.p]),
     lpost = samps[,"lpost"]
   )
-  structure(result, class="debinfer_result")
+  result <- structure(result, class="debinfer_result")
   return(result)
 }
 
