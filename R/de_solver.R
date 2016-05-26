@@ -47,7 +47,7 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
   if(which == 2 || which == "dde"){
     #require(PBSddesolve)
     #on.exit(freeglobaldata())
-    out<-dde(inits, times, sim, parms=params, ...)
+    out<-PBSddesolve::dde(inits, times, sim, parms=params, ...)
   }
   if(which == 3 || which == "dede"){
     #require(PBSddesolve)

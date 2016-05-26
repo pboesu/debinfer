@@ -29,7 +29,7 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 #' @import MASS
 #' @import RColorBrewer
 #' @importFrom graphics abline contour hist layout lines par plot plot.default points text
-#' @importFrom stats cor loess predict window
+#' @import stats
 #' @export
 pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL, ...){
   if(!is.null(burnin)) x$samples <- window(x$samples, burnin, nrow(x$samples))

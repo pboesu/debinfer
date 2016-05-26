@@ -17,8 +17,7 @@ LazyData: TRUE
 RoxygenNote: 5.0.1
 Depends:
     R  (>= 2.10),
-    deSolve,
-    PBSddesolve
+    deSolve
 Imports:
     truncdist,
     coda,
@@ -27,7 +26,8 @@ Imports:
     stats,
     mvtnorm,
     graphics,
-    grDevices
+    grDevices,
+    PBSddesolve
 Suggests:
     testthat,
     knitr,
