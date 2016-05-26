@@ -23,13 +23,13 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 #'
 #' Plots pairwise correlations of posterior marginals
 #'
-#' @param result a deBInfer_result object
+#' @param x a deBInfer_result object
 #' @param trend logical, add loess smooth
 #' @param scatter logical, add scatterplot of posterior samples
 #' @import MASS
 #' @import RColorBrewer
 #' @export
-pairs.debinfer_result <- function(result, trend = FALSE, scatter = FALSE, burnin=NULL){
+pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL, ...){
   if(!is.null(burnin)) result$samples <- window(result$samples, burnin, nrow(result$samples))
   np = ncol(result$samples)
   cors<-round(cor(result$samples),2) #correlations
