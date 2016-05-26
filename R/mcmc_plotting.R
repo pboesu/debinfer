@@ -122,7 +122,7 @@ post_prior_densplot <- function(result, burnin=NULL, prior.range="post", ...){
       prior.dens <- do.call(dprior, c(list(x=post.range), result$all.params[[i]]$hypers))
       lines(post.range, prior.dens, col="red")
     } else {
-      if (prior.scale=="xlim"){
+      if (prior.range=="xlim"){
         coda::densplot(result$samples[,i], ...)
         post.range <- seq(min(xlim), max(xlim), length.out = 100)
         prior.dens <- do.call(dprior, c(list(x=post.range), result$all.params[[i]]$hypers))
