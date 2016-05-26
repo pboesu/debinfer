@@ -19,7 +19,7 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 ### code following a stackexchange example
 ## check out the function in rethinking
 
-#' pretty_pairs
+#' Pairwise posterior marginals
 #'
 #' Plots pairwise correlations of posterior marginals
 #'

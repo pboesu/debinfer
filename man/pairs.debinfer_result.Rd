@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmc_plotting.R
 \name{pairs.debinfer_result}
 \alias{pairs.debinfer_result}
-\title{pretty_pairs}
+\title{Pairwise posterior marginals}
 \usage{
 \method{pairs}{debinfer_result}(result, trend = FALSE, scatter = FALSE,
   burnin = NULL)
