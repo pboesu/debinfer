@@ -13,6 +13,7 @@
 #' @param numsteps numeric
 #' @param which Choice of solver to use 1 or "ode" = deSolve::ode, 2 or "dde" = PBSddesolve::dde, 3 or "dede" = deSolve::dede
 #' @param sizestep for solver
+#' @param method solver method
 #' @param verbose passed to deSolve::ode
 #' @param data.times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
 #' @param ... additional arguments to solver

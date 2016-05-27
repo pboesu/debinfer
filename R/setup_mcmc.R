@@ -5,7 +5,7 @@
 #' Creates an object of class debinfer_parlist containing initial values, parameters, prior distributions, hyperparameters
 #' tuning parameters etc. to set up a debinfer analysis
 #'
-#'
+#' @param ... debinfer_par objects to be combined into a debinfer_parlist
 #' @return returns an S3 object of class debinfer_parlist to be fed to the mcmc function
 #' @export
 setup_debinfer <- function(...)
@@ -31,16 +31,15 @@ setup_debinfer <- function(...)
 #' @export
 #'
 #'
-logd_prior <- function(x, pdf, hypers, sigma=NULL){
+logd_prior <- function(x, pdf, hypers){
   if (pdf == 'mvnorm'){
-    stop('multivariate priors not yet implemented')
+    stop('multivariate priors not implemented')
     } else {
     lp <- do.call(paste("d",pdf, sep=''), args=append(list(x, log=TRUE), hypers))
     return(lp)
     }
 }
 
-#logd_prior(x=1, pdf='norm', hypers=c(mean=1,sd=1))
 
 #' debinfer_par
 #'
@@ -48,13 +47,13 @@ logd_prior <- function(x, pdf, hypers, sigma=NULL){
 #' hyper-parameters, tuning parameters etc. to set up a debinfer analysis
 #'
 #' @param name character vector; name of the variable
-#' @param par.type character vector; type of the variable "de" = parameter for the differential equation, "obs" = parameter of the observation model, "init" = initial condition for a state variable in the differential equation
+#' @param var.type character vector; type of the variable "de" = parameter for the differential equation, "obs" = parameter of the observation model, "init" = initial condition for a state variable in the differential equation
 #' @param fixed boolean; TRUE = parameter is taken to be fixed, FALSE = parameter is to be estimated by MCMC
 #' @param value numeric; parameter value. For fixed parameters this is the value used in the analysis for free parameters this is the starting value used when setting up the MCMC chain
 #' @param joint integer; number of block for joint proposal; NULL means the parameter is not to be jointly proposed
 #' @param prior character; name of the probability distribution for the prior on the parameter. must conform to standard R naming i.e. beta ( foo = beta), binomial binom, Cauchy cauchy, chi-squared chisq, exponential exp, Fisher F f, gamma gamma, geometric geom, hypergeometric hyper, logistic logis, lognormal lnorm, negative binomial nbinom, normal norm, Poisson pois, Student t t, uniform unif, Weibull weibull, mvnorm
 #' @param hypers list of numeric vectors, hyperparameters for the prior; mean only for mvnorm.
-#' @param prop.sd numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter
+#' @param prop.var numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter
 #' @param samp.type character; type of sampler: "rw" random walk, "ind" = idenpendence
 #'
 #' @return returns an object of class debinfer_par to be fed to the mcmc setup function

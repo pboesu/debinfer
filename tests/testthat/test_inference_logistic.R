@@ -30,7 +30,7 @@ test_that("Inference on simulated data w/ known obs. error returns simulation pa
 
   # define an observation model
   # NB: lognormal errors are not great really for the obs model - should be changed to sth that actually allows N to be zero instead of using epsilon correction
-  logistic_obs_model<-function(data, sim.data, sds, samp){
+  logistic_obs_model<-function(data, sim.data, samp){
 
     llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"]+1e-6), sdlog=exp(samp[['loglogsd.N']]), log=TRUE))
 

@@ -26,6 +26,7 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 #' @param x a deBInfer_result object
 #' @param trend logical, add loess smooth
 #' @param scatter logical, add scatterplot of posterior samples
+#' @param burnin integer, number of samples to discard from start of chain before plotting
 #' @import MASS
 #' @import RColorBrewer
 #' @importFrom graphics abline contour hist layout lines par plot plot.default points text
@@ -122,7 +123,7 @@ post_prior_densplot <- function(result, burnin=NULL, prior.range="post", ...){
       prior.dens <- do.call(dprior, c(list(x=post.range), result$all.params[[i]]$hypers))
       lines(post.range, prior.dens, col="red")
     } else {
-      if (prior.range=="xlim"){
+      if (prior.range=="xlim"){ #get xlim from ellipsis??
         coda::densplot(result$samples[,i], ...)
         post.range <- seq(min(xlim), max(xlim), length.out = 100)
         prior.dens <- do.call(dprior, c(list(x=post.range), result$all.params[[i]]$hypers))

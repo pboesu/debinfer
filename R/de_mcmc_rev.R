@@ -14,7 +14,7 @@
 ##' @param ref.inits  an optional named vector containing a set of reference initial values, e.g. the true initial values underlying a simulated data set
 ##' @param de.model a function defining a DE model, compliant with the solvers in deSolve or PBSddesolve
 ##' @param obs.model a function defining an observation model
-##' @param Tmax
+##' @param Tmax maximum timestep for solver
 ##' @param cnt integer interval at which to print and possibly plot information on the current state of the MCMC chain
 ##' @param plot logical, plot traces for all parameters at the interval defined by \code{cnt}
 ##' @param sizestep timestep for solver to return values at, only used if data.times is missing
@@ -76,7 +76,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
   if(!is.null(ref.params) && !is.null(ref.inits)){
     sim.ref<-solve_de(sim = de.model, params = ref.params, inits = ref.inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
-    prob.ref<-log_post_params(samp = ref.params, data = data, sim.data = sim.ref, sds =NULL, w.p = w.p, obs.model = obs.model, pdfs = pdfs, hyper = hyper)
+    prob.ref<-log_post_params(samp = ref.params, data = data, sim.data = sim.ref, w.p = w.p, obs.model = obs.model, pdfs = pdfs, hyper = hyper)
     print(paste("(unnormalized) posterior probability of the reference parameters= ",
                 prob.ref, sep=""))
   }
@@ -103,7 +103,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
-  samps[1,"lpost"] <- log_post_params(samp = params, data = data, sim.data = sim.start, sds =NULL, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
+  samps[1,"lpost"] <- log_post_params(samp = params, data = data, sim.data = sim.start, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
 
   if(!is.finite(samps[1,"lpost"])) stop("Infinite log likelihood with current starting values")
 
@@ -164,24 +164,26 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##'
 ##' @param samps row vector of samples from the previous mcmc iteration
 ##' @param samp.p the parlist created by setup_debinfer
-##' @param data
-##' @param sim the de model
-##' @param inits
-##' @param out
-##' @param Tmax
-##' @param sizestep
-##' @param w.t
-##' @param l
-##' @param which
-##' @param i
-##' @param cnt
-##' @param myswitch
-##' @param mymap
-##' @param test
+##' @param data the observation
+##' @param sim the de.model
+##' @param inits the initial values for the solver
+##' @param out list containing the initial or previous update i.e. list(s=samps[i-1,], p=params, sim.old=sim.start)
+##' @param Tmax maximum timestep for solver
+##' @param sizestep sizestep for solver when not using data.times
+##' @param l number of parameters to be proposed
+##' @param which solver choice
+##' @param i current MCMC iteration
+##' @param cnt interval for printing/plotting information on chains
+##' @param data.times times with observations
+##' @param obs.model function containing obs model
+##' @param pdfs names of prior pdfs
+##' @param hyper list of hyperparameters
+##' @param w.p names of free parameters
+##' @param ... further arguments to solver
 ##' @export
 ##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
-                        data.times, l, which, i, cnt, test=TRUE, obs.model, pdfs, hyper, w.p, ...)
+                        data.times, l, which, i, cnt, obs.model, pdfs, hyper, w.p, ...)
 {
   ## read in some bits
   s<-samps
@@ -237,9 +239,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
 
     ## The posteriorprob of the previous sample is saved as
     ## s$lpost. If we accept a draw, we will set s$lpost<-s.new$lpost
-
-    #s.new$lpost<-log_post_params(s.new, data, samp.p, sim.new)
-    s.new["lpost"] <- log_post_params(samp = s.new, data = data, sim.data = sim.new, sds =NULL, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
+    s.new["lpost"] <- log_post_params(samp = s.new, data = data, sim.data = sim.new, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
 
     if(is.finite(s.new["lpost"]) && is.finite(s["lpost"])){
       A<-exp( s.new["lpost"] + q$lbak - s["lpost"] - q$lfwd )
@@ -278,8 +278,8 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
 ##' propose a parameter individually
 ##'
 ##' @title propose_single_rev
-##' @param samps
-##' @param s.p
+##' @param samps current sample of the MCMC chain
+##' @param s.p debinfer_par object representing the parameter that is to be proposed
 ##' @import stats
 ##' @return
 ##' @author Philipp Boersch-Supan
@@ -318,13 +318,13 @@ propose_single_rev<-function(samps, s.p)
 ##'
 ##' Function to jointly propose parameters using a multivariate normal proposal distribution
 ##' @title propose_joint
-##' @param samp
-##' @param samp.p
+##' @param samp current sample of the MCMC chain
+##' @param s.p debinfer_par object representing the parameter that is to be proposed
 ##' @import stats
 ##' @import mvtnorm
 ##' @return
 ##' @author Philipp Boersch-Supan
-propose_joint_rev<-function(samp, samp.p){
+propose_joint_rev<-function(samp, s.p){
 
 
   b<-NULL
@@ -385,14 +385,20 @@ prior_draw_rev<-function(b, hypers, prior.pdf){
 #' log_post_params
 #'
 #' evaluate the likelihood given the data, the current deterministic model solution and the observation model
-#'
+#' @param samp named numeric; current sample
+#' @param w.p character; parameter names
+#' @param data data
+#' @param pdfs character, prior pdf names
+#' @param hyper list, hyper parameters for the priors
+#' @param sim.data solver output
+#' @param obs.model function containing the observation model
 #'
 #' @export
-log_post_params <- function(samp, w.p, data, p, pdfs, hyper, sim.data, sds, verbose.lik=FALSE, obs.model){
+log_post_params <- function(samp, w.p, data, pdfs, hyper, sim.data, obs.model){
 
   log_data <- obs.model
 
-  llik <- log_data(data=data, sim.data=sim.data, samp=samp, sds=sds)
+  llik <- log_data(data=data, sim.data=sim.data, samp=samp)
 
   #if(length(w.p)==1) lprior<-as.numeric(log_prior_params(samp, w.p, hyper))
   #else {
@@ -411,7 +417,10 @@ log_post_params <- function(samp, w.p, data, p, pdfs, hyper, sim.data, sds, verb
 #' log_prior_params
 #'
 #' evaluate prior density at current parameter values
-#'
+#' @param samp named numeric; current sample
+#' @param w.p character; parameter names
+#' @param pdfs character, prior pdf names
+#' @param hyper list of named hyper parameters for the priors
 #'
 #' @export
 log_prior_params<-function(samp, pdfs, w.p, hyper){
