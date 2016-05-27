@@ -4,7 +4,12 @@
 \alias{propose_joint_rev}
 \title{propose_joint}
 \usage{
-propose_joint_rev(samp, samp.p)
+propose_joint_rev(samp, s.p)
+}
+\arguments{
+\item{s.p}{debinfer_par object representing the parameter that is to be proposed}
+
+\item{samps}{current sample of the MCMC chain}
 }
 \description{
 joint proposal function

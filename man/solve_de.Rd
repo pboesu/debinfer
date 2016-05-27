@@ -27,6 +27,8 @@ solve_de(sim, params, inits, Tmax, numsteps = 10000, which = 1,
 
 \item{data.times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.}
 
+\item{method}{solver method}
+
 \item{...}{additional arguments to solver
 If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.}
 }

@@ -6,6 +6,11 @@
 \usage{
 propose_single_rev(samps, s.p)
 }
+\arguments{
+\item{samps}{current sample of the MCMC chain}
+
+\item{s.p}{debinfer_par object representing the parameter that is to be proposed}
+}
 \description{
 propose a parameter individually
 }

@@ -23,6 +23,8 @@ de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
 
 \item{ref.inits}{an optional named vector containing a set of reference initial values, e.g. the true initial values underlying a simulated data set}
 
+\item{Tmax}{maximum timestep for solver}
+
 \item{data.times}{time points for which observations are available}
 
 \item{cnt}{integer interval at which to print and possibly plot information on the current state of the MCMC chain}

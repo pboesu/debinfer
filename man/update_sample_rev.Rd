@@ -5,15 +5,34 @@
 \title{update_sample_rev}
 \usage{
 update_sample_rev(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
-  data.times, l, which, i, cnt, myswitch = NULL, mymap = NULL,
-  test = TRUE, obs.model, pdfs, hyper, w.p, ...)
+  data.times, l, which, i, cnt, obs.model, pdfs, hyper, w.p, ...)
 }
 \arguments{
 \item{samps}{row vector of samples from the previous mcmc iteration}
 
 \item{samp.p}{the parlist created by setup_debinfer}
 
-\item{sim}{the de model}
+\item{data}{the observation}
+
+\item{sim}{the de.model}
+
+\item{inits}{the initial values for the solver}
+
+\item{out}{list containing the initial or previous update i.e. list(s=samps[i-1,], p=params, sim.old=sim.start)}
+
+\item{Tmax}{maximum timestep for solver}
+
+\item{sizestep}{sizestep for solver when not using data.times}
+
+\item{l}{number of parameters to be proposed}
+
+\item{which}{solver choice}
+
+\item{i}{current MCMC iteration}
+
+\item{cnt}{interval for printing/plotting information on chains}
+
+\item{...}{further arguments to solver}
 }
 \description{
 This is the workhorse of the MCMC algorithm.

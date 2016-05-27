@@ -6,6 +6,15 @@
 \usage{
 log_prior_params(samp, pdfs, w.p, hyper)
 }
+\arguments{
+\item{samp}{named numeric; current sample}
+
+\item{pdfs}{character, prior pdf names}
+
+\item{w.p}{character; parameter names}
+
+\item{hyper}{list of named hyper parameters for the priors}
+}
 \description{
 evaluate prior density at current parameter values
 }

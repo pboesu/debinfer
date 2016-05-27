@@ -4,8 +4,22 @@
 \alias{log_post_params}
 \title{log_post_params}
 \usage{
-log_post_params(samp, w.p, data, p, pdfs, hyper, sim.data, sds,
-  verbose.lik = FALSE, obs.model)
+log_post_params(samp, w.p, data, pdfs, hyper, sim.data, obs.model)
+}
+\arguments{
+\item{samp}{named numeric; current sample}
+
+\item{w.p}{character; parameter names}
+
+\item{data}{data}
+
+\item{pdfs}{character, prior pdf names}
+
+\item{hyper}{list, hyper parameters for the priors}
+
+\item{sim.data}{solver output}
+
+\item{obs.model}{function containing the observation model}
 }
 \description{
 evaluate the likelihood given the data, the current deterministic model solution and the observation model
