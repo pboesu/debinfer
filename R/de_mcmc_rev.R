@@ -121,8 +121,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
     out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, inits = inits, out = out,
                        Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, which=which, i=i, cnt=cnt, w.p = w.p,
-                       obs.model = obs.model, pdfs = pdfs, hyper = hyper,
-                       myswitch=myswitch, mymap=mymap)
+                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, ...)
     samps[i,] <- out$s #make sure order is matched
 #     if(test){
 #       if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
@@ -182,7 +181,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @export
 ##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
-                        data.times, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE, obs.model, pdfs, hyper, w.p, ...)
+                        data.times, l, which, i, cnt, test=TRUE, obs.model, pdfs, hyper, w.p, ...)
 {
   ## read in some bits
   s<-samps
@@ -234,7 +233,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
      sim.new<-solve_de(sim = sim , params = p.new, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
     }
 
-    #sim.new<-make.states(sim, p.new, inits, Tmax, which=which, sizestep, w.t,...)
+
 
     ## The posteriorprob of the previous sample is saved as
     ## s$lpost. If we accept a draw, we will set s$lpost<-s.new$lpost

@@ -5,9 +5,8 @@
 \title{de_mcmc}
 \usage{
 de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
-  ref.inits = NULL, Tmax, data.times, cnt = 10, burnin = 0.1,
-  plot = TRUE, sizestep = 0.01, which = 1, myswitch = NULL,
-  mymap = NULL, verbose = FALSE, ...)
+  ref.inits = NULL, Tmax, data.times, cnt = 10, plot = TRUE,
+  sizestep = 0.01, which = 1, verbose = FALSE, ...)
 }
 \arguments{
 \item{N}{integer, number of MCMC iterations}
@@ -24,9 +23,13 @@ de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
 
 \item{ref.inits}{an optional named vector containing a set of reference initial values, e.g. the true initial values underlying a simulated data set}
 
+\item{data.times}{time points for which observations are available}
+
 \item{cnt}{integer interval at which to print and possibly plot information on the current state of the MCMC chain}
 
 \item{plot}{logical, plot traces for all parameters at the interval defined by \code{cnt}}
+
+\item{sizestep}{timestep for solver to return values at, only used if data.times is missing}
 
 \item{which}{the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde}
 
