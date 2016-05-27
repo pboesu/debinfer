@@ -15,6 +15,9 @@ update_sample_rev(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
 
 \item{sim}{the de model}
 }
+\description{
+This is the workhorse of the MCMC algorithm.
+}
 \author{
 Philipp Boersch-Supan
 }

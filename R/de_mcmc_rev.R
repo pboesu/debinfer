@@ -162,7 +162,10 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   return(result)
 }
 
-##' @title update_sample_rev
+##' update_sample_rev
+##'
+##' This is the workhorse of the MCMC algorithm.
+##'
 ##' @param samps row vector of samples from the previous mcmc iteration
 ##' @param samp.p the parlist created by setup_debinfer
 ##' @param data
@@ -179,7 +182,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param myswitch
 ##' @param mymap
 ##' @param test
-##' @return
+##' @export
 ##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
                         data.times, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE, obs.model, pdfs, hyper, w.p, ...)
