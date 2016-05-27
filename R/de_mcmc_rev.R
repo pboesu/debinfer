@@ -16,23 +16,20 @@
 ##' @param obs.model a function defining an observation model
 ##' @param Tmax
 ##' @param cnt integer interval at which to print and possibly plot information on the current state of the MCMC chain
-##' @param burnin
 ##' @param plot logical, plot traces for all parameters at the interval defined by \code{cnt}
-##' @param sizestep
+##' @param sizestep timestep for solver to return values at, only used if data.times is missing
 ##' @param w.t
 ##' @param which the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde
-##' @param myswitch
-##' @param mymap
+##' @param data.times time points for which observations are available
 ##' @param verbose logical
 ##' @param ... further arguments to the solver
 ##' @return
 ##' @author Philipp Boersch-Supan
 ##' @export
 de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
-                              Tmax, data.times, cnt=10, burnin=0.1,
+                              Tmax, data.times, cnt=10,
                               plot=TRUE, sizestep=0.01, which=1,
-                              myswitch=NULL,
-                              mymap=NULL, verbose =FALSE, ...)
+                              verbose =FALSE, ...)
 {
   p.names <- sapply(all.params, function(x) x$name)
   is.free <- !sapply(all.params, function(x) x$fixed)
