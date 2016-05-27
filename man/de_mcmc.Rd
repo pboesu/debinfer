@@ -39,6 +39,9 @@ de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
 
 \item{...}{further arguments to the solver}
 }
+\value{
+a debinfer_result object containing input parameters, data and MCMC samples
+}
 \description{
 Bayesian inference for a deterministic DE model (with models
 solved via an DE solver) with an observation model.

@@ -18,12 +18,11 @@
 ##' @param cnt integer interval at which to print and possibly plot information on the current state of the MCMC chain
 ##' @param plot logical, plot traces for all parameters at the interval defined by \code{cnt}
 ##' @param sizestep timestep for solver to return values at, only used if data.times is missing
-##' @param w.t
 ##' @param which the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde
 ##' @param data.times time points for which observations are available
 ##' @param verbose logical
 ##' @param ... further arguments to the solver
-##' @return
+##' @return a debinfer_result object containing input parameters, data and MCMC samples
 ##' @author Philipp Boersch-Supan
 ##' @export
 de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
@@ -281,7 +280,6 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
 ##' @param samps current sample of the MCMC chain
 ##' @param s.p debinfer_par object representing the parameter that is to be proposed
 ##' @import stats
-##' @return
 ##' @author Philipp Boersch-Supan
 propose_single_rev<-function(samps, s.p)
 { ## I'm feeding in the variance, so I need to take the square root....
@@ -322,7 +320,6 @@ propose_single_rev<-function(samps, s.p)
 ##' @param s.p debinfer_par object representing the parameter that is to be proposed
 ##' @import stats
 ##' @import mvtnorm
-##' @return
 ##' @author Philipp Boersch-Supan
 propose_joint_rev<-function(samp, s.p){
 
@@ -365,7 +362,6 @@ propose_joint_rev<-function(samp, s.p){
 ##' @param hypers list of hyper parameters, named appropriately for the corresponding prior.pdf
 ##' @param prior.pdf string name of probability distribution following base R conventions, or those of additionally loaded packages
 ##' @import stats
-##' @return
 ##' @author Philipp Boersch-Supan
 prior_draw_rev<-function(b, hypers, prior.pdf){
     #assemble random number generator function name

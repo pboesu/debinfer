@@ -7,9 +7,9 @@
 propose_joint_rev(samp, s.p)
 }
 \arguments{
-\item{s.p}{debinfer_par object representing the parameter that is to be proposed}
+\item{samp}{current sample of the MCMC chain}
 
-\item{samps}{current sample of the MCMC chain}
+\item{s.p}{debinfer_par object representing the parameter that is to be proposed}
 }
 \description{
 joint proposal function

@@ -27,6 +27,7 @@ plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen',
 #' @param trend logical, add loess smooth
 #' @param scatter logical, add scatterplot of posterior samples
 #' @param burnin integer, number of samples to discard from start of chain before plotting
+#' @param ... further arguments to plot.default (the call that draws the scatter/contour plot)
 #' @import MASS
 #' @import RColorBrewer
 #' @importFrom graphics abline contour hist layout lines par plot plot.default points text
@@ -57,7 +58,7 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
   # Again, tweak accordingly
   for(i in 1:(np-1))
     for(j in (i+1):np){
-      plot(-1:1,-1:1, type = "n",xlab="",ylab="",xaxt="n",yaxt="n")
+      plot.default(-1:1,-1:1, type = "n",xlab="",ylab="",xaxt="n",yaxt="n")
       text(x=0,y=0,labels=paste(cors[i,j]),cex=2)
     }
 
@@ -75,9 +76,9 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
   for(i in 2:np)
     for(j in 1:(i-1)){
       if (scatter == TRUE){
-        plot.default(x$samples[,i],x$samples[,j], pch=16, cex=0.3, col='darkgrey')
+        plot.default(x$samples[,i],x$samples[,j], pch=16, cex=0.3, col='darkgrey', ...)
       } else {
-        plot.default(range(x$samples[,i]), range(x$samples[,j]), type = 'n')
+        plot.default(range(x$samples[,i]), range(x$samples[,j]), type = 'n', ...)
       }
       z <- MASS::kde2d(x$samples[,i],x$samples[,j], n=20)
       contour(z, drawlabels=FALSE, nlevels=k, col=my.cols, add=TRUE)

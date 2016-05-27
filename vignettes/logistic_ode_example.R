@@ -5,8 +5,8 @@
 #Load the devtools package.
 library(devtools)
 
-## ----install2------------------------------------------------------------
-install_github("pboesu/debinfer")
+## ----install2, eval=FALSE------------------------------------------------
+#  install_github("pboesu/debinfer")
 
 ## ----ode-def, message=FALSE,warning=FALSE--------------------------------
 library(deSolve)
@@ -45,9 +45,9 @@ lines(out)
 
 ## ----obs-model-----------------------------------------------------------
   # the observation model
-  logistic_obs_model<-function(data, sim.data, sds, samp){
+  logistic_obs_model<-function(data, sim.data, samp){
 
-    llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data$N + 1e-6), 
+    llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6), 
                        sdlog=exp(samp[['loglogsd.N']]), log=TRUE)
                 )
 
@@ -86,27 +86,26 @@ mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
   mcmc_samples <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model, 
                           obs.model=logistic_obs_model, all.params=mcmc.pars,
                           Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter, 
-                          burnin=0.1, plot=FALSE, sizestep=0.1, which=1)
+                          plot=FALSE, sizestep=0.1, which=1)
 
 
 ## ----message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8----------
 burnin = 1500
-pretty_pairs(mcmc_samples$samps[burnin:iter,], scatter=TRUE, trend=TRUE)
+pairs(mcmc_samples, burnin = burnin, scatter=TRUE, trend=TRUE)
 
 library(coda)
-coda.samples <- as.mcmc(mcmc_samples$samps[burnin:iter,])
-plot(coda.samples)
-summary(coda.samples)
+plot(mcmc_samples$samples)
+summary(mcmc_samples$samples)
 #plot(N_obs$time,N_obs$N_noisy)
 
-posterior.mean.sim <- solve_de(logistic_model, params=c(r=mean(mcmc_samples$samps$r[burnin:iter]),K=mean(mcmc_samples$samps$K[burnin:iter])), Tmax=max(N_obs$time), inits=c(N=0.1))
+posterior.mean.sim <- solve_de(logistic_model, params=c(r=mean(mcmc_samples$samples[,"r"][burnin:iter]),K=mean(mcmc_samples$samples[,"K"][burnin:iter])), Tmax=max(N_obs$time), inits=c(N=0.1))
 plot(posterior.mean.sim)
 points(N_obs$time,N_obs$N_noisy)
 
 ## ------------------------------------------------------------------------
 library(plyr)
-simlist <- llply(sample(nrow(mcmc_samples$samps[burnin:iter,]), 1000),
-                 function(x)solve_de(logistic_model, mcmc_samples$samps[burnin:iter,][x,],
+simlist <- llply(sample(nrow(mcmc_samples$samples[burnin:iter,]), 1000),
+                 function(x)solve_de(logistic_model, mcmc_samples$samples[burnin:iter,][x,],
                                      inits=c(N = 0.1), Tmax=120, numsteps=100))
 
 sima <- simplify2array(simlist)

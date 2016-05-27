@@ -13,6 +13,10 @@
 \item{trend}{logical, add loess smooth}
 
 \item{scatter}{logical, add scatterplot of posterior samples}
+
+\item{burnin}{integer, number of samples to discard from start of chain before plotting}
+
+\item{...}{further arguments to plot.default (the call that draws the scatter/contour plot)}
 }
 \description{
 Plots pairwise correlations of posterior marginals

@@ -24,6 +24,8 @@ update_sample_rev(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
 
 \item{sizestep}{sizestep for solver when not using data.times}
 
+\item{data.times}{times with observations}
+
 \item{l}{number of parameters to be proposed}
 
 \item{which}{solver choice}
@@ -31,6 +33,14 @@ update_sample_rev(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
 \item{i}{current MCMC iteration}
 
 \item{cnt}{interval for printing/plotting information on chains}
+
+\item{obs.model}{function containing obs model}
+
+\item{pdfs}{names of prior pdfs}
+
+\item{hyper}{list of hyperparameters}
+
+\item{w.p}{names of free parameters}
 
 \item{...}{further arguments to solver}
 }
