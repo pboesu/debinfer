@@ -290,23 +290,22 @@ propose_single_rev<-function(samps, s.p)
   type<-s.p$samp.type
   hyps<-s.p$hypers
 
-  if(type=="rw"){
-    if(length(var)>1){#this silently switches to uniform proposals when the proposal variance is a two-element vector. this should be handled by a different sampler-type
+  if(type=="rw-unif"){
       l<-var[1]
       h<-var[2]
       b.new<-runif(1, l/h*b, h/l*b)
       lfwd<-dunif(b.new, l/h*b, h/l*b, log=TRUE)
       lbak<-dunif(b, l/h*b.new, h/l*b.new, log=TRUE)
+      return(list(b=b.new, lfwd=lfwd, lbak=lbak))
     }
-    else{
+  if(type=="rw"){
       sd<-sqrt(var)
       b.new<-rnorm(1, b, sd=sd)
       lfwd<-dnorm(b.new, b, sd=sd, log=TRUE)
       lbak<-dnorm(b, b.new, sd=sd, log=TRUE)
+      return(list(b=b.new, lfwd=lfwd, lbak=lbak))
     }
-    return(list(b=b.new, lfwd=lfwd, lbak=lbak))
-  }
-  else if(type=="ind"){
+ if(type=="ind"){
     out<-prior_draw_rev(b, hyps, s.p$prior)
     return(out)
   }

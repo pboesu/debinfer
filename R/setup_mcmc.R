@@ -66,8 +66,9 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
   if(!is.numeric(value)) stop("value must be numeric")
   if(!fixed & (is.null(prior) | is.null(hypers) | is.null(prop.var) | is.null(samp.type))) stop("free parameters require a specification of prior, hypers, prop.var and samp.type")
   if(fixed & !(is.null(prior) | is.null(hypers) | is.null(prop.var) | is.null(samp.type))) warning(paste(name, "is treated as a fixed parameters. Ignoring prior, hypers, prop.var and samp.type specification."))
-  if(!fixed) if(!samp.type %in% c("rw","ind")) stop('samp.type must be one of c("rw","ind)')
-  if(!fixed) if(!is.numeric(prop.var) | prop.var < 0) stop("prop.var must be a numeric > 0")
+  if(!fixed) if(!samp.type %in% c("rw", "rw-unif","ind")) stop('samp.type must be one of c("rw", "rw-unif","ind)')
+  if(!fixed) if(samp.type == "rw") if(!is.numeric(prop.var) | prop.var < 0 | length(prop.var)!=1) stop("prop.var must be a numeric > 0 of length 1 for sampler type 'rw'")
+  if(!fixed) if(samp.type == "rw-unif") if(!is.numeric(prop.var) | prop.var < 0 | length(prop.var)!=2) stop("prop.var must be a numeric > 0 of length 2 for sampler type 'rw-unif'")
   #checks for prior and hypers?
   if(!is.null(joint)) stop("joint proposals are not yet implemented")
 
