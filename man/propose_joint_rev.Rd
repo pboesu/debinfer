@@ -4,10 +4,10 @@
 \alias{propose_joint_rev}
 \title{propose_joint}
 \usage{
-propose_joint_rev(samp, s.p)
+propose_joint_rev(samps, s.p)
 }
 \arguments{
-\item{samp}{current sample of the MCMC chain}
+\item{samps}{current sample of the MCMC chain}
 
 \item{s.p}{debinfer_par object representing the parameter that is to be proposed}
 }

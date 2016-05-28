@@ -1,4 +1,6 @@
-#' Spore counts of the chytrid fungus
+#' Chytrid fungus data set
+#'
+#' Spore counts of the chytrid fungus \emph{Batrachochytrium dendrobatidis}. This dataset contains a small portion of the observations underlying the experimental study conducted by Voyles et al. (2012).
 #'
 #' @name chytrid
 #' @docType data

@@ -7,6 +7,7 @@
 ##'
 ##' @title de_mcmc
 ##' @import coda
+##' @import PBSddesolve
 ##' @param N integer, number of MCMC iterations
 ##' @param data data.frame observations to fit the model to
 ##' @param all.params debinfer_parlist containing all model, MCMC, and observation
@@ -316,28 +317,28 @@ propose_single_rev<-function(samps, s.p)
 ##'
 ##' Function to jointly propose parameters using a multivariate normal proposal distribution
 ##' @title propose_joint
-##' @param samp current sample of the MCMC chain
+##' @param samps current sample of the MCMC chain
 ##' @param s.p debinfer_par object representing the parameter that is to be proposed
 ##' @import stats
 ##' @import mvtnorm
 ##' @author Philipp Boersch-Supan
-propose_joint_rev<-function(samp, s.p){
+propose_joint_rev<-function(samps, s.p){
 
 
   b<-NULL
-  if(samp.p$type=="rw"){
-    b<-as.numeric(samp[samp.p$params])
-    sigma<-samp.p$var
+  if(s.p$type=="rw"){
+    b<-as.numeric(samps[s.p$params])
+    sigma<-s.p$var
 
     b.new<-rmvnorm(1, mean=b, sigma=sigma)
     lfwd<-dmvnorm(b.new, b, sigma, log=TRUE)
     lbak<-dmvnorm(b, b.new, sigma, log=TRUE)
   }
-  else if(samp.p$type=="ind"){
-    if(is.null(samp.p$mean)) stop("not enough info for the independence sampler")
-    mean<-as.numeric(samp.p$mean)
-    b<-as.numeric(samp[samp.p$params])
-    sigma<-samp.p$var
+  else if(s.p$type=="ind"){
+    if(is.null(s.p$mean)) stop("not enough info for the independence sampler")
+    mean<-as.numeric(s.p$mean)
+    b<-as.numeric(samps[s.p$params])
+    sigma<-s.p$var
 
     b.new<-rmvnorm(1, mean=mean, sigma=sigma)
     lfwd<-dmvnorm(b.new, mean, sigma, log=TRUE)

@@ -4,18 +4,23 @@
 \alias{post_prior_densplot}
 \title{Plot posterior marginals and corresponding priors}
 \usage{
-post_prior_densplot(result, burnin = NULL, prior.range = "post", ...)
+post_prior_densplot(result, param = "all", burnin = NULL,
+  prior.col = "red", n = 1000, ...)
 }
 \arguments{
 \item{result}{a deBInfer_result object}
 
+\item{param}{character, name of parameter to plot. "all" (default) plots all parameters}
+
 \item{burnin}{numeric, number of samples to discard before plotting}
 
-\item{prior.range}{character, range to calculate prior density "xlim" plot limits; "post" posterior range (default) #this should be a function on a single parameter, then a corresponding method for all pars, also need smarter way of feeding in xlims separately for each par}
+\item{prior.col}{character color for prior density}
+
+\item{n, }{integer, number of points at which to evaluate the prior density.}
 
 \item{...}{further arguments to coda::densplot}
 }
 \description{
-Plots posterior densities and the densities of the corresponding priors
+Plots posterior densities and the densities of the corresponding priors. The prior density is automatically evaluated for the range given by the x-axis limits of the plot (which defaults to the posterior support).
 }
 

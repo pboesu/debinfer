@@ -27,7 +27,7 @@ CSZ.dde<-function(t,y,p){
   lag1<-lag2<-0
 
   if (t>Tmin){
-    lag1<-pastvalue(t-Tmin)
+    lag1<-PBSddesolve::pastvalue(t-Tmin)
     Rs <- sr*fs*lag1[1]
   }
 
@@ -90,7 +90,6 @@ CSZ.dede<-function(t,y,p){
 
 
 ## ----data, echo=FALSE----------------------------------------------------
-library(deBInfer)
 #load chytrid data
 data(chytrid)
 #knitr::kable(chytrid, caption='Replicated counts of chytrid fungus zoospores')
@@ -98,7 +97,7 @@ plot(chytrid, xlab='Time (days)', ylab='Zoospores x 10e4', xlim=c(0,10))
 
 ## ----obs-model-----------------------------------------------------------
 ## observation model
-chytrid_obs_model<-function(data, sim.data, sds, samp){
+chytrid_obs_model<-function(data, sim.data, samp){
 
   #z.temp<-sim.data$Z
 
@@ -149,24 +148,19 @@ mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
 ## ----deBinfer, results="hide"--------------------------------------------
 # do inference with deBInfer
 # MCMC iterations
-iter = 5000
+iter = 2000
 # inference call
 dde_plot <- microbenchmark::microbenchmark(
-dde_old = de_mcmc(N = iter, data=chytrid, de.model=CSZ.dde,
-                        obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                        Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                        burnin=0.1, plot=TRUE, sizestep=0.1, which=2, verbose = TRUE),
 
-
-dde_rev = de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dde,
+dde_rev = de_mcmc(N = iter, data=chytrid, de.model=CSZ.dde,
                       obs.model=chytrid_obs_model, all.params=mcmc.pars,
                       Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                      burnin=0.1, plot=TRUE, sizestep=0.1, which=2, verbose = TRUE),
+                      plot=TRUE, sizestep=0.1, which=2, verbose = TRUE),
 
-dede_rev <- de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dede,
+dede_rev <- de_mcmc(N = iter, data=chytrid, de.model=CSZ.dede,
                                obs.model=chytrid_obs_model, all.params=mcmc.pars,
                                Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                               burnin=0.1, plot=TRUE, sizestep=0.1, which="dede", verbose = TRUE),
+                               plot=FALSE, sizestep=0.1, which="dede", verbose = TRUE),
 times = 10)
 
 dde_noplot <- microbenchmark::microbenchmark(

@@ -1,23 +1,7 @@
-##traceplot for multiple chains
-#obsolete when using plot.mcmc.list
-plot_chains <- function(chains, nrow, ncol, cols = c('orange','red','darkgreen','cornflowerblue')){
-  nch = length(chains)
-  np = ncol(chains[[1]]$samps)
-  if(nrow*ncol < np) stop("more parameters than plot can fit")
-  w.p = names(chains[[1]]$samps)
-  ranges = apply(do.call('rbind', (do.call('rbind', chains))), 2, range)
-  par(mfrow = c(nrow, ncol))
-  for (p in 1:np){
-    plot(chains[[1]]$samps[,p], col = cols[1], main = w.p[p], type = 'l', ylim = ranges[,p])
-    for (i in 2:nch){
-      lines(chains[[i]]$samps[,p], col = cols[i], main = w.p[i])
-    }
-  }
-}
+
 
 ### pairwise plot of marginal densities
 ### code following a stackexchange example
-## check out the function in rethinking
 
 #' Pairwise posterior marginals
 #'
@@ -96,42 +80,55 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
 
 #' Plot posterior marginals and corresponding priors
 #'
-#' Plots posterior densities and the densities of the corresponding priors
+#' Plots posterior densities and the densities of the corresponding priors. The prior density is automatically evaluated for the range given by the x-axis limits of the plot (which defaults to the posterior support).
 #'
 #' @param result a deBInfer_result object
 #' @param burnin numeric, number of samples to discard before plotting
-#' @param prior.range character, range to calculate prior density "xlim" plot limits; "post" posterior range (default) #this should be a function on a single parameter, then a corresponding method for all pars, also need smarter way of feeding in xlims separately for each par
+#' @param param character, name of parameter to plot. "all" (default) plots all parameters
+#' @param prior.col character color for prior density
+#' @param n, integer, number of points at which to evaluate the prior density.
 #' @param ... further arguments to coda::densplot
 #' @import coda
 #' @importFrom graphics abline contour hist layout lines par plot plot.default points text
 #' @importFrom grDevices n2mfrow
 #' @export
-post_prior_densplot <- function(result, burnin=NULL, prior.range="post", ...){
+post_prior_densplot <- function(result, param="all", burnin=NULL, prior.col="red", n=1000, ...){
   # store old par
   old.par <- par(no.readonly=TRUE)
   #remove burnin if supplied
   if(!is.null(burnin)) result$samples <- window(result$samples, burnin, nrow(result$samples))
-  #get number of parameters
-  n <- ncol(result$samples)
-  par(mfrow=n2mfrow(n))
-  for (i in colnames(result$samples)){
+  if (param=="all"){
+    #get number of parameters
+    nplots <- ncol(result$samples)
+    par(mfrow=n2mfrow(nplots))
+    for (i in colnames(result$samples)){
+      #plot posterior density
+      coda::densplot(result$samples[,i],..., main = i)
 
-    #construct prior densities
-    dprior <- paste("d", result$all.params[[i]]$prior, sep="")
-    if (prior.range=="post"){
-      coda::densplot(result$samples[,i],...)
-      post.range <- seq(min(result$samples[,i]), max(result$samples[,i]), length.out = 100)
-      prior.dens <- do.call(dprior, c(list(x=post.range), result$all.params[[i]]$hypers))
-      lines(post.range, prior.dens, col="red")
-    } else {
-      if (prior.range=="xlim"){ #get xlim from ellipsis??
-        coda::densplot(result$samples[,i], ...)
-        post.range <- seq(min(xlim), max(xlim), length.out = 100)
-        prior.dens <- do.call(dprior, c(list(x=post.range), result$all.params[[i]]$hypers))
-        lines(post.range, prior.dens, col="red")
+      #construct prior densities
+      dprior <- paste("d", result$all.params[[i]]$prior, sep="")
+      #get x range form plot
+      plot.range <- seq(par("usr")[1], par("usr")[2], length.out = n)
+      #evaluate prior
+      prior.dens <- do.call(dprior, c(list(x=plot.range), result$all.params[[i]]$hypers))
+      #plot
+      lines(plot.range, prior.dens, col=prior.col)
     }
-
-
+  } else {
+    if (any(colnames(result$samples) == param )){
+      i = param
+      #plot posterior density
+      coda::densplot(result$samples[,i],..., main = i)
+      #construct prior densities
+      dprior <- paste("d", result$all.params[[i]]$prior, sep="")
+      #get x range form plot
+      plot.range <- seq(par("usr")[1], par("usr")[2], length.out = n)
+      #evaluate prior
+      prior.dens <- do.call(dprior, c(list(x=plot.range), result$all.params[[i]]$hypers))
+      #plot
+      lines(plot.range, prior.dens, col=prior.col)
+    } else {
+      stop(paste(param, "is not a valid parameter name for this posterior sample."))
     }
   }
   # restore old par

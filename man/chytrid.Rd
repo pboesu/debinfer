@@ -3,9 +3,9 @@
 \docType{data}
 \name{chytrid}
 \alias{chytrid}
-\title{Spore counts of the chytrid fungus}
+\title{Chytrid fungus data set}
 \description{
-Spore counts of the chytrid fungus
+Spore counts of the chytrid fungus \emph{Batrachochytrium dendrobatidis}. This dataset contains a small portion of the observations underlying the experimental study conducted by Voyles et al. (2012).
 }
 \author{
 Philipp Boersch-Supan
