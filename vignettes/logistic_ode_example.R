@@ -1,35 +1,14 @@
----
-title: "deBInfer logistic ODE example"
-author: "Philipp H Boersch-Supan"
-date: "`r Sys.Date()`"
-output: pdf_document
-vignette: >
-  %\VignetteIndexEntry{Logistic ODE example}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
+## ----install1, eval=FALSE------------------------------------------------
+#  install.packages("devtools")
 
-#Preliminaries
-
-First we install the deBInfer package. For this you need to install and load the devtools package first. You can do this from CRAN.
-```{r install1, eval=FALSE}
-install.packages("devtools")
-```
-```{r install1b}
+## ----install1b-----------------------------------------------------------
 #Load the devtools package.
 library(devtools)
-```
 
-Then you install deBInfer from github
-```{r install2, eval=FALSE}
-install_github("pboesu/debinfer")
-```
+## ----install2, eval=FALSE------------------------------------------------
+#  install_github("pboesu/debinfer")
 
-#Defining the DE model
-
-We define a logistic growth ODE for deSolve.
-
-```{r ode-def, message=FALSE,warning=FALSE}
+## ----ode-def, message=FALSE,warning=FALSE--------------------------------
 library(deSolve)
 logistic_model <- function (time, y, parms) {
 with(as.list(c(y, parms)), {
@@ -41,24 +20,16 @@ y <- c(N = 0.1)
 parms <- c(r = 0.1, K = 10)
 times <- seq(0, 120, 1)
 out <- ode(y, times, logistic_model, parms, method='lsoda')
-```
 
-Which gives us the numerical solution
-
-```{r, echo=FALSE}
+## ---- echo=FALSE---------------------------------------------------------
 plot(out)
-```
 
-#Simulationg observations
-Now we simulate a noisy dataset from this equation. We sample a random subset from the integration output 
-
-```{r}
+## ------------------------------------------------------------------------
 set.seed(143)
 N_obs <- as.data.frame(out[c(1,runif(35, 0, nrow(out))),]) #force include the first time-point (t=0)
 
-```
-and we "add" lognormal noise 
-```{r}
+
+## ------------------------------------------------------------------------
 # add lognormal noise
   parms['loglogsd.N'] <- -4.6
   N_obs$N_noisy <- rlnorm(nrow(N_obs), log(N_obs$N),exp(parms['loglogsd.N']))
@@ -71,12 +42,8 @@ points(N_obs$time, N_obs$N_noisy, col="red")
 out_obs <- ode(y, c(0,N_obs$time), logistic_model, parms, method='lsoda')
 plot(out_obs)
 lines(out)
-```
 
-#Defining an observation model and parameters for inference
-We define an observation model. Note that we are sampling the log of the observation standard deviation, to ensure sampled values are strictly positive.
-We also use an epsilon correction for the meanlog, as the DE model can return values of 0 (or even less due to numerical precision). 
-```{r obs-model}
+## ----obs-model-----------------------------------------------------------
   # the observation model
   logistic_obs_model<-function(data, sim.data, samp){
 
@@ -89,10 +56,8 @@ We also use an epsilon correction for the meanlog, as the DE model can return va
     return(llik)
   }
 
-```
 
-We declare the parameters for inference:
-```{r pars, results="hide", message=FALSE}
+## ----pars, results="hide", message=FALSE---------------------------------
 library(deBInfer)
 r <- debinfer_par(name = "r", var.type = "de", fixed = FALSE,
                 value = 0.5, prior="norm", hypers=list(mean = 0, sd = 1),
@@ -105,20 +70,22 @@ K <- debinfer_par(name = "K", var.type = "de", fixed = FALSE,
 loglogsd.N <- debinfer_par(name = "loglogsd.N", var.type = "obs", fixed = FALSE,
                 value = -2, prior="norm", hypers=list(mean = 0, sd = 1),
                 prop.var=0.5, samp.type="rw")
-```
 
-and we also need to provide an initial condition for the differential equation:
-```{r inits}
+## ----pars2---------------------------------------------------------------
+#we could also use  asymmetric uniform proposals to ensure only positive values of sd.N are sampled
+
+sd.Nunif <-  debinfer_par(name = "sd.N", var.type = "obs", fixed = FALSE,
+                value = 0.01, prior="norm", hypers=list(mean = 0, sd = 1),
+                prop.var=c(1,2), samp.type="rw-unif")
+
+
+## ----inits---------------------------------------------------------------
 N <- debinfer_par(name = "N", var.type = "init", fixed = TRUE, value = 0.1)
-```
-All declared parameters are collated using the setup_debinfer function
-```{r setup}
-mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
-```
 
-#Conduct inference
-Finally we use deBInfer to estimate the parameters of the original model.
-```{r deBinfer, results="hide"}
+## ----setup---------------------------------------------------------------
+mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
+
+## ----deBinfer, results="hide"--------------------------------------------
 # do inference with deBInfer
   # MCMC iterations
   iter = 5000
@@ -127,13 +94,9 @@ Finally we use deBInfer to estimate the parameters of the original model.
                           obs.model=logistic_obs_model, all.params=mcmc.pars,
                           Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter, 
                           plot=FALSE, sizestep=0.1, which=1)
-  
-  
 
-```
 
-We plot the results
-```{r message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8}
+## ----message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8----------
 burnin = 1500
 pairs(mcmc_samples, burnin = burnin, scatter=TRUE, trend=TRUE)
 
@@ -144,10 +107,8 @@ summary(mcmc_samples$samples)
 posterior.mean.sim <- solve_de(logistic_model, params=c(r=mean(mcmc_samples$samples[,"r"][burnin:iter]),K=mean(mcmc_samples$samples[,"K"][burnin:iter])), Tmax=max(N_obs$time), inits=c(N=0.1))
 plot(posterior.mean.sim)
 points(N_obs$time,N_obs$N_noisy)
-```
 
-Posterior credible interval (equal-tailed)
-```{r}
+## ------------------------------------------------------------------------
 library(plyr)
 simlist <- llply(sample(nrow(mcmc_samples$samples[burnin:iter,]), 1000),
                  function(x)solve_de(logistic_model, mcmc_samples$samples[burnin:iter,][x,],
@@ -168,42 +129,11 @@ for (p in 2:ncol(simlist[[1]])){
   }
   if (dimnames(simlist[[1]])[[2]][p] == "N") points(N_obs$time,N_obs$N_noisy)
 }
-```
 
-```{r}
+## ------------------------------------------------------------------------
 #str(out)
 #lines(posterior.mean.sim, ylim=c(0,15))
 
 #l_ply(simlist, function(x)  lines(x[,1], x[,2]))
 #lines(out[,1],out[,2], col='blue')
-```
 
-```{r pars2}
-#we could also use  asymmetric uniform proposals to ensure only positive values of logsd.N are sampled
-
-logsd.Nunif <-  debinfer_par(name = "logsd.N", var.type = "obs", fixed = FALSE,
-                value = 0.01, prior="norm", hypers=list(mean = 0, sd = 1),
-                prop.var=c(1,2), samp.type="rw-unif")
-
-#in that case we need to adjust the observation model slightly
-
-# the observation model
-  logistic_obs_model_unif<-function(data, sim.data, samp){
-
-    llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6), 
-                       sdlog=samp[['logsd.N']], log=TRUE)
-                )
-
-    llik<-llik.N
-
-    return(llik)
-  }
-  
-  mcmc.pars_unif <- setup_debinfer(r, K, logsd.Nunif, N)
-  
-  mcmc_samples_unif <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model, 
-                          obs.model=logistic_obs_model_unif, all.params=mcmc.pars_unif,
-                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 10, 
-                          plot=TRUE, sizestep=0.1, which=1)
-
-```

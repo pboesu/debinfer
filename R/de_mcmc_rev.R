@@ -211,7 +211,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
     }
 
     ## automatically reject if the proposed parameter value is
-    ## outside of the reasonable limits (i.e. < 0 ) replace with prior support
+    ## outside of the prior support
 #     zeros<-0
 #     zeros<-check.zeros(samp.p[[k]], q$b)
 #     if(zeros){
