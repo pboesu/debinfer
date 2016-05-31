@@ -121,7 +121,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
     out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, inits = inits, out = out,
                        Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, which=which, i=i, cnt=cnt, w.p = w.p,
-                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, ...)
+                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose = verbose, ...)
     samps[i,] <- out$s #make sure order is matched
 #     if(test){
 #       if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
@@ -179,11 +179,12 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param pdfs names of prior pdfs
 ##' @param hyper list of hyperparameters
 ##' @param w.p names of free parameters
+##' @param verbose logical, print additional information from sampler
 ##' @param ... further arguments to solver
 ##' @export
 ##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
-                        data.times, l, which, i, cnt, obs.model, pdfs, hyper, w.p, ...)
+                        data.times, l, which, i, cnt, obs.model, pdfs, hyper, w.p, verbose, ...)
 {
   ## read in some bits
   s<-samps
@@ -205,66 +206,62 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
       ##print(paste(s.p$params, " proposing single ", sep=" "))
       q<-propose_single_rev(samps = s, s.p = samp.p[[k]])
     }
-    else{
+    else {
       ##print(paste(s.p$params, " proposing jointly ", sep=" "))
       q<-propose_joint_rev(samps = s, s.p = samp.p[[k]])
     }
 
     ## automatically reject if the proposed parameter value is
     ## outside of the prior support
-#     zeros<-0
-#     zeros<-check.zeros(samp.p[[k]], q$b)
-#     if(zeros){
-#       if(length(samp.p[[k]]$params)>=2){
-#         print("proposed one of the joint params outside of the range. Moving on.")
-#       }
-#       else print(paste("proposed ", samp.p[[k]]$params, " outside of the range. moving on", sep=""))
-#       next
-#     }
-    ## write the proposed params into the p.new and s.new.
+    qprior <- logd_prior(q$b, pdfs[[k]], hypers=hyper[[k]])
+    if (is.finite(qprior)){
+      ## write the proposed params into the p.new and s.new.
 
-    #for(j in 1:length(samp.p[[k]]$name)){#this will need to be able to handle joint proposals
-      ww<-samp.p[[k]]$name
-      p.new[ww]<-s.new[ww]<-q$b#[j]
-    #}
+      #for(j in 1:length(samp.p[[k]]$name)){#this will need to be able to handle joint proposals
+        ww<-samp.p[[k]]$name
+        p.new[ww]<-s.new[ww]<-q$b#[j]
+      #}
 
-    ## simulate the dynamics forward with the new parameters, but only if parameter in question is not an observation parameter
-    if (samp.p[[k]]$var.type == "obs"){
-      sim.new <- sim.old #keep using last available de solution
-    } else { #compute new solution
-     sim.new<-solve_de(sim = sim , params = p.new, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
-    }
+      ## simulate the dynamics forward with the new parameters, but only if parameter in question is not an observation parameter
+      if (samp.p[[k]]$var.type == "obs"){
+        sim.new <- sim.old #keep using last available de solution
+      } else { #compute new solution
+       sim.new<-solve_de(sim = sim , params = p.new, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
+      }
 
 
 
-    ## The posteriorprob of the previous sample is saved as
-    ## s$lpost. If we accept a draw, we will set s$lpost<-s.new$lpost
-    s.new["lpost"] <- log_post_params(samp = s.new, data = data, sim.data = sim.new, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
+      ## The posteriorprob of the previous sample is saved as
+      ## s$lpost. If we accept a draw, we will set s$lpost<-s.new$lpost
+      s.new["lpost"] <- log_post_params(samp = s.new, data = data, sim.data = sim.new, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
 
-    if(is.finite(s.new["lpost"]) && is.finite(s["lpost"])){
-      A<-exp( s.new["lpost"] + q$lbak - s["lpost"] - q$lfwd )
-    }
-    else{
+      if(is.finite(s.new["lpost"]) && is.finite(s["lpost"])){
+        A<-exp( s.new["lpost"] + q$lbak - s["lpost"] - q$lfwd )
+      } else {
+        A<-0
+        if (verbose) print("posterior not finite")
+      }
+    } else {
       A<-0
-      print("whoops! must have proposed outside the correct region")
+      if (verbose) print("proposal outside prior support")
     }
 
-    ## print some output so we can follow the progress
-    if(i%%cnt==0){
-      print(paste("proposing " , samp.p[[k]]$name, ": prob.old = ",
-                  signif(s["lpost"], digits=5),
-                  "; prob.new = ", signif(s.new["lpost"], digits=5), "; A = ",
-                  signif(A, digits=5),
-                  sep=""))
-    }
+      ## print some output so we can follow the progress
+      if(i%%cnt==0){
+        print(paste("proposing " , samp.p[[k]]$name, ": prob.old = ",
+                    signif(s["lpost"], digits=5),
+                    "; prob.new = ", signif(s.new["lpost"], digits=5), "; A = ",
+                    signif(A, digits=5),
+                    sep=""))
+      }
 
-    ## take a draw from a unif distrib, and use it to accept/reject
-    u<-runif(1)
-    if( u < A ){ ## accept
-      sim.old<-sim.new
-      p<-p.new
-      s<-s.new
-    }
+      ## take a draw from a unif distrib, and use it to accept/reject
+      u<-runif(1)
+      if( u < A ){ ## accept
+        sim.old<-sim.new
+        p<-p.new
+        s<-s.new
+      }
   }
 
   return(list(s=s, p=p, sim.old=sim.old))
