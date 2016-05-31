@@ -239,11 +239,11 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
         A<-exp( s.new["lpost"] + q$lbak - s["lpost"] - q$lfwd )
       } else {
         A<-0
-        if (verbose) print("posterior not finite")
+        if (verbose) print(paste("posterior not finite for proposal", samp.p[[k]]$name,"=",q$b ))
       }
     } else {
       A<-0
-      if (verbose) print("proposal outside prior support")
+      if (verbose) print(paste("proposal outside prior support for", samp.p[[k]]$name,"=",q$b))
     }
 
       ## print some output so we can follow the progress
