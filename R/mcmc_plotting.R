@@ -93,11 +93,12 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
 #' @importFrom grDevices n2mfrow
 #' @export
 post_prior_densplot <- function(result, param="all", burnin=NULL, prior.col="red", n=1000, ...){
-  # store old par
-  old.par <- par(no.readonly=TRUE)
+
   #remove burnin if supplied
   if(!is.null(burnin)) result$samples <- window(result$samples, burnin, nrow(result$samples))
   if (param=="all"){
+    # store old par
+    old.par <- par(no.readonly=TRUE)
     #get number of parameters
     nplots <- ncol(result$samples)
     par(mfrow=n2mfrow(nplots))
@@ -114,11 +115,13 @@ post_prior_densplot <- function(result, param="all", burnin=NULL, prior.col="red
       #plot
       lines(plot.range, prior.dens, col=prior.col)
     }
+    # restore old par
+    par(old.par)
   } else {
     if (any(colnames(result$samples) == param )){
       i = param
       #plot posterior density
-      coda::densplot(result$samples[,i],..., main = i)
+      coda::densplot(result$samples[,i],...)
       #construct prior densities
       dprior <- paste("d", result$all.params[[i]]$prior, sep="")
       #get x range form plot
@@ -131,6 +134,4 @@ post_prior_densplot <- function(result, param="all", burnin=NULL, prior.col="red
       stop(paste(param, "is not a valid parameter name for this posterior sample."))
     }
   }
-  # restore old par
-  par(old.par)
 }
