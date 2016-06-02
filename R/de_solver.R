@@ -56,7 +56,27 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 
 
 
+#' post_sim
+#'
+#' @import deSolve
+#' @import PBSddesolve
+#' @param x debinfer_result object
+#' @param n number of simulations
+#' @param output character, "median", "mult", hdi
+#' @param times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
+#' @param ... additional arguments to solver
+#'
+#'
+#' @return integrated ode - describe structure
+#'
+#'
+#' @examples example
+#' @export
+solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
+                   which=1, sizestep=NULL, verbose=FALSE, data.times=NULL, method = "lsoda", ...)
+{
 
+}
 
 
 

@@ -47,8 +47,8 @@ lines(out)
   # the observation model
   logistic_obs_model<-function(data, sim.data, samp){
 
-    llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6), 
-                       sdlog=exp(samp[['loglogsd.N']]), log=TRUE)
+    llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6),
+                       sdlog=(samp[['loglogsd.N']]), log=TRUE)
                 )
 
     llik<-llik.N
@@ -64,20 +64,12 @@ r <- debinfer_par(name = "r", var.type = "de", fixed = FALSE,
                 prop.var=0.005, samp.type="rw")
 
 K <- debinfer_par(name = "K", var.type = "de", fixed = FALSE,
-                value = 5, prior="lnorm", hypers=list(meanlog = 1, sdlog = 1),
+                value = 1, prior="lnorm", hypers=list(meanlog = 1, sdlog = 1),
                 prop.var=0.1, samp.type="rw")
 
 loglogsd.N <- debinfer_par(name = "loglogsd.N", var.type = "obs", fixed = FALSE,
-                value = -2, prior="norm", hypers=list(mean = 0, sd = 1),
-                prop.var=0.5, samp.type="rw")
-
-## ----pars2---------------------------------------------------------------
-#we could also use  asymmetric uniform proposals to ensure only positive values of sd.N are sampled
-
-sd.Nunif <-  debinfer_par(name = "sd.N", var.type = "obs", fixed = FALSE,
-                value = 0.01, prior="norm", hypers=list(mean = 0, sd = 1),
-                prop.var=c(1,2), samp.type="rw-unif")
-
+                value = 0.005, prior="lnorm", hypers=list(mean = 1, sd = 1),
+                prop.var=0.1, samp.type="rw")
 
 ## ----inits---------------------------------------------------------------
 N <- debinfer_par(name = "N", var.type = "init", fixed = TRUE, value = 0.1)
@@ -90,10 +82,12 @@ mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
   # MCMC iterations
   iter = 5000
   # inference call
-  mcmc_samples <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model, 
+  mcmc_samples <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model,
                           obs.model=logistic_obs_model, all.params=mcmc.pars,
-                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter, 
-                          plot=FALSE, sizestep=0.1, which=1)
+                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=100,
+                          plot=TRUE, sizestep=0.1, which=1, verbose=TRUE)
+
+
 
 
 ## ----message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8----------
@@ -136,4 +130,33 @@ for (p in 2:ncol(simlist[[1]])){
 
 #l_ply(simlist, function(x)  lines(x[,1], x[,2]))
 #lines(out[,1],out[,2], col='blue')
+
+## ----pars2---------------------------------------------------------------
+#we could also use  asymmetric uniform proposals to ensure only positive values of logsd.N are sampled
+
+logsd.Nunif <-  debinfer_par(name = "logsd.N", var.type = "obs", fixed = FALSE,
+                value = 0.01, prior="norm", hypers=list(mean = 0, sd = 1),
+                prop.var=c(1,2), samp.type="rw-unif")
+
+#in that case we need to adjust the observation model slightly
+
+# the observation model
+  logistic_obs_model_unif<-function(data, sim.data, samp){
+
+    llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6),
+                       sdlog=samp[['logsd.N']], log=TRUE)
+                )
+
+    llik<-llik.N
+
+    return(llik)
+  }
+
+  mcmc.pars_unif <- setup_debinfer(r, K, logsd.Nunif, N)
+
+  mcmc_samples_unif <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model,
+                          obs.model=logistic_obs_model_unif, all.params=mcmc.pars_unif,
+                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 10,
+                          plot=TRUE, sizestep=0.1, which=1)
+
 
