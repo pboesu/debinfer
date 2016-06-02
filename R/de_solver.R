@@ -72,8 +72,7 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 #'
 #' @examples example
 #' @export
-post_sim<-function(result, n,
-                   sizestep=NULL, verbose=FALSE, data.times=NULL, method = "lsoda", ...)
+post_sim<-function(x, n, times, output, ...)
 {
 
 }

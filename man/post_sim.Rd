@@ -4,15 +4,14 @@
 \alias{post_sim}
 \title{post_sim}
 \usage{
-post_sim(result, n, sizestep = NULL, verbose = FALSE, data.times = NULL,
-  method = "lsoda", ...)
+post_sim(x, n, ...)
 }
 \arguments{
+\item{x}{debinfer_result object}
+
 \item{n}{number of simulations}
 
 \item{...}{additional arguments to solver}
-
-\item{x}{debinfer_result object}
 
 \item{output}{character, "median", "mult", hdi}
 
