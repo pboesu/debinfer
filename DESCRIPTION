@@ -1,17 +1,13 @@
 Package: deBInfer
 Type: Package
 Title: Bayesian Inference for Differential Equations
-Version: 0.2
-Date: 2016-04-22
+Version: 0.3
+Date: 2016-06-02
 Authors@R: c(
     person("Philipp H", "Boersch-Supan", email = "pboesu@gmail.com", role = c("aut","cre")),
     person("Leah R", "Johnson", email = "lrjohnson0@gmail.com", role = "aut"))
-Description: deBInfer implements a Bayesian framework for parameter inference in differential equations.
-    This approach offers a rigorous methodology for parameter inference as well as modeling the link between unobservable model states and parameters,
-    and observable quantities. deBInfer provides templates for the DE model, the observation model and data likelihood, and the model parameters and
-    their prior distributions. A Markov chain Monte Carlo (MCMC) procedure processes these inputs to estimate the posterior distributions of the
-    parameters and any derived quantities, including the model trajectories. Further functionality is provided to facilitate MCMC diagnostics and the
-    visualisation of the posterior distributions of model parameters and trajectories.
+Description: A Bayesian framework for parameter inference in differential equations.
+    This approach offers a rigorous methodology for parameter inference as well as modeling the link between unobservable model states and parameters, and observable quantities. deBInfer provides templates for the DE model, the observation model and data likelihood, and the model parameters and their prior distributions. A Markov chain Monte Carlo (MCMC) procedure processes these inputs to estimate the posterior distributions of the parameters and any derived quantities, including the model trajectories. Further functionality is provided to facilitate MCMC diagnostics and the visualisation of the posterior distributions of model parameters and trajectories.
 License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
