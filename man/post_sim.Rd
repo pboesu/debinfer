@@ -4,18 +4,18 @@
 \alias{post_sim}
 \title{post_sim}
 \usage{
-post_sim(x, n, ...)
+post_sim(x, n, times, output, ...)
 }
 \arguments{
 \item{x}{debinfer_result object}
 
 \item{n}{number of simulations}
 
-\item{...}{additional arguments to solver}
+\item{times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.}
 
 \item{output}{character, "median", "mult", hdi}
 
-\item{times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.}
+\item{...}{additional arguments to solver}
 }
 \value{
 integrated ode - describe structure
