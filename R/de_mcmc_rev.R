@@ -19,7 +19,7 @@
 ##' @param cnt integer interval at which to print and possibly plot information on the current state of the MCMC chain
 ##' @param plot logical, plot traces for all parameters at the interval defined by \code{cnt}
 ##' @param sizestep timestep for solver to return values at, only used if data.times is missing
-##' @param which the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde
+##' @param solver the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde
 ##' @param data.times time points for which observations are available
 ##' @param verbose logical
 ##' @param ... further arguments to the solver
@@ -28,7 +28,7 @@
 ##' @export
 de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
                               Tmax, data.times, cnt=10,
-                              plot=TRUE, sizestep=0.01, which=1,
+                              plot=TRUE, sizestep=0.01, solver="ode",
                               verbose =FALSE, ...)
 {
   p.names <- sapply(all.params, function(x) x$name)
@@ -75,7 +75,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   ## through ref.params
 
   if(!is.null(ref.params) && !is.null(ref.inits)){
-    sim.ref<-solve_de(sim = de.model, params = ref.params, inits = ref.inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
+    sim.ref<-solve_de(sim = de.model, params = ref.params, inits = ref.inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
     prob.ref<-log_post_params(samp = ref.params, data = data, sim.data = sim.ref, w.p = w.p, obs.model = obs.model, pdfs = pdfs, hyper = hyper)
     print(paste("(unnormalized) posterior probability of the reference parameters= ",
                 prob.ref, sep=""))
@@ -95,7 +95,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in p.
 
-  sim.start<-solve_de(sim = de.model, params = params, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
+  sim.start<-solve_de(sim = de.model, params = params, inits = inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
 
   ## check that solver provides simulation values for all observations
   if(!all(data.times %in% sim.start[,"time"])) stop("solver times do not cover all data times")
@@ -120,7 +120,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
     ## the meat of the MCMC is found in the function update.samps (see below)
 
     out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, inits = inits, out = out,
-                       Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, which=which, i=i, cnt=cnt, w.p = w.p,
+                       Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, solver=solver, i=i, cnt=cnt, w.p = w.p,
                        obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose = verbose, ...)
     samps[i,] <- out$s #make sure order is matched
 #     if(test){
@@ -140,7 +140,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   #make a data structure that returns all parts of the analysis
 #   function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
 #            Tmax, data.times, cnt=10, burnin=0.1,
-#            plot=TRUE, sizestep=0.01, which=1,
+#            plot=TRUE, sizestep=0.01, solver=1,
 #            myswitch=NULL,
 #            mymap=NULL, verbose =FALSE, ...)
   result <- list(
@@ -152,6 +152,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
     iter = N,
     data = data,
     samples = as.mcmc(samps[,w.p]),
+    solver = solver,
     lpost = samps[,"lpost"]
   )
   result <- structure(result, class="debinfer_result")
@@ -171,7 +172,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param Tmax maximum timestep for solver
 ##' @param sizestep sizestep for solver when not using data.times
 ##' @param l number of parameters to be proposed
-##' @param which solver choice
+##' @param solver solver choice
 ##' @param i current MCMC iteration
 ##' @param cnt interval for printing/plotting information on chains
 ##' @param data.times times with observations
@@ -184,7 +185,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @export
 ##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
-                        data.times, l, which, i, cnt, obs.model, pdfs, hyper, w.p, verbose, ...)
+                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose, ...)
 {
   ## read in some bits
   s<-samps
@@ -226,7 +227,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
       if (samp.p[[k]]$var.type == "obs"){
         sim.new <- sim.old #keep using last available de solution
       } else { #compute new solution
-       sim.new<-solve_de(sim = sim , params = p.new, inits = inits, Tmax = Tmax, which=which, sizestep = sizestep, data.times = data.times, ...)
+       sim.new<-solve_de(sim = sim , params = p.new, inits = inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
       }
 
 

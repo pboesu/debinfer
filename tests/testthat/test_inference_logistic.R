@@ -68,7 +68,7 @@ test_that("Inference on simulated data w/ known obs. error returns simulation pa
 
   mcmc_samples <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model, obs.model=logistic_obs_model, all.params=mcmc.pars,
                    Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter+1,
-                   plot=FALSE, sizestep=0.1, which=1)
+                   plot=FALSE, sizestep=0.1, solver=1)
   #add more tests here checking the integrity & contents of the returned data structure
   #check accuracy of estimation (threshold is 0.5% of true parameter value)
   expect_equal(unname(colMeans(mcmc_samples$samples[burnin:iter,])/parms),c(1,1,1),tolerance = 2e-2)

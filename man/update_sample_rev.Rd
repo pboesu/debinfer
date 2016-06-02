@@ -5,7 +5,7 @@
 \title{update_sample_rev}
 \usage{
 update_sample_rev(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
-  data.times, l, which, i, cnt, obs.model, pdfs, hyper, w.p, verbose, ...)
+  data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose, ...)
 }
 \arguments{
 \item{samps}{row vector of samples from the previous mcmc iteration}
@@ -28,7 +28,7 @@ update_sample_rev(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
 
 \item{l}{number of parameters to be proposed}
 
-\item{which}{solver choice}
+\item{solver}{solver choice}
 
 \item{i}{current MCMC iteration}
 

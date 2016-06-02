@@ -11,7 +11,7 @@
 #' @param inits numeric; initial values. Must be in the same order as specified within sim!
 #' @param Tmax numeric; maximum timestep
 #' @param numsteps numeric
-#' @param which Choice of solver to use 1 or "ode" = deSolve::ode, 2 or "dde" = PBSddesolve::dde, 3 or "dede" = deSolve::dede
+#' @param solver Choice of solver to use 1 or "ode" = deSolve::ode, 2 or "dde" = PBSddesolve::dde, 3 or "dede" = deSolve::dede
 #' @param sizestep for solver
 #' @param method solver method
 #' @param verbose passed to deSolve::ode
@@ -25,7 +25,7 @@
 #' @examples example
 #' @export
 solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
-                    which=1, sizestep=NULL, verbose=FALSE, data.times=NULL, method = "lsoda", ...){
+                    solver="ode", sizestep=NULL, verbose=FALSE, data.times=NULL, method = "lsoda", ...){
 
     if(!is.null(data.times)){
       #this is fragile. really the data should be in a class that ensures proper times, no missing data etc. pp. Also this now assumes observations at identical times for all observed variables.
@@ -35,16 +35,16 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
       if(is.null(numsteps))  times<- seq(0, Tmax, by=sizestep)
     }
 
-    if(which == 1 || which == "ode"){
+    if(solver == 1 || solver == "ode"){
     #require(deSolve)
     out<-ode(inits, times, sim, parms=params, verbose=verbose , method=method, ...)
   }
-  if(which == 2 || which == "dde"){
+  if(solver == 2 || solver == "dde"){
     #require(PBSddesolve)
     #on.exit(freeglobaldata())
     out<-PBSddesolve::dde(inits, times, sim, parms=params, ...)
   }
-  if(which == 3 || which == "dede"){
+  if(solver == 3 || solver == "dede"){
     #require(PBSddesolve)
     #on.exit(freeglobaldata())
     out <- dede(y=inits, times=times, func=sim, parms=params)
@@ -72,8 +72,8 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 #'
 #' @examples example
 #' @export
-solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
-                   which=1, sizestep=NULL, verbose=FALSE, data.times=NULL, method = "lsoda", ...)
+post_sim<-function(result, n,
+                   sizestep=NULL, verbose=FALSE, data.times=NULL, method = "lsoda", ...)
 {
 
 }

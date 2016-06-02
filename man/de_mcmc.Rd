@@ -6,7 +6,7 @@
 \usage{
 de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
   ref.inits = NULL, Tmax, data.times, cnt = 10, plot = TRUE,
-  sizestep = 0.01, which = 1, verbose = FALSE, ...)
+  sizestep = 0.01, solver = "ode", verbose = FALSE, ...)
 }
 \arguments{
 \item{N}{integer, number of MCMC iterations}
@@ -33,7 +33,7 @@ de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
 
 \item{sizestep}{timestep for solver to return values at, only used if data.times is missing}
 
-\item{which}{the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde}
+\item{solver}{the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde}
 
 \item{verbose}{logical}
 
