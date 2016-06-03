@@ -5,7 +5,7 @@
 \title{Pairwise posterior marginals}
 \usage{
 \method{pairs}{debinfer_result}(x, trend = FALSE, scatter = FALSE,
-  burnin = NULL, ...)
+  burnin = NULL, medians = TRUE, ...)
 }
 \arguments{
 \item{x}{a deBInfer_result object}
@@ -15,6 +15,8 @@
 \item{scatter}{logical, add scatterplot of posterior samples}
 
 \item{burnin}{integer, number of samples to discard from start of chain before plotting}
+
+\item{medians}{logical, plot marginal medians on contour plot}
 
 \item{...}{further arguments to plot.default (the call that draws the scatter/contour plot)}
 }

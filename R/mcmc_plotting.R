@@ -11,13 +11,14 @@
 #' @param trend logical, add loess smooth
 #' @param scatter logical, add scatterplot of posterior samples
 #' @param burnin integer, number of samples to discard from start of chain before plotting
+#' @param medians logical, plot marginal medians on contour plot
 #' @param ... further arguments to plot.default (the call that draws the scatter/contour plot)
 #' @import MASS
 #' @import RColorBrewer
 #' @importFrom graphics abline contour hist layout lines par plot plot.default points text
 #' @import stats
 #' @export
-pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL, ...){
+pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL, medians=TRUE, ...){
   if(!is.null(burnin)) x$samples <- window(x$samples, burnin, nrow(x$samples))
   np = ncol(x$samples)
   cors<-round(cor(x$samples),2) #correlations
@@ -66,7 +67,7 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
       }
       z <- MASS::kde2d(x$samples[,i],x$samples[,j], n=20)
       contour(z, drawlabels=FALSE, nlevels=k, col=my.cols, add=TRUE)
-      abline(h=mean(x$samples[,j]), v=mean(x$samples[,i]), lwd=2, lty = 2)
+      if (medians) abline(h=median(x$samples[,j]), v=median(x$samples[,i]), lwd=2, lty = 2)
       if (trend == TRUE) {
         rows <- sample(nrow(x$samples), ceiling(0.05*nrow(x$samples)))
         loess_fit <- loess(x$samples[rows,j] ~ x$samples[rows,i])
@@ -135,3 +136,19 @@ post_prior_densplot <- function(result, param="all", burnin=NULL, prior.col="red
     }
   }
 }
+
+#' Plot inference outputs
+#'
+#' Plots the inference results from a debinfer_result object
+#'
+#' @param x a deBInfer_result object
+#' @param plot.type character, which type of plot. Options are "coda" for coda::plot.mcmc, "post_prior" for deBInfer::post_prior_densplot.
+#' @param ... further arguments to methods
+#' @seealso \code{\link{post_prior_densplot}}, \code{\link[coda]{plot.mcmc}}, \code{\link{pairs.debinfer_result}}
+#' @import coda
+#' @export
+plot.debinfer_result <- function(x, plot.type="coda", ...){
+  if (plot.type=="coda") plot(x$samples, ...)
+  if (plot.type=="post_prior") post_prior_densplot(x, ...)
+  }
+
