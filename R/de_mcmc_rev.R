@@ -162,8 +162,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param samp.p the parlist created by setup_debinfer
 ##' @param data the observation
 ##' @param sim the de.model
-##' @param inits the initial values for the solver
-##' @param out list containing the initial or previous update i.e. list(s=samps[i-1,], p=params, sim.old=sim.start)
+##' @param out list containing the initial or previous update i.e. list(s=samps[i-1,], inits=inits, p=params, sim.old=sim.start)
 ##' @param Tmax maximum timestep for solver
 ##' @param sizestep sizestep for solver when not using data.times
 ##' @param l number of parameters to be proposed
