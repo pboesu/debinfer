@@ -36,7 +36,7 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
 
   # Draw histograms, tweak arguments of hist to make nicer figures
   for(i in 1:np)
-    hist(x$samples[,i],main=names(x$samples)[i])
+    hist(x$samples[,i],main=colnames(x$samples)[i])
 
   # Write correlations to upper diagonal part of the graph
   # Again, tweak accordingly
