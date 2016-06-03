@@ -23,11 +23,11 @@ Imports:
     mvtnorm,
     graphics,
     grDevices,
+    plyr,
     PBSddesolve
 Suggests:
     testthat,
     knitr,
     rmarkdown,
-    plyr,
     devtools
 VignetteBuilder: knitr

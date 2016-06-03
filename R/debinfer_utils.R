@@ -12,3 +12,63 @@
 summary.debinfer_result <- function(object, ...){
  summary(object$samples, ...)
 }
+
+#' is.debinfer_result
+#'
+#' Check debinfer_result class
+#'
+#' @param x an object
+#' @export
+is.debinfer_result <- function(x){
+  if (inherits(x, "debinfer_result")) TRUE
+  else FALSE
+}
+
+#' Get starting/fixed values of DE initial values
+#'
+#' Accessor function for initial values
+#'
+#' @param x a deBInfer_result object
+#' @return a named numeric vector
+#' @export
+deinits <- function(x){
+  if (is.debinfer_result(x)){
+    is.init <- sapply(x$all.params, function(x) x$var.type)=="init"
+    inits <- sapply(x$all.params, function(x) x$value)[is.init]
+    return(inits)
+  } else NULL
+}
+
+#' Get starting/fixed values of DE parameters
+#'
+#' Accessor function for parameters
+#'
+#' @param x a deBInfer_result object
+#' @return a named numeric vector
+#' @export
+depars <- function(x){
+  if (is.debinfer_result(x)){
+    is.depar <- sapply(x$all.params, function(x) x$var.type)=="de"
+    depars <- sapply(x$all.params, function(x) x$value)[is.depar]
+    return(depars)
+  } else NULL
+}
+
+
+#' Reshape posterior model solutions
+#'
+#' Take a list of DE model solutions and transform into a list of of matrices, one for each state variable, where each row is an iteration, and each column is a time point
+#'
+#' @param x a post_sim object
+#' @import plyr
+#' @export
+reshape_post_sim <- function(x){
+  if(!inherits(x, "post_sim")) stop("input not of class 'post_sim'")
+  out <- list()
+  out$time <- x[[1]][,'time']
+  for (i in 2:ncol(x[[1]])){
+    name <- colnames(x[[1]])[i]
+    out[[name]] <- plyr::laply(x, function(x) x[,i])
+  }
+  return(out)
+}

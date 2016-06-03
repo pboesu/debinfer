@@ -40,7 +40,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   names(p.start) = p.names[is.free]
   # get the parameters that are to be estimated
   w.p <- p.names[is.free]
-  #check what this is needed for, except for the "true" likelihood calculation
+  #this is needed for the reference likelihood calculation
   params <- unlist(lapply(all.params, function(x) x$value))
   names(params) <-  p.names
   #initial values for DE (no re-ordering!)
@@ -49,7 +49,6 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   #inits are matched by order in deSolve. inform user of input order
   print(paste("Order of initial conditions is ", names(inits)))
 
-  # sds <- NULL# is this obsolete if it is not used in the obs model?
   hyper = lapply(all.params, function(x) x$hyper)[is.free]
   names(hyper) <- p.names[is.free]
   pdfs = lapply(all.params, function(x) x$prior)[is.free]

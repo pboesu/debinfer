@@ -4,7 +4,8 @@
 \alias{post_sim}
 \title{post_sim}
 \usage{
-post_sim(x, n, times, output, ...)
+post_sim(x, n = 100, times, output = "all", burnin = NULL, prob = NULL,
+  ...)
 }
 \arguments{
 \item{x}{debinfer_result object}
@@ -14,6 +15,10 @@ post_sim(x, n, times, output, ...)
 \item{times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.}
 
 \item{output}{character, "median", "mult", hdi}
+
+\item{burnin}{integer, number of samples to discard from the start of the mcmc chain}
+
+\item{prob}{numeric argument to HDPinterval}
 
 \item{...}{additional arguments to solver}
 }

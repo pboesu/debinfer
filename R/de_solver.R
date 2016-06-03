@@ -63,18 +63,45 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 #' @param x debinfer_result object
 #' @param n number of simulations
 #' @param output character, "median", "mult", hdi
+#' @param burnin integer, number of samples to discard from the start of the mcmc chain
 #' @param times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
+#' @param prob numeric argument to HDPinterval
 #' @param ... additional arguments to solver
-#'
-#'
 #' @return integrated ode - describe structure
 #'
-#'
+#' @import plyr
 #' @examples example
 #' @export
-post_sim<-function(x, n, times, output, ...)
+post_sim<-function(x, n=100, times, output='all', burnin=NULL, prob = NULL, ...)
 {
+#sample parameter values
+  if(!is.null(burnin)) x$samples <- window(x$samples, burnin, nrow(x$samples))
+  samps <- x$samples[sample(nrow(x$samples), size=n, replace=FALSE),]
+#a function to recombine inits and pars
+  restore_and_solve <- function(x, samp, times, ...){
+    params <- depars(x)
+    inits <- deinits(x)
+    #paste in sample values
+    for (i in names(samp)){
+      if (i %in% names(params)) params[i]<-samp[i]
+      if (i %in% names(inits)) inits[i]<-samp[i]
+    }
+    #solve DE model
+    soln <- solve_de(sim = x$de.model, params = params, inits = inits, data.times = times, solver = x$solver, ...)
+    return(soln)
+  }
+  #apply restore_and_solve over the samples
+  if (n==1){
+    sims <- restore_and_solve(x = x, samp = samps, times = times, ...)
+  } else {
+    sims <- plyr::alply(samps, 1, function(samp) restore_and_solve(x = x, samp = samp, times = times, ...) )
+  }
+  class(sims) <- "post_sim"
+  if (output == "all") return(sims)
+  if (output == "HDI"){
+    #reshape
 
+  }
 }
 
 
