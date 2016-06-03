@@ -113,13 +113,13 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
   ## now we begin the MCMC
 
-  out <- list(s=samps[1,], p=params, sim.old=sim.start)
+  out <- list(s=samps[1,], p=params, inits=inits, sim.old=sim.start)
 
   for(i in 2:N){
 
     ## the meat of the MCMC is found in the function update.samps (see below)
 
-    out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, inits = inits, out = out,
+    out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, out = out,
                        Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, solver=solver, i=i, cnt=cnt, w.p = w.p,
                        obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose = verbose, ...)
     samps[i,] <- out$s #make sure order is matched
@@ -138,11 +138,6 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   }
 
   #make a data structure that returns all parts of the analysis
-#   function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
-#            Tmax, data.times, cnt=10, burnin=0.1,
-#            plot=TRUE, sizestep=0.01, solver=1,
-#            myswitch=NULL,
-#            mymap=NULL, verbose =FALSE, ...)
   result <- list(
     de.model = de.model,
     obs.model = obs.model,
@@ -184,30 +179,33 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param ... further arguments to solver
 ##' @export
 ##' @author Philipp Boersch-Supan
-update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
+update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
                         data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose, ...)
 {
   ## read in some bits
   s<-samps
   sim.old<-out$sim.old
   p<-out$p
+  ints <- out$inits
 
   #randomize updating order
-  x<-1:l
-  s.x<-sample(x)
+  x<-1:l #make this the not joint paramters
+  #then get the number of joint blocks and add the joint blocks
+  s.x<-sample(x) #and resample order
 
   for(k in s.x){
 
     s.new<-s #sample vector
     p.new<-p #parameter vector
+    i.new<-ints #initial value vector
 
     #pick
 
-    if(is.null(samp.p[[k]]$joint)){
+    if(is.null(samp.p[[k]]$joint)){#if k is a single par
       ##print(paste(s.p$params, " proposing single ", sep=" "))
       q<-propose_single_rev(samps = s, s.p = samp.p[[k]])
     }
-    else {
+    else {#if k is a joint block
       ##print(paste(s.p$params, " proposing jointly ", sep=" "))
       q<-propose_joint_rev(samps = s, s.p = samp.p[[k]])
     }
@@ -220,14 +218,15 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
 
       #for(j in 1:length(samp.p[[k]]$name)){#this will need to be able to handle joint proposals
         ww<-samp.p[[k]]$name
-        p.new[ww]<-s.new[ww]<-q$b#[j]
+        if (samp.p[[k]]$var.type== "de" || samp.p[[k]]$var.type == "obs") p.new[ww]<-s.new[ww]<-q$b#[j]
+        if (samp.p[[k]]$var.type== "init") i.new[ww]<-s.new[ww]<-q$b#[j]
       #}
 
       ## simulate the dynamics forward with the new parameters, but only if parameter in question is not an observation parameter
       if (samp.p[[k]]$var.type == "obs"){
         sim.new <- sim.old #keep using last available de solution
       } else { #compute new solution
-       sim.new<-solve_de(sim = sim , params = p.new, inits = inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
+       sim.new<-solve_de(sim = sim , params = p.new, inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
       }
 
 
@@ -262,10 +261,11 @@ update_sample_rev<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep
         sim.old<-sim.new
         p<-p.new
         s<-s.new
+        ints <-i.new
       }
   }
 
-  return(list(s=s, p=p, sim.old=sim.old))
+  return(list(s=s, p=p, inits=ints, sim.old=sim.old))
 
 }
 

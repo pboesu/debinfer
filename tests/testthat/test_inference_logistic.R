@@ -131,7 +131,7 @@ test_that("Inference on simulated data with unknown inits. ", {
   #we also need to provide an initial condition for the DE
   N <- debinfer_par(name = "N", var.type = "init", fixed = FALSE,
                     value = 0.5, prior="lnorm", hypers=list(meanlog = 0, sdlog = 1),
-                    prop.var=c(1,2), samp.type="rw-unif")
+                    prop.var=c(3,4), samp.type="rw-unif")
 
 
   mcmc.pars <- setup_debinfer(r, K, logsd.N, N)
@@ -151,5 +151,6 @@ test_that("Inference on simulated data with unknown inits. ", {
   expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"r"])/parms["r"]),1,tolerance = 1e-2)
   expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"K"])/parms["K"]),1,tolerance = 1e-2)
   expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"logsd.N"])/parms["logsd.N"]),1,tolerance = 1e-1)
+  expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"N"])/y["N"]),1,tolerance = 1e-2)
 })
 
