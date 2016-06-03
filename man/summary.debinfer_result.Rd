@@ -4,10 +4,10 @@
 \alias{summary.debinfer_result}
 \title{Summary of the inference results}
 \usage{
-\method{summary}{debinfer_result}(x, ...)
+\method{summary}{debinfer_result}(object, ...)
 }
 \arguments{
-\item{x}{a deBInfer_result object}
+\item{object}{a deBInfer_result object}
 
 \item{...}{further arguments to summary.mcmc}
 }

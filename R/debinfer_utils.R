@@ -4,11 +4,11 @@
 #'
 #' Currently just a wrapper for coda::summary.mcmc
 #'
-#' @param x a deBInfer_result object
+#' @param object a deBInfer_result object
 #' @param ... further arguments to summary.mcmc
 #' @seealso \code{\link[coda]{summary.mcmc}}
 #' @import coda
 #' @export
-summary.debinfer_result <- function(x, ...){
- summary(x$samples, ...)
+summary.debinfer_result <- function(object, ...){
+ summary(object$samples, ...)
 }
