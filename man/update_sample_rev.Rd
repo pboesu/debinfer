@@ -4,8 +4,8 @@
 \alias{update_sample_rev}
 \title{update_sample_rev}
 \usage{
-update_sample_rev(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
-  data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose, ...)
+update_sample_rev(samps, samp.p, data, sim, out, Tmax, sizestep, data.times, l,
+  solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose, ...)
 }
 \arguments{
 \item{samps}{row vector of samples from the previous mcmc iteration}
@@ -16,9 +16,7 @@ update_sample_rev(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
 
 \item{sim}{the de.model}
 
-\item{inits}{the initial values for the solver}
-
-\item{out}{list containing the initial or previous update i.e. list(s=samps[i-1,], p=params, sim.old=sim.start)}
+\item{out}{list containing the initial or previous update i.e. list(s=samps[i-1,], inits=inits, p=params, sim.old=sim.start)}
 
 \item{Tmax}{maximum timestep for solver}
 
