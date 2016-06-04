@@ -152,3 +152,22 @@ plot.debinfer_result <- function(x, plot.type="coda", ...){
   if (plot.type=="post_prior") post_prior_densplot(x, ...)
   }
 
+#' Plot posterior trajectory
+#'
+#' Plots the inference results from a debinfer_result object
+#'
+#' @param x a post_sim or post_sim_list object
+#' @param plot.type character, which type of plot. Options are "ensemble" and "medianHDI".
+#' @param col color, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
+#' @param ... further arguments to methods
+#' @export
+plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","grey"), ...){
+  if (plot.type=="medianHDI") {
+    for (i in length(x$median)){
+      plot(x$time, x$median[[i]], type='l', col = col[1], ...)
+      lines(x$time, x$HDI[[i]][,1], col=col[2])
+      lines(x$time, x$HDI[[i]][,2], col=col[2])
+    }
+    }
+  if (plot.type=="ensemble"){}
+}

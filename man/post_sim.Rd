@@ -4,7 +4,7 @@
 \alias{post_sim}
 \title{post_sim}
 \usage{
-post_sim(x, n = 100, times, output = "all", burnin = NULL, prob = NULL,
+post_sim(x, n = 100, times, output = "all", burnin = NULL, prob = 0.95,
   ...)
 }
 \arguments{
@@ -18,12 +18,12 @@ post_sim(x, n = 100, times, output = "all", burnin = NULL, prob = NULL,
 
 \item{burnin}{integer, number of samples to discard from the start of the mcmc chain}
 
-\item{prob}{numeric argument to HDPinterval}
+\item{prob}{A numeric scalar in the interval (0,1) giving the target probability content of the intervals. The nominal probability content of the intervals is the multiple of 1/nrow(obj) nearest to prob.}
 
 \item{...}{additional arguments to solver}
 }
 \value{
-integrated ode - describe structure
+a list of de solutions
 }
 \description{
 post_sim

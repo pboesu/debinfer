@@ -86,50 +86,23 @@ mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
                           obs.model=logistic_obs_model, all.params=mcmc.pars,
                           Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter, 
                           plot=FALSE, sizestep=0.1, solver="ode")
-  
-  
 
 
 ## ----message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8----------
 burnin = 1500
 pairs(mcmc_samples, burnin = burnin, scatter=TRUE, trend=TRUE)
 
-plot(mcmc_samples$samples)
-summary(mcmc_samples$samples)
-#plot(N_obs$time,N_obs$N_noisy)
+plot(mcmc_samples)
+summary(mcmc_samples)
 
-posterior.mean.sim <- solve_de(logistic_model, params=c(r=mean(mcmc_samples$samples[,"r"][burnin:iter]),K=mean(mcmc_samples$samples[,"K"][burnin:iter])), Tmax=max(N_obs$time), inits=c(N=0.1))
-plot(posterior.mean.sim)
-points(N_obs$time,N_obs$N_noisy)
 
-## ------------------------------------------------------------------------
-library(plyr)
-simlist <- llply(sample(nrow(mcmc_samples$samples[burnin:iter,]), 1000),
-                 function(x)solve_de(logistic_model, mcmc_samples$samples[burnin:iter,][x,],
-                                     inits=c(N = 0.1), Tmax=120, numsteps=100))
+## ----post-sims-----------------------------------------------------------
+post_traj <- post_sim(mcmc_samples, n=100, times=0:100, burnin=burnin, output = 'all')
 
-sima <- simplify2array(simlist)
-dim(sima)
+## ----post-sims-plot------------------------------------------------------
+#median and HDI
 
-simCI <- aaply(sima, .margins = c(1,2), quantile, probs=c(0.025,0.5,0.975))
-for (p in 2:ncol(simlist[[1]])){
-  plot(simCI[,,3][,c(1,p)], main="", type='n', ylim=c(0,11))
 
-  #for (i in 1:length(simlist)){
-  #  lines(simlist[[i]][,c(1,p)],lty=2,col='grey')
-  #}
-  for (i in 1:3){
-    lines(simCI[,,i][,c(1,p)], lty=c(2,1,2)[i], col=c("red"))
-  }
-  if (dimnames(simlist[[1]])[[2]][p] == "N") points(N_obs$time,N_obs$N_noisy)
-}
-
-## ------------------------------------------------------------------------
-#str(out)
-#lines(posterior.mean.sim, ylim=c(0,15))
-
-#l_ply(simlist, function(x)  lines(x[,1], x[,2]))
-#lines(out[,1],out[,2], col='blue')
 
 ## ----pars2---------------------------------------------------------------
 #we could also use  asymmetric uniform proposals to ensure only positive values of logsd.N are sampled

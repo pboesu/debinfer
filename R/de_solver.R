@@ -65,14 +65,14 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 #' @param output character, "median", "mult", hdi
 #' @param burnin integer, number of samples to discard from the start of the mcmc chain
 #' @param times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
-#' @param prob numeric argument to HDPinterval
+#' @param prob A numeric scalar in the interval (0,1) giving the target probability content of the intervals. The nominal probability content of the intervals is the multiple of 1/nrow(obj) nearest to prob.
 #' @param ... additional arguments to solver
-#' @return integrated ode - describe structure
-#'
+#' @return a list of de solutions
+#' @import coda
 #' @import plyr
 #' @examples example
 #' @export
-post_sim<-function(x, n=100, times, output='all', burnin=NULL, prob = NULL, ...)
+post_sim<-function(x, n=100, times, output='all', burnin=NULL, prob = 0.95, ...)
 {
 #sample parameter values
   if(!is.null(burnin)) x$samples <- window(x$samples, burnin, nrow(x$samples))
@@ -97,12 +97,22 @@ post_sim<-function(x, n=100, times, output='all', burnin=NULL, prob = NULL, ...)
     sims <- plyr::alply(samps, 1, function(samp) restore_and_solve(x = x, samp = samp, times = times, ...) )
   }
   class(sims) <- "post_sim"
-  if (output == "all") return(sims)
-  if (output == "HDI"){
-    #reshape
 
+  if (output == "HDI" | output=="all"){
+    newlist <- reshape_post_sim(sims)
+    HDI <- llply(newlist[2:length(newlist)], coda:::HPDinterval.mcmc, prob = prob)
+    time <- newlist$time
+    medianlist <- llply(newlist[2:length(newlist)], function(x) apply(x,2,median))
   }
-}
+  if (output == "sims") return(sims)
+  if (output == "HDI") return(HDI)
+  if (output == "all"){
+    out <- list(sims=sims, HDI = HDI, median=medianlist, time = time)
+    class(out) <- "post_sim_list"
+    return(out)
+  }
+  }
+
 
 
 
