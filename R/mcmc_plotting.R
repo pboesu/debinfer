@@ -165,7 +165,7 @@ plot.debinfer_result <- function(x, plot.type="coda", ...){
 plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","darkgrey"), lty = c(1,2), ...){
   if (plot.type=="medianHDI") {
     for (i in length(x$median)){
-      plot(x$time, x$median[[i]], type='l', col = col[1], lty = lty[1], ylim = c(min(x$HDI[[i]][,1]),max(x$HDI[[i]][,2])), ...)
+      plot(x$time, x$median[[i]], type='l', col = col[1], lty = lty[1], ylim = c(min(x$HDI[[i]][,1]),max(x$HDI[[i]][,2])), ylab = i, xlab = "time", ...)
       lines(x$time, x$HDI[[i]][,1], col=col[2], lty = lty[2])
       lines(x$time, x$HDI[[i]][,2], col=col[2], lty = lty[2])
     }

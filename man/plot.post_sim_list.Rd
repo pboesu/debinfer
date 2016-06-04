@@ -5,7 +5,7 @@
 \title{Plot posterior trajectory}
 \usage{
 \method{plot}{post_sim_list}(x, plot.type = "medianHDI", col = c("red",
-  "grey"), ...)
+  "darkgrey"), lty = c(1, 2), ...)
 }
 \arguments{
 \item{x}{a post_sim or post_sim_list object}
