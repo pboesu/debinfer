@@ -100,7 +100,7 @@ post_sim<-function(x, n=100, times, output='all', burnin=NULL, prob = 0.95, ...)
 
   if (output == "HDI" | output=="all"){
     newlist <- reshape_post_sim(sims)
-    HDI <- llply(newlist[2:length(newlist)], coda:::HPDinterval.mcmc, prob = prob)
+    HDI <- llply(newlist[2:length(newlist)], function(x) HPDinterval(as.mcmc(x), prob = prob))
     time <- newlist$time
     medianlist <- llply(newlist[2:length(newlist)], function(x) apply(x,2,median))
   }
