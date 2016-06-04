@@ -160,14 +160,18 @@ plot.debinfer_result <- function(x, plot.type="coda", ...){
 #' @param plot.type character, which type of plot. Options are "ensemble" and "medianHDI".
 #' @param col color, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
 #' @param ... further arguments to methods
+#' 
 #' @export
-plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","grey"), ...){
+plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","darkgrey"), lty = c(1,2), ...){
   if (plot.type=="medianHDI") {
     for (i in length(x$median)){
-      plot(x$time, x$median[[i]], type='l', col = col[1], ...)
-      lines(x$time, x$HDI[[i]][,1], col=col[2])
-      lines(x$time, x$HDI[[i]][,2], col=col[2])
+      plot(x$time, x$median[[i]], type='l', col = col[1], lty = lty[1], ylim = c(min(x$HDI[[i]][,1]),max(x$HDI[[i]][,2])), ...)
+      lines(x$time, x$HDI[[i]][,1], col=col[2], lty = lty[2])
+      lines(x$time, x$HDI[[i]][,2], col=col[2], lty = lty[2])
     }
     }
-  if (plot.type=="ensemble"){}
+  if (plot.type=="ensemble"){
+    if(!inherits(x$sims[[1]], "deSolve")) stop("method not implemented for non deSolve solvers")
+    do.call("plot", c(list(x = x$sims[[1]]),x$sims[2:length(x$sims)],list(col=col[1], lty=lty[1],...)))
+  }
 }
