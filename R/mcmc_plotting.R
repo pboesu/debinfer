@@ -159,6 +159,7 @@ plot.debinfer_result <- function(x, plot.type="coda", ...){
 #' @param x a post_sim or post_sim_list object
 #' @param plot.type character, which type of plot. Options are "ensemble" and "medianHDI".
 #' @param col color, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
+#' @param lty line type, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
 #' @param ... further arguments to methods
 #' 
 #' @export

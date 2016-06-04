@@ -14,6 +14,8 @@
 
 \item{col}{color, for plot.type="medianHDI" the first element is used for the median, the second for the HDI}
 
+\item{lty}{line type, for plot.type="medianHDI" the first element is used for the median, the second for the HDI}
+
 \item{...}{further arguments to methods}
 }
 \description{

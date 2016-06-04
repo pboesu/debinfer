@@ -31,8 +31,8 @@ N_obs <- as.data.frame(out[c(1,runif(35, 0, nrow(out))),]) #force include the fi
 
 ## ------------------------------------------------------------------------
 # add lognormal noise
-  parms['loglogsd.N'] <- -4.6
-  N_obs$N_noisy <- rlnorm(nrow(N_obs), log(N_obs$N),exp(parms['loglogsd.N']))
+  parms['sdlog.N'] <- 0.05
+  N_obs$N_noisy <- rlnorm(nrow(N_obs), log(N_obs$N),parms['sdlog.N'])
 #observations must be ordered for solver to work
 N_obs <- N_obs[order(N_obs$time),]
 
@@ -40,7 +40,7 @@ plot(N_obs$time, N_obs$N, ylim=c(0, max(N_obs$N,N_obs$N_noisy)))
 points(N_obs$time, N_obs$N_noisy, col="red")
 
 out_obs <- ode(y, c(0,N_obs$time), logistic_model, parms, method='lsoda')
-plot(out_obs)
+plot(out_obs, type="p")
 lines(out)
 
 ## ----obs-model-----------------------------------------------------------
@@ -48,7 +48,7 @@ lines(out)
   logistic_obs_model<-function(data, sim.data, samp){
 
     llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6), 
-                       sdlog=exp(samp[['loglogsd.N']]), log=TRUE)
+                       sdlog=samp[['sdlog.N']], log=TRUE)
                 )
 
     llik<-llik.N
@@ -67,15 +67,15 @@ K <- debinfer_par(name = "K", var.type = "de", fixed = FALSE,
                 value = 5, prior="lnorm", hypers=list(meanlog = 1, sdlog = 1),
                 prop.var=0.1, samp.type="rw")
 
-loglogsd.N <- debinfer_par(name = "loglogsd.N", var.type = "obs", fixed = FALSE,
-                value = -2, prior="norm", hypers=list(mean = 0, sd = 1),
-                prop.var=0.5, samp.type="rw")
+sdlog.N <- debinfer_par(name = "sdlog.N", var.type = "obs", fixed = FALSE,
+                value = 0.1, prior="lnorm", hypers=list(meanlog = 0, sdlog = 1),
+                prop.var=c(3,4), samp.type="rw-unif")
 
 ## ----inits---------------------------------------------------------------
 N <- debinfer_par(name = "N", var.type = "init", fixed = TRUE, value = 0.1)
 
 ## ----setup---------------------------------------------------------------
-mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
+mcmc.pars <- setup_debinfer(r, K, sdlog.N, N)
 
 ## ----deBinfer, results="hide"--------------------------------------------
 # do inference with deBInfer
@@ -84,52 +84,28 @@ mcmc.pars <- setup_debinfer(r, K, loglogsd.N, N)
   # inference call
   mcmc_samples <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model, 
                           obs.model=logistic_obs_model, all.params=mcmc.pars,
-                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter, 
+                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter+1, 
                           plot=FALSE, sizestep=0.1, solver="ode")
 
 
 ## ----message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8----------
-burnin = 1500
-pairs(mcmc_samples, burnin = burnin, scatter=TRUE, trend=TRUE)
-
 plot(mcmc_samples)
+
+## ------------------------------------------------------------------------
+burnin = 200
+pairs(mcmc_samples, burnin = burnin, scatter=TRUE, trend=TRUE)
+post_prior_densplot(mcmc_samples, burnin = burnin)
 summary(mcmc_samples)
 
-
 ## ----post-sims-----------------------------------------------------------
-post_traj <- post_sim(mcmc_samples, n=100, times=0:100, burnin=burnin, output = 'all')
+post_traj <- post_sim(mcmc_samples, n=200, times=0:100, burnin=burnin, output = 'all')
 
 ## ----post-sims-plot------------------------------------------------------
 #median and HDI
+plot(post_traj, plot.type = "medianHDI")
+legend("topleft", legend=c("posterior median", "95% HDI"), lty=1, col=c("red","grey"))
 
 
-
-## ----pars2---------------------------------------------------------------
-#we could also use  asymmetric uniform proposals to ensure only positive values of logsd.N are sampled
-
-logsd.Nunif <-  debinfer_par(name = "logsd.N", var.type = "obs", fixed = FALSE,
-                value = 0.01, prior="norm", hypers=list(mean = 0, sd = 1),
-                prop.var=c(1,2), samp.type="rw-unif")
-
-#in that case we need to adjust the observation model slightly
-
-# the observation model
-  logistic_obs_model_unif<-function(data, sim.data, samp){
-
-    llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + 1e-6), 
-                       sdlog=samp[['logsd.N']], log=TRUE)
-                )
-
-    llik<-llik.N
-
-    return(llik)
-  }
-  
-  mcmc.pars_unif <- setup_debinfer(r, K, logsd.Nunif, N)
-  
-  mcmc_samples_unif <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model, 
-                          obs.model=logistic_obs_model_unif, all.params=mcmc.pars_unif,
-                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter %/% 10, 
-                          plot=TRUE, sizestep=0.1, solver="ode")
-
+## ----post-sims-ensemble--------------------------------------------------
+plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 
