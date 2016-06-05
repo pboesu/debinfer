@@ -160,7 +160,7 @@ plot.debinfer_result <- function(x, plot.type="coda", ...){
 #' @param plot.type character, which type of plot. Options are "ensemble" and "medianHDI".
 #' @param col color, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
 #' @param lty line type, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
-#' @auto.layout logical, should the layout for plot.type = medianHDI be determined automatically?
+#' @param auto.layout logical, should the layout for plot.type = medianHDI be determined automatically?
 #' @param ... further arguments to methods
 #' 
 #' @export

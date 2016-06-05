@@ -5,7 +5,7 @@
 \title{Plot posterior trajectory}
 \usage{
 \method{plot}{post_sim_list}(x, plot.type = "medianHDI", col = c("red",
-  "darkgrey"), lty = c(1, 2), ...)
+  "darkgrey"), lty = c(1, 2), auto.layout = TRUE, ...)
 }
 \arguments{
 \item{x}{a post_sim or post_sim_list object}
@@ -15,6 +15,8 @@
 \item{col}{color, for plot.type="medianHDI" the first element is used for the median, the second for the HDI}
 
 \item{lty}{line type, for plot.type="medianHDI" the first element is used for the median, the second for the HDI}
+
+\item{auto.layout}{logical, should the layout for plot.type = medianHDI be determined automatically?}
 
 \item{...}{further arguments to methods}
 }
