@@ -111,7 +111,7 @@ The log-likelihood of the data given the parameters, underlying model, and initi
 
 **Explain epsilon correction**
 
-This can be translated into an observation model function for `deBInfer`. The observation model function must have three named arguments `data`, `sim.data`, and `samp`, as these are used by the MCMC procedure to pass in the data, the current state of the Markov chain, and the associated DE model solution. We can access these inputs to define the data likelihood. In this case we have repeat measurements for each time point, so we iterate over the unique timepoints in `data$time`, and then calculate the sum log-likelihood over all matching `data$count` observations using the current value of the state variable $Z$ from the DE model solution at this point in the Markov chain.
+This can be translated into an observation model function for `deBInfer`. The observation model function must have three named arguments `data`, `sim.data`, and `samp`, as these are used by the MCMC procedure to pass in the data, the current state of the Markov chain, and the associated DE model solution. We can access these inputs to define the data likelihood. In this case we have repeat measurements for each time point, so we iterate over the unique timepoints in `data$time`, and then calculate the sum log-likelihood over all matching `data$count` observations using the current value of the state variable $Z$ from the DE model solution at this point in the Markov chain. **Explain indexing of deSolve vs dde solutions**
 
 ```{r obs-model}
 # observation model
@@ -159,7 +159,11 @@ Tmin <- debinfer_par(name = "Tmin", var.type = "de", fixed = FALSE,
 C <- debinfer_par(name = "C", var.type = "init", fixed = TRUE, value = 120)
 S <- debinfer_par(name = "S", var.type = "init", fixed = TRUE, value = 0)
 Z <- debinfer_par(name = "Z", var.type = "init", fixed = TRUE, value = 0)
+```
 
+**Explain importance of init order**
+
+```{r mcmc-setup}
 # ----setup---------------------------------------------------------------
 mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
 ```
