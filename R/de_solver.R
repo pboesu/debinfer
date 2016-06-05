@@ -48,7 +48,6 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
     #require(PBSddesolve)
     #on.exit(freeglobaldata())
     out <- dede(y=inits, times=times, func=sim, parms=params)
-    out <- as.data.frame(out)
   }
   return(out)
 }
