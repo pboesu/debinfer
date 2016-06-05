@@ -2,8 +2,6 @@
 title: "Bayesian inference for a population growth model of the chytrid fungus"
 author: "Philipp H Boersch-Supan and Leah R Johnson"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
-header-includes:
-   - \usepackage{newpxtext}
 output: 
   pdf_document: 
     keep_tex: no
