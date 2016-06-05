@@ -160,16 +160,25 @@ plot.debinfer_result <- function(x, plot.type="coda", ...){
 #' @param plot.type character, which type of plot. Options are "ensemble" and "medianHDI".
 #' @param col color, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
 #' @param lty line type, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
+#' @auto.layout logical, should the layout for plot.type = medianHDI be determined automatically?
 #' @param ... further arguments to methods
 #' 
 #' @export
-plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","darkgrey"), lty = c(1,2), ...){
+plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","darkgrey"), lty = c(1,2), auto.layout = TRUE,...){
   if (plot.type=="medianHDI") {
-    for (i in length(x$median)){
-      plot(x$time, x$median[[i]], type='l', col = col[1], lty = lty[1], ylim = c(min(x$HDI[[i]][,1]),max(x$HDI[[i]][,2])), ylab = i, xlab = "time", ...)
+    if (auto.layout){
+      # store old par
+      old.par <- par(no.readonly=TRUE)
+      #get number of parameters
+      nplots <- length(x$median)
+      par(mfrow=n2mfrow(nplots))
+    }
+    for (i in 1:length(x$median)){
+      plot(x$time, x$median[[i]], type='l', col = col[1], lty = lty[1], ylim = c(min(x$HDI[[i]][,1]),max(x$HDI[[i]][,2])), ylab = names(x$median)[i], xlab = "time", ...)
       lines(x$time, x$HDI[[i]][,1], col=col[2], lty = lty[2])
       lines(x$time, x$HDI[[i]][,2], col=col[2], lty = lty[2])
     }
+    if (auto.layout) par(old.par)
     }
   if (plot.type=="ensemble"){
     if(!inherits(x$sims[[1]], "deSolve")) stop("method not implemented for non deSolve solvers")
