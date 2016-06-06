@@ -33,11 +33,13 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
 
   layout(laymat) #define layout using laymat
 
-  par(mar=c(2,2,2,2)) #define marginals etc.
+  par(mar=c(2,2,0.6,0.6), mgp = c(3,0.5,0)) #define marginals etc.
 
   # Draw histograms, tweak arguments of hist to make nicer figures
-  for(i in 1:np)
-    hist(x$samples[,i],main=colnames(x$samples)[i])
+  for(i in 1:np){
+    hist(x$samples[,i],main="")
+    title(main=colnames(x$samples)[i], line = -0.1, xpd=TRUE)
+  }
 
   # Write correlations to upper diagonal part of the graph
   # Again, tweak accordingly
@@ -162,7 +164,7 @@ plot.debinfer_result <- function(x, plot.type="coda", ...){
 #' @param lty line type, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
 #' @param auto.layout logical, should the layout for plot.type = medianHDI be determined automatically?
 #' @param ... further arguments to methods
-#' 
+#'
 #' @export
 plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","darkgrey"), lty = c(1,2), auto.layout = TRUE,...){
   if (plot.type=="medianHDI") {
