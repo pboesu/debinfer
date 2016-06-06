@@ -169,7 +169,7 @@ mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
 ```
 
 And then do the actual inference
-```{r de_mcmc, results='hide', cache=TRUE}
+```{r de_mcmc, results='hide'}
 # do inference with deBInfer
 # MCMC iterations
 iter = 500
