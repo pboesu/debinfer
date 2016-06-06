@@ -34,25 +34,20 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
       if(is.null(sizestep)) times<- seq(0, Tmax, length=numsteps)
       if(is.null(numsteps))  times<- seq(0, Tmax, by=sizestep)
     }
-out <- tryCatch{
       if(solver == 1 || solver == "ode"){
         #require(deSolve)
-        out<-ode(inits, times, sim, parms=params, verbose=verbose , method=method, ...)
+        out <- try(ode(inits, times, sim, parms=params, verbose=verbose , method=method, ...))
       }
       if(solver == 2 || solver == "dde"){
         #require(PBSddesolve)
         #on.exit(freeglobaldata())
-        out<-PBSddesolve::dde(inits, times, sim, parms=params, ...)
+        out <- try(PBSddesolve::dde(inits, times, sim, parms=params, ...))
       }
       if(solver == 3 || solver == "dede"){
         #require(PBSddesolve)
         #on.exit(freeglobaldata())
-        out <- dede(y=inits, times=times, func=sim, parms=params)
-      }}, warning = function(war){
-
-      }, error = function(err){
-
-      }) #end tryCatch
+        out <- try(dede(y=inits, times=times, func=sim, parms=params))
+      }
   return(out)
 }
 

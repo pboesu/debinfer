@@ -231,7 +231,14 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
 
       ## The posteriorprob of the previous sample is saved as
       ## s$lpost. If we accept a draw, we will set s$lpost<-s.new$lpost
-      s.new["lpost"] <- log_post_params(samp = s.new, data = data, sim.data = sim.new, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
+
+      ##calculate posterior likelihood, but only if solver did not fail
+        if (!inherits(sim.new, "try-error")){
+          s.new["lpost"] <- log_post_params(samp = s.new, data = data, sim.data = sim.new, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
+        } else {
+          if (verbose) print(paste("Solver failed with current state =", s, "and proposal", samp.p[[k]]$name,"=",q$b ))
+          s.new["lpost"] <- -Inf
+          }
 
       if(is.finite(s.new["lpost"]) && is.finite(s["lpost"])){
         A<-exp( s.new["lpost"] + q$lbak - s["lpost"] - q$lfwd )
