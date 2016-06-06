@@ -25,12 +25,11 @@ solve_de(sim, params, inits, Tmax, numsteps = 10000, solver = "ode",
 
 \item{verbose}{passed to deSolve::ode}
 
-\item{data.times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.}
+\item{data.times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL. If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.}
 
 \item{method}{solver method}
 
-\item{...}{additional arguments to solver
-If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.}
+\item{...}{additional arguments to solver}
 }
 \value{
 integrated ode - describe structure
