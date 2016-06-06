@@ -2,8 +2,6 @@
 title: "Bayesian inference for a population growth model of the chytrid fungus"
 author: "Philipp H Boersch-Supan and Leah R Johnson"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
-header-includes:
-   - \usepackage{newpxtext}
 output: 
   pdf_document: 
     keep_tex: no
@@ -27,8 +25,10 @@ library(devtools)
 ```
 
 Then you install deBInfer from github
-```{r install2, results='hide', message=FALSE, warning=FALSE}
+```{r install2, eval=FALSE, results='hide', message=FALSE, warning=FALSE}
 install_github("pboesu/debinfer")
+```
+```{r loadlib, message=FALSE}
 library(deBInfer)
 ```
 
@@ -91,9 +91,14 @@ CSZ.dede<-function(t,y,p){
 
 Eventhough the data used in this example come from an experimental study, the system is only partially observed. We know the initial conditions for all states, but we only have observations for the second generation of Zoospores $Z$. Because the observations are counts (i.e. discrete numbers), we assume that observations of the system at a set of discrete times $t'$ are independent Poisson random variables with a mean given by the solution of the DDE, at times $t'$.
 
+The observations are provided with `deBInfer`. They can be loaded with the `data()` command.
+
 ```{r data}
 #load chytrid data
 data(chytrid)
+#have a look at the variables
+head(chytrid)
+#plot the data
 plot(chytrid, xlab='Time (days)', ylab='Zoospores x 10e4', xlim=c(0,10))
 ```
 
@@ -102,21 +107,18 @@ The log-likelihood of the data given the parameters, underlying model, and initi
 \ell(\mathbf{Z}|\mathbf{\theta})=\sum\limits^n_{t}Z_t \text{ log }\lambda-n\lambda
 \end{equation}
 
+**Explain epsilon correction**
 
-```{r obs-model, eval=FALSE}
+This can be translated into an observation model function for `deBInfer`. The observation model function must have three named arguments `data`, `sim.data`, and `samp`, as these are used by the MCMC procedure to pass in the data, the current state of the Markov chain, and the associated DE model solution. We can access these inputs to define the data likelihood. In this case we have repeat measurements for each time point, so we iterate over the unique timepoints in `data$time`, and then calculate the sum log-likelihood over all matching `data$count` observations using the current value of the state variable $Z$ from the DE model solution at this point in the Markov chain. **Explain indexing of deSolve vs dde solutions**
 
-
-## ----obs-model-----------------------------------------------------------
-## observation model
+```{r obs-model}
+# observation model
 chytrid_obs_model<-function(data, sim.data, samp){
 
-  #z.temp<-sim.data$Z
-
-  ##ec<-0.00001
   ec<-0.01
   llik.Z<-0
   for(i in unique(data$time)){
-    try(llik.Z<-llik.Z + sum(dpois(data$count[data$time==i], lambda=(sim.data$Z[sim.data$time==i]+ec), log=TRUE)))
+    try(llik.Z<-llik.Z + sum(dpois(data$count[data$time==i], lambda=(sim.data[,'Z'][sim.data[,'time']==i]+ec), log=TRUE)))
   }
   llik<-llik.Z
   return(llik)
@@ -124,17 +126,15 @@ chytrid_obs_model<-function(data, sim.data, samp){
 ```
 
 
-
-```{r rest, eval=FALSE}
-
-## ----pars, results="hide", message=FALSE---------------------------------
+We continue by defining the parameters for inference
+```{r vars}
 sr <- debinfer_par(name = "sr", var.type = "de", fixed = FALSE,
                    value = 2, prior="gamma", hypers=list(shape = 5, rate = 1),
-                   prop.var=0.5, samp.type="rw")
+                   prop.var=c(3,4), samp.type="rw-unif")
 
 fs <- debinfer_par(name = "fs", var.type = "de", fixed = FALSE,
                    value = 0.5, prior="beta", hypers=list(shape1 = 1, shape2 = 1),
-                   prop.var=0.05, samp.type="ind")
+                   prop.var=0.01, samp.type="ind")
 
 ds <- debinfer_par(name = "ds", var.type = "de", fixed = FALSE,
                    value = 2, prior="gamma", hypers=list(shape = 1, rate = 1),
@@ -142,7 +142,7 @@ ds <- debinfer_par(name = "ds", var.type = "de", fixed = FALSE,
 
 muz <- debinfer_par(name = "muz", var.type = "de", fixed = FALSE,
                     value = 1, prior="gamma", hypers=list(shape = 5, rate = 1),
-                    prop.var=0.1, samp.type="rw")
+                    prop.var=c(4,5), samp.type="rw-unif")
 
 eta <- debinfer_par(name = "eta", var.type = "de", fixed = FALSE,
                     value = 10, prior="gamma", hypers=list(shape = 1, rate = 0.25),
@@ -150,100 +150,61 @@ eta <- debinfer_par(name = "eta", var.type = "de", fixed = FALSE,
 
 Tmin <- debinfer_par(name = "Tmin", var.type = "de", fixed = FALSE,
                      value = 3, prior="unif", hypers=list(min = 2, max = 6),
-                     prop.var=0.2, samp.type="rw")
+                     prop.var=0.05, samp.type="rw")
 
 
-## ----inits---------------------------------------------------------------
+# ----inits---------------------------------------------------------------
 C <- debinfer_par(name = "C", var.type = "init", fixed = TRUE, value = 120)
 S <- debinfer_par(name = "S", var.type = "init", fixed = TRUE, value = 0)
 Z <- debinfer_par(name = "Z", var.type = "init", fixed = TRUE, value = 0)
+```
 
-## ----setup---------------------------------------------------------------
+**Explain importance of init order**
+
+```{r mcmc-setup}
+# ----setup---------------------------------------------------------------
 mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
+```
 
+And then do the actual inference
+```{r de_mcmc}
 ## ----deBinfer, results="hide"--------------------------------------------
 # do inference with deBInfer
 # MCMC iterations
-iter = 2000
+iter = 5000
 # inference call
-dde_plot <- microbenchmark::microbenchmark(
-
-dde_rev = de_mcmc(N = iter, data=chytrid, de.model=CSZ.dde,
-                      obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                      Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                      plot=TRUE, sizestep=0.1, which=2, verbose = TRUE),
-
 dede_rev <- de_mcmc(N = iter, data=chytrid, de.model=CSZ.dede,
                                obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                               Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                               plot=FALSE, sizestep=0.1, which="dede", verbose = TRUE),
-times = 10)
-
-dde_noplot <- microbenchmark::microbenchmark(
-  dde_old = de_mcmc(N = iter, data=chytrid, de.model=CSZ.dde,
-                    obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                    Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                    burnin=0.1, plot=FALSE, sizestep=0.1, which=2, verbose = TRUE),
-
-
-  dde_rev = de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dde,
-                        obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                        Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                        burnin=0.1, plot=FALSE, sizestep=0.1, which=2, verbose = TRUE),
-
-  dede_rev <- de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dede,
-                          obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                          Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-                          burnin=0.1, plot=FALSE, sizestep=0.1, which="dede", verbose = TRUE),
-  times = 10)
-par(mfrow=c(1,2))
-plot_benchmark(dde_noplot, expr.levels = c("dde", "dde-rev", "dede"))
-plot_benchmark(dde_plot, expr.levels = c("dde", "dde-rev", "dede"))
-saveRDS(list(plot = dde_plot, noplot = dde_noplot, session = sessionInfo()), file="sandbox/benchmarks-dont-solve-obs-dde.RDS")
-
-## ----solve-dde-----------------------------------------------------------
-pars <- colMeans(mcmc_samples$samps)
-names(pars) <- names(mcmc_samples$samps)
-
-voylesfit <- dde(y=c(C=120,S=0,Z=0), times = seq(0,10,by=0.02), func=CSZ.dde, parms=pars )
-
-
-#Sim CIs
-library(coda)
-library(plyr)
-parsamps <- mcmc_samples$samps[sample(nrow(mcmc_samples$samps), size=500),]
-
-
-
-siml <- alply(parsamps, 1, function(x){spars <- as.numeric(x)
-names(spars) <- names(parsamps)
-dde(y=c(120,0,0), times = seq(0,10,by=0.02), func=CSZ.dde, parms=spars)}, .progress='text')
-
-
-plot(chytrid, xlim=c(0,9))
-l_ply(siml, .fun=function(x){lines(x$time, x$y1, col='red3')})
-
-l_ply(siml, .fun=function(x){lines(x$time, x$y2, col='blue3')})
-
-l_ply(siml, .fun=function(x){lines(x$time, x$y3, col='green3')})
-
-#figure
-library(viridis)
-
-#set colors
-colours <- viridis(9)[c(1,4,7)]
-
-
-with(voylesfit,{
-  lwd=3
-  plot(time,C, type='l', ylim=c(0,300),col=colours[1],lwd=lwd,ylab="Counts x 10^4", xlab="Time (days)")
-  lines(time,Z,col=colours[2],lwd=lwd)
-  lines(time,S,col=colours[3],lwd=lwd, lty=2)
-  legend("topright", legend=c("C","Z","S", "Z_obs"), lwd=3, col=c(colours[c(1,2,3)],"black"), lty=c(1,1,2,NA), pch=c(NA,NA,NA,1))
-  points(data_obs)
-}
-)
-
+                               Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=iter %/% 10,
+                               plot=FALSE, sizestep=0.1, solver="dede", verbose = TRUE)
 ```
 
-# References
+We plot and summarize the MCMC chains
+```{r message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8}
+plot(dede_rev, ask=FALSE)
+```
+From the traceplot we can see that the burnin period is **about 200 samples**. We can remove the burnin and have a look at parameter correlations, and the overlap between the posterior and prior densities.
+```{r}
+burnin = 1
+pairs(dede_rev, burnin = burnin, scatter=TRUE, trend=TRUE)
+post_prior_densplot(dede_rev, burnin = burnin)
+summary(dede_rev)
+```
+We simulate DE model trajectories from the posterior and calculate the HPD interval for the deterministic part of the model.
+
+```{r post-sims}
+post_traj <- post_sim(dede_rev, n=20, times=0:100, burnin=burnin, output = 'all')
+```
+
+We can visualise the median posterior trajectory and the associated highest posterior density interval using `r plot.type="medianHDI"` 
+```{r post-sims-plot}
+#median and HDI
+par(mfrow=c(1,3))
+plot(post_traj, plot.type = "medianHDI", auto.layout = FALSE)
+legend("topright", legend=c("posterior median", "95% HDI"), lty=1, col=c("red","grey"))
+
+```
+Alternatively we can plot an ensemble of posterior trajectories
+```{r post-sims-ensemble}
+plot(post_traj, plot.type = "ensemble", col = "#FF000040")
+```

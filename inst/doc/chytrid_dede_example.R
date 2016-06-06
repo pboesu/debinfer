@@ -5,8 +5,10 @@
 #Load the devtools package.
 library(devtools)
 
-## ----install2, results='hide', message=FALSE, warning=FALSE--------------
-install_github("pboesu/debinfer")
+## ----install2, eval=FALSE, results='hide', message=FALSE, warning=FALSE----
+#  install_github("pboesu/debinfer")
+
+## ----loadlib, message=FALSE----------------------------------------------
 library(deBInfer)
 
 ## ----dde-def-------------------------------------------------------------
@@ -49,144 +51,89 @@ CSZ.dede<-function(t,y,p){
 ## ----data----------------------------------------------------------------
 #load chytrid data
 data(chytrid)
+#have a look at the variables
+head(chytrid)
+#plot the data
 plot(chytrid, xlab='Time (days)', ylab='Zoospores x 10e4', xlim=c(0,10))
 
-## ----obs-model, eval=FALSE-----------------------------------------------
-#  
-#  
-#  ## ----obs-model-----------------------------------------------------------
-#  ## observation model
-#  chytrid_obs_model<-function(data, sim.data, samp){
-#  
-#    #z.temp<-sim.data$Z
-#  
-#    ##ec<-0.00001
-#    ec<-0.01
-#    llik.Z<-0
-#    for(i in unique(data$time)){
-#      try(llik.Z<-llik.Z + sum(dpois(data$count[data$time==i], lambda=(sim.data$Z[sim.data$time==i]+ec), log=TRUE)))
-#    }
-#    llik<-llik.Z
-#    return(llik)
-#  }
+## ----obs-model-----------------------------------------------------------
+# observation model
+chytrid_obs_model<-function(data, sim.data, samp){
 
-## ----rest, eval=FALSE----------------------------------------------------
-#  
-#  ## ----pars, results="hide", message=FALSE---------------------------------
-#  sr <- debinfer_par(name = "sr", var.type = "de", fixed = FALSE,
-#                     value = 2, prior="gamma", hypers=list(shape = 5, rate = 1),
-#                     prop.var=0.5, samp.type="rw")
-#  
-#  fs <- debinfer_par(name = "fs", var.type = "de", fixed = FALSE,
-#                     value = 0.5, prior="beta", hypers=list(shape1 = 1, shape2 = 1),
-#                     prop.var=0.05, samp.type="ind")
-#  
-#  ds <- debinfer_par(name = "ds", var.type = "de", fixed = FALSE,
-#                     value = 2, prior="gamma", hypers=list(shape = 1, rate = 1),
-#                     prop.var=0.1, samp.type="rw")
-#  
-#  muz <- debinfer_par(name = "muz", var.type = "de", fixed = FALSE,
-#                      value = 1, prior="gamma", hypers=list(shape = 5, rate = 1),
-#                      prop.var=0.1, samp.type="rw")
-#  
-#  eta <- debinfer_par(name = "eta", var.type = "de", fixed = FALSE,
-#                      value = 10, prior="gamma", hypers=list(shape = 1, rate = 0.25),
-#                      prop.var=5, samp.type="rw")
-#  
-#  Tmin <- debinfer_par(name = "Tmin", var.type = "de", fixed = FALSE,
-#                       value = 3, prior="unif", hypers=list(min = 2, max = 6),
-#                       prop.var=0.2, samp.type="rw")
-#  
-#  
-#  ## ----inits---------------------------------------------------------------
-#  C <- debinfer_par(name = "C", var.type = "init", fixed = TRUE, value = 120)
-#  S <- debinfer_par(name = "S", var.type = "init", fixed = TRUE, value = 0)
-#  Z <- debinfer_par(name = "Z", var.type = "init", fixed = TRUE, value = 0)
-#  
-#  ## ----setup---------------------------------------------------------------
-#  mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
-#  
-#  ## ----deBinfer, results="hide"--------------------------------------------
-#  # do inference with deBInfer
-#  # MCMC iterations
-#  iter = 2000
-#  # inference call
-#  dde_plot <- microbenchmark::microbenchmark(
-#  
-#  dde_rev = de_mcmc(N = iter, data=chytrid, de.model=CSZ.dde,
-#                        obs.model=chytrid_obs_model, all.params=mcmc.pars,
-#                        Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-#                        plot=TRUE, sizestep=0.1, which=2, verbose = TRUE),
-#  
-#  dede_rev <- de_mcmc(N = iter, data=chytrid, de.model=CSZ.dede,
-#                                 obs.model=chytrid_obs_model, all.params=mcmc.pars,
-#                                 Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-#                                 plot=FALSE, sizestep=0.1, which="dede", verbose = TRUE),
-#  times = 10)
-#  
-#  dde_noplot <- microbenchmark::microbenchmark(
-#    dde_old = de_mcmc(N = iter, data=chytrid, de.model=CSZ.dde,
-#                      obs.model=chytrid_obs_model, all.params=mcmc.pars,
-#                      Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-#                      burnin=0.1, plot=FALSE, sizestep=0.1, which=2, verbose = TRUE),
-#  
-#  
-#    dde_rev = de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dde,
-#                          obs.model=chytrid_obs_model, all.params=mcmc.pars,
-#                          Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-#                          burnin=0.1, plot=FALSE, sizestep=0.1, which=2, verbose = TRUE),
-#  
-#    dede_rev <- de_mcmc_rev(N = iter, data=chytrid, de.model=CSZ.dede,
-#                            obs.model=chytrid_obs_model, all.params=mcmc.pars,
-#                            Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
-#                            burnin=0.1, plot=FALSE, sizestep=0.1, which="dede", verbose = TRUE),
-#    times = 10)
-#  par(mfrow=c(1,2))
-#  plot_benchmark(dde_noplot, expr.levels = c("dde", "dde-rev", "dede"))
-#  plot_benchmark(dde_plot, expr.levels = c("dde", "dde-rev", "dede"))
-#  saveRDS(list(plot = dde_plot, noplot = dde_noplot, session = sessionInfo()), file="sandbox/benchmarks-dont-solve-obs-dde.RDS")
-#  
-#  ## ----solve-dde-----------------------------------------------------------
-#  pars <- colMeans(mcmc_samples$samps)
-#  names(pars) <- names(mcmc_samples$samps)
-#  
-#  voylesfit <- dde(y=c(C=120,S=0,Z=0), times = seq(0,10,by=0.02), func=CSZ.dde, parms=pars )
-#  
-#  
-#  #Sim CIs
-#  library(coda)
-#  library(plyr)
-#  parsamps <- mcmc_samples$samps[sample(nrow(mcmc_samples$samps), size=500),]
-#  
-#  
-#  
-#  siml <- alply(parsamps, 1, function(x){spars <- as.numeric(x)
-#  names(spars) <- names(parsamps)
-#  dde(y=c(120,0,0), times = seq(0,10,by=0.02), func=CSZ.dde, parms=spars)}, .progress='text')
-#  
-#  
-#  plot(chytrid, xlim=c(0,9))
-#  l_ply(siml, .fun=function(x){lines(x$time, x$y1, col='red3')})
-#  
-#  l_ply(siml, .fun=function(x){lines(x$time, x$y2, col='blue3')})
-#  
-#  l_ply(siml, .fun=function(x){lines(x$time, x$y3, col='green3')})
-#  
-#  #figure
-#  library(viridis)
-#  
-#  #set colors
-#  colours <- viridis(9)[c(1,4,7)]
-#  
-#  
-#  with(voylesfit,{
-#    lwd=3
-#    plot(time,C, type='l', ylim=c(0,300),col=colours[1],lwd=lwd,ylab="Counts x 10^4", xlab="Time (days)")
-#    lines(time,Z,col=colours[2],lwd=lwd)
-#    lines(time,S,col=colours[3],lwd=lwd, lty=2)
-#    legend("topright", legend=c("C","Z","S", "Z_obs"), lwd=3, col=c(colours[c(1,2,3)],"black"), lty=c(1,1,2,NA), pch=c(NA,NA,NA,1))
-#    points(data_obs)
-#  }
-#  )
-#  
+  ec<-0.01
+  llik.Z<-0
+  for(i in unique(data$time)){
+    try(llik.Z<-llik.Z + sum(dpois(data$count[data$time==i], lambda=(sim.data[,'Z'][sim.data[,'time']==i]+ec), log=TRUE)))
+  }
+  llik<-llik.Z
+  return(llik)
+}
+
+## ----vars----------------------------------------------------------------
+sr <- debinfer_par(name = "sr", var.type = "de", fixed = FALSE,
+                   value = 2, prior="gamma", hypers=list(shape = 5, rate = 1),
+                   prop.var=c(3,4), samp.type="rw-unif")
+
+fs <- debinfer_par(name = "fs", var.type = "de", fixed = FALSE,
+                   value = 0.5, prior="beta", hypers=list(shape1 = 1, shape2 = 1),
+                   prop.var=0.01, samp.type="ind")
+
+ds <- debinfer_par(name = "ds", var.type = "de", fixed = FALSE,
+                   value = 2, prior="gamma", hypers=list(shape = 1, rate = 1),
+                   prop.var=0.1, samp.type="rw")
+
+muz <- debinfer_par(name = "muz", var.type = "de", fixed = FALSE,
+                    value = 1, prior="gamma", hypers=list(shape = 5, rate = 1),
+                    prop.var=c(4,5), samp.type="rw-unif")
+
+eta <- debinfer_par(name = "eta", var.type = "de", fixed = FALSE,
+                    value = 10, prior="gamma", hypers=list(shape = 1, rate = 0.25),
+                    prop.var=5, samp.type="rw")
+
+Tmin <- debinfer_par(name = "Tmin", var.type = "de", fixed = FALSE,
+                     value = 3, prior="unif", hypers=list(min = 2, max = 6),
+                     prop.var=0.05, samp.type="rw")
+
+
+# ----inits---------------------------------------------------------------
+C <- debinfer_par(name = "C", var.type = "init", fixed = TRUE, value = 120)
+S <- debinfer_par(name = "S", var.type = "init", fixed = TRUE, value = 0)
+Z <- debinfer_par(name = "Z", var.type = "init", fixed = TRUE, value = 0)
+
+## ----mcmc-setup----------------------------------------------------------
+# ----setup---------------------------------------------------------------
+mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
+
+## ----de_mcmc-------------------------------------------------------------
+## ----deBinfer, results="hide"--------------------------------------------
+# do inference with deBInfer
+# MCMC iterations
+iter = 5000
+# inference call
+dede_rev <- de_mcmc(N = iter, data=chytrid, de.model=CSZ.dede,
+                               obs.model=chytrid_obs_model, all.params=mcmc.pars,
+                               Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=iter %/% 10,
+                               plot=FALSE, sizestep=0.1, solver="dede", verbose = TRUE)
+
+## ----message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8----------
+plot(dede_rev, ask=FALSE)
+
+## ------------------------------------------------------------------------
+burnin = 1
+pairs(dede_rev, burnin = burnin, scatter=TRUE, trend=TRUE)
+post_prior_densplot(dede_rev, burnin = burnin)
+summary(dede_rev)
+
+## ----post-sims-----------------------------------------------------------
+post_traj <- post_sim(dede_rev, n=20, times=0:100, burnin=burnin, output = 'all')
+
+## ----post-sims-plot------------------------------------------------------
+#median and HDI
+par(mfrow=c(1,3))
+plot(post_traj, plot.type = "medianHDI", auto.layout = FALSE)
+legend("topright", legend=c("posterior median", "95% HDI"), lty=1, col=c("red","grey"))
+
+
+## ----post-sims-ensemble--------------------------------------------------
+plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 

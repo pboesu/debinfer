@@ -15,9 +15,9 @@
 #' @param sizestep for solver
 #' @param method solver method
 #' @param verbose passed to deSolve::ode
-#' @param data.times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
+#' @param data.times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL. If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.
 #' @param ... additional arguments to solver
-#' If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.
+#'
 #'
 #' @return integrated ode - describe structure
 #'
@@ -34,21 +34,25 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
       if(is.null(sizestep)) times<- seq(0, Tmax, length=numsteps)
       if(is.null(numsteps))  times<- seq(0, Tmax, by=sizestep)
     }
+out <- tryCatch{
+      if(solver == 1 || solver == "ode"){
+        #require(deSolve)
+        out<-ode(inits, times, sim, parms=params, verbose=verbose , method=method, ...)
+      }
+      if(solver == 2 || solver == "dde"){
+        #require(PBSddesolve)
+        #on.exit(freeglobaldata())
+        out<-PBSddesolve::dde(inits, times, sim, parms=params, ...)
+      }
+      if(solver == 3 || solver == "dede"){
+        #require(PBSddesolve)
+        #on.exit(freeglobaldata())
+        out <- dede(y=inits, times=times, func=sim, parms=params)
+      }}, warning = function(war){
 
-    if(solver == 1 || solver == "ode"){
-    #require(deSolve)
-    out<-ode(inits, times, sim, parms=params, verbose=verbose , method=method, ...)
-  }
-  if(solver == 2 || solver == "dde"){
-    #require(PBSddesolve)
-    #on.exit(freeglobaldata())
-    out<-PBSddesolve::dde(inits, times, sim, parms=params, ...)
-  }
-  if(solver == 3 || solver == "dede"){
-    #require(PBSddesolve)
-    #on.exit(freeglobaldata())
-    out <- dede(y=inits, times=times, func=sim, parms=params)
-  }
+      }, error = function(err){
+
+      }) #end tryCatch
   return(out)
 }
 

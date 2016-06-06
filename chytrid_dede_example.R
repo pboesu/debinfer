@@ -1,12 +1,12 @@
 ## ----install1, eval=FALSE------------------------------------------------
-#  install.packages("devtools")
+## install.packages("devtools")
 
 ## ----install1b-----------------------------------------------------------
 #Load the devtools package.
 library(devtools)
 
 ## ----install2, eval=FALSE, results='hide', message=FALSE, warning=FALSE----
-#  install_github("pboesu/debinfer")
+## install_github("pboesu/debinfer")
 
 ## ----loadlib, message=FALSE----------------------------------------------
 library(deBInfer)
@@ -72,11 +72,11 @@ chytrid_obs_model<-function(data, sim.data, samp){
 ## ----vars----------------------------------------------------------------
 sr <- debinfer_par(name = "sr", var.type = "de", fixed = FALSE,
                    value = 2, prior="gamma", hypers=list(shape = 5, rate = 1),
-                   prop.var=0.5, samp.type="rw")
+                   prop.var=c(3,4), samp.type="rw-unif")
 
 fs <- debinfer_par(name = "fs", var.type = "de", fixed = FALSE,
                    value = 0.5, prior="beta", hypers=list(shape1 = 1, shape2 = 1),
-                   prop.var=0.05, samp.type="ind")
+                   prop.var=0.01, samp.type="ind")
 
 ds <- debinfer_par(name = "ds", var.type = "de", fixed = FALSE,
                    value = 2, prior="gamma", hypers=list(shape = 1, rate = 1),
@@ -84,7 +84,7 @@ ds <- debinfer_par(name = "ds", var.type = "de", fixed = FALSE,
 
 muz <- debinfer_par(name = "muz", var.type = "de", fixed = FALSE,
                     value = 1, prior="gamma", hypers=list(shape = 5, rate = 1),
-                    prop.var=0.1, samp.type="rw")
+                    prop.var=c(4,5), samp.type="rw-unif")
 
 eta <- debinfer_par(name = "eta", var.type = "de", fixed = FALSE,
                     value = 10, prior="gamma", hypers=list(shape = 1, rate = 0.25),
@@ -92,7 +92,7 @@ eta <- debinfer_par(name = "eta", var.type = "de", fixed = FALSE,
 
 Tmin <- debinfer_par(name = "Tmin", var.type = "de", fixed = FALSE,
                      value = 3, prior="unif", hypers=list(min = 2, max = 6),
-                     prop.var=0.2, samp.type="rw")
+                     prop.var=0.05, samp.type="rw")
 
 
 # ----inits---------------------------------------------------------------
@@ -100,6 +100,7 @@ C <- debinfer_par(name = "C", var.type = "init", fixed = TRUE, value = 120)
 S <- debinfer_par(name = "S", var.type = "init", fixed = TRUE, value = 0)
 Z <- debinfer_par(name = "Z", var.type = "init", fixed = TRUE, value = 0)
 
+## ----mcmc-setup----------------------------------------------------------
 # ----setup---------------------------------------------------------------
 mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
 
@@ -107,11 +108,11 @@ mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
 ## ----deBinfer, results="hide"--------------------------------------------
 # do inference with deBInfer
 # MCMC iterations
-iter = 200
+iter = 5000
 # inference call
 dede_rev <- de_mcmc(N = iter, data=chytrid, de.model=CSZ.dede,
                                obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                               Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
+                               Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=iter %/% 10,
                                plot=FALSE, sizestep=0.1, solver="dede", verbose = TRUE)
 
 ## ----message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8----------
