@@ -1,17 +1,21 @@
 ---
-title: "deBInfer logistic ODE example"
+title: "Bayesian inference for the logistic growth model"
 author: "Philipp H Boersch-Supan"
-date: "`r Sys.Date()`"
-output: pdf_document
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  pdf_document: 
+    keep_tex: yes
+    number_sections: yes
+bibliography: debinfer.bib
 vignette: >
   %\VignetteIndexEntry{Logistic ODE example}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 #Preliminaries
 
-First we install the deBInfer package. For this you need to install and load the devtools package first. You can do this from CRAN.
+This examples assumes that `deBInfer` is installed and loaded. If this is not the case it needs to be installed from github, which requires the devtools package.
 ```{r install1, eval=FALSE}
 install.packages("devtools")
 ```
@@ -20,9 +24,12 @@ install.packages("devtools")
 library(devtools)
 ```
 
-Then you install deBInfer from github
-```{r install2, eval=FALSE}
+Then deBInfer can be installed from github.
+```{r install2, eval=FALSE, results='hide', message=FALSE, warning=FALSE}
 install_github("pboesu/debinfer")
+```
+```{r loadlib, message=FALSE}
+library(deBInfer)
 ```
 
 #Defining the DE model
@@ -49,7 +56,7 @@ Which gives us the numerical solution
 plot(out)
 ```
 
-#Simulationg observations
+#Simulating observations
 Now we simulate a noisy dataset from this equation. We sample a random subset from the integration output 
 
 ```{r}
