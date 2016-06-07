@@ -4,18 +4,18 @@ author: "Philipp H Boersch-Supan and Leah R Johnson"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: 
   pdf_document: 
-    keep_tex: no
+    keep_tex: yes
     number_sections: yes
 bibliography: debinfer.bib
 vignette: >
   %\VignetteIndexEntry{Chytrid DDE example}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 #Preliminaries
 
-This examples assumes that `deBInfer` is installed and loaded. If this is not the case you need to install it from github, which requires the devtools package.
+This examples assumes that `deBInfer` is installed and loaded. If this is not the case it needs to be installed from github, which requires the devtools package.
 ```{r install1, eval=FALSE}
 install.packages("devtools")
 ```
@@ -24,7 +24,7 @@ install.packages("devtools")
 library(devtools)
 ```
 
-Then you install deBInfer from github
+Then deBInfer can be installed from github.
 ```{r install2, eval=FALSE, results='hide', message=FALSE, warning=FALSE}
 install_github("pboesu/debinfer")
 ```
@@ -109,7 +109,7 @@ The log-likelihood of the data given the parameters, underlying model, and initi
 
 **Explain epsilon correction**
 
-This can be translated into an observation model function for `deBInfer`. The observation model function must have three named arguments `data`, `sim.data`, and `samp`, as these are used by the MCMC procedure to pass in the data, the current state of the Markov chain, and the associated DE model solution. We can access these inputs to define the data likelihood. In this case we have repeat measurements for each time point, so we iterate over the unique timepoints in `data$time`, and then calculate the sum log-likelihood over all matching `data$count` observations using the current value of the state variable $Z$ from the DE model solution at this point in the Markov chain. **Explain indexing of deSolve vs dde solutions**
+This can be translated into an observation model function for `deBInfer`. The observation model function must have three named arguments `data`, `sim.data`, and `samp`, as these are used by the MCMC procedure to pass in the data (as a `data.frame`), the current state of the Markov chain (as a named vector), and the associated DE model solution (as a matrix-like object of class `deSolve`). We can access these inputs to define the data likelihood. In this case we have repeat measurements for each time point, so we iterate over the unique timepoints in `data$time`, and then calculate the sum log-likelihood over all matching `data$count` observations using the current value of the state variable $Z$ from the DE model solution at this point in the Markov chain.
 
 ```{r obs-model}
 # observation model
@@ -210,3 +210,6 @@ Alternatively we can plot an ensemble of posterior trajectories
 ```{r post-sims-ensemble, fig.width = 8, fig.height = 6}
 plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 ```
+
+
+# References

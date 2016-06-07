@@ -5,8 +5,11 @@
 #Load the devtools package.
 library(devtools)
 
-## ----install2, eval=FALSE------------------------------------------------
+## ----install2, eval=FALSE, results='hide', message=FALSE, warning=FALSE----
 #  install_github("pboesu/debinfer")
+
+## ----loadlib, message=FALSE----------------------------------------------
+library(deBInfer)
 
 ## ----ode-def, message=FALSE,warning=FALSE--------------------------------
 library(deSolve)
