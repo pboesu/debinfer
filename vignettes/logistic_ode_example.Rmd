@@ -1,6 +1,6 @@
 ---
 title: "Bayesian inference for the logistic growth model"
-author: "Philipp H Boersch-Supan"
+author: "Philipp H Boersch-Supan and Leah R Johnson"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: 
   pdf_document: 
