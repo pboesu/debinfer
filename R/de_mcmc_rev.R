@@ -25,6 +25,7 @@
 ##' @param ... further arguments to the solver
 ##' @return a debinfer_result object containing input parameters, data and MCMC samples
 ##' @author Philipp Boersch-Supan
+##' @importFrom methods formalArgs
 ##' @export
 de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
                               Tmax, data.times, cnt=10,
