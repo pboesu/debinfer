@@ -24,7 +24,8 @@ Imports:
     graphics,
     grDevices,
     plyr,
-    PBSddesolve
+    PBSddesolve,
+    methods
 Suggests:
     testthat,
     knitr,
