@@ -163,10 +163,11 @@ plot.debinfer_result <- function(x, plot.type="coda", ...){
 #' @param col color, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
 #' @param lty line type, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
 #' @param auto.layout logical, should the layout for plot.type = medianHDI be determined automatically?
+#' @param panel.first an ‘expression’ to be evaluated after the plot axes are set up but before any plotting takes place. This can be useful for adding data points.
 #' @param ... further arguments to methods
 #'
 #' @export
-plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","darkgrey"), lty = c(1,2), auto.layout = TRUE,...){
+plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","darkgrey"), lty = c(1,2), auto.layout = TRUE, panel.first=NULL,...){
   if (plot.type=="medianHDI") {
     if (auto.layout){
       # store old par
@@ -176,7 +177,10 @@ plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","darkgrey
       par(mfrow=n2mfrow(nplots))
     }
     for (i in 1:length(x$median)){
-      plot(x$time, x$median[[i]], type='l', col = col[1], lty = lty[1], ylim = c(min(x$HDI[[i]][,1]),max(x$HDI[[i]][,2])), ylab = names(x$median)[i], xlab = "time", ...)
+      #if no ylims given, use HDI to determine them
+      if("ylim" %in% names(list(...))) { plot(x$time, x$median[[i]], type='l', col = col[1], lty = lty[1], ylab = names(x$median)[i], xlab = "time", panel.first=panel.first, ...) } else {
+        plot(x$time, x$median[[i]], type='l', col = col[1], lty = lty[1], ylim  = c(min(x$HDI[[i]][,1]),max(x$HDI[[i]][,2])),  ylab = names(x$median)[i], xlab = "time", panel.first=panel.first,...)
+      }
       lines(x$time, x$HDI[[i]][,1], col=col[2], lty = lty[2])
       lines(x$time, x$HDI[[i]][,2], col=col[2], lty = lty[2])
     }
