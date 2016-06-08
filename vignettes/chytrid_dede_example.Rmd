@@ -4,7 +4,6 @@ author: "Philipp H Boersch-Supan and Leah R Johnson"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: 
   pdf_document: 
-    keep_tex: yes
     number_sections: yes
 bibliography: debinfer.bib
 vignette: >

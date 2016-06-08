@@ -133,7 +133,7 @@ Finally we use deBInfer to estimate the parameters of the original model.
   mcmc_samples <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model, 
                           obs.model=logistic_obs_model, all.params=mcmc.pars,
                           Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter+1, 
-                          plot=FALSE, sizestep=0.1, solver="ode")
+                          plot=FALSE, solver="ode")
 
 ```
 
