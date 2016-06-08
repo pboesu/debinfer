@@ -31,6 +31,12 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
                               plot=TRUE, sizestep=0.01, solver="ode",
                               verbose =FALSE, ...)
 {
+  #check models
+  if(!is.function(obs.model)) stop("obs.model must be a function")
+  if(!identical(formalArgs(obs.model), c("data", "sim.data", "samp" ))) stop("obs.model must be a function with arguments 'data', 'sim.data', 'samp'")
+  if(!is.function(de.model)) stop("de.model must be a function")
+
+  #get names, identify free parameters and inits
   p.names <- sapply(all.params, function(x) x$name)
   is.free <- !sapply(all.params, function(x) x$fixed)
   is.init <- sapply(all.params, function(x) x$var.type)=="init"
