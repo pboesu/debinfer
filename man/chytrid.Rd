@@ -4,8 +4,14 @@
 \name{chytrid}
 \alias{chytrid}
 \title{Chytrid fungus data set}
+\format{A data.frame with 76 rows and two columns
+\describe{
+  \item{time}{days since the start of the experiment}
+  \item{count}{count of zoospores ($\times$ 1e4)}
+}}
 \description{
-Spore counts of the chytrid fungus \emph{Batrachochytrium dendrobatidis}. This dataset contains a small portion of the observations underlying the experimental study conducted by Voyles et al. (2012).
+Replicated spore counts of an experimental culture of the chytrid fungus \emph{Batrachochytrium dendrobatidis}. 
+This dataset is a subset of the observations from the experimental study conducted by Voyles et al. (2012).
 }
 \author{
 Philipp Boersch-Supan
