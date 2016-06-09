@@ -11,7 +11,7 @@ de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
 \arguments{
 \item{N}{integer, number of MCMC iterations}
 
-\item{data}{data.frame observations to fit the model to}
+\item{data}{data.frame of time course observations to fit the model to. The observations must be ordered ascending by time.}
 
 \item{de.model}{a function defining a DE model, compliant with the solvers in deSolve or PBSddesolve}
 
