@@ -14,7 +14,9 @@ vignette: >
 
 #Preliminaries
 
-This examples assumes that `deBInfer` is installed and loaded. If this is not the case it needs to be installed from github, which requires the devtools package.
+This vignette illustrates the steps needed to perform inference for a DDE model of population growth in a fungal pathogen. A detailed description of the rationale behind the Bayesian inference approach for differential equations can be found in the preprint describing the `deBInfer` package [@deBInfer]. 
+
+This example assumes that `deBInfer` is installed and loaded. If this is not the case it needs to be installed from github, which requires the devtools package [@devtools].
 ```{r install1, eval=FALSE}
 install.packages("devtools")
 ```
@@ -106,9 +108,7 @@ The log-likelihood of the data given the parameters, underlying model, and initi
 \ell(\mathbf{Z}|\mathbf{\theta})=\sum\limits^n_{t}Z_t \text{ log }\lambda-n\lambda
 \end{equation}
 
-**Explain epsilon correction**
-
-This can be translated into an observation model function for `deBInfer`. The observation model function must have three named arguments `data`, `sim.data`, and `samp`, as these are used by the MCMC procedure to pass in the data (as a `data.frame`), the current state of the Markov chain (as a named vector), and the associated DE model solution (as a matrix-like object of class `deSolve`). We can access these inputs to define the data likelihood. In this case we have repeat measurements for each time point, so we iterate over the unique timepoints in `data$time`, and then calculate the sum log-likelihood over all matching `data$count` observations using the current value of the state variable $Z$ from the DE model solution at this point in the Markov chain.
+This can be translated into an observation model function for `deBInfer`. The observation model function must have three named arguments `data`, `sim.data`, and `samp`, as these are used by the MCMC procedure to pass in the data (as a `data.frame`, i.e. indexed using the `$` operator and the column names of the input data), the current state of the Markov chain (as a named vector), and the associated DE model solution (as a matrix-like object of class `deSolve`, i.e. indexed using the `[ ]` operator and the declared names of the state variables). We can access these inputs to define the data likelihood. In this case we have repeat measurements for each time point, so we iterate over the unique timepoints in `data$time`, and then calculate the sum log-likelihood over all matching `data$count` observations using the current value of the state variable $Z$ from the DE model solution at this point in the Markov chain.
 
 ```{r obs-model}
 # observation model
@@ -125,7 +125,10 @@ chytrid_obs_model<-function(data, sim.data, samp){
   return(llik)
 }
 ```
+Following Johnson et al. [-@johnson2013bayesian] we employ a small correction `ec` that is needed because the DE solution can equal zero, whereas the parameter `lambda` of the Poisson likelihood must be strictly positive.
 
+
+## Parameter declaration
 
 We continue by defining the parameters for inference
 ```{r vars}
@@ -160,14 +163,16 @@ S <- debinfer_par(name = "S", var.type = "init", fixed = TRUE, value = 0)
 Z <- debinfer_par(name = "Z", var.type = "init", fixed = TRUE, value = 0)
 ```
 
-**Explain importance of init order**
+## MCMC Inference 
+
+The declared parameters are then collated using the `setup_debinfer` function. Note that **the initial values must be entered in the same order, as they are specified in the DE model function**, as the solver matches these values by position, rather than by name. More details can be found in `?deSolve::dede`. The remaining parameters can be entered in any order.
 
 ```{r mcmc-setup}
 # ----setup---------------------------------------------------------------
 mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
 ```
 
-And then do the actual inference
+`de_mcmc` is the workhorse of the package and runs the MCMC estimation. The progress of the MCMC procedure can be monitored using the `cnt`, `plot` and `verbose` options: Every `cnt` iterations the function will print out information about the current state, and, if `plot=TRUE`, traceplots of the chains will be plotted. Setting `verbose=TRUE` will print additional information. Note that frequent plotting will substantially slow down the MCMC sampler, and should be used only on short runs when tuning the sampler.
 ```{r de_mcmc, results='hide'}
 # do inference with deBInfer
 # MCMC iterations
@@ -175,37 +180,67 @@ iter = 500
 # inference call
 dede_rev <- de_mcmc(N = iter, data=chytrid, de.model=CSZ.dede,
                                obs.model=chytrid_obs_model, all.params=mcmc.pars,
-                               Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=iter %/% 10,
+                               Tmax = max(chytrid$time), data.times=c(0,chytrid$time), cnt=50,
                                plot=FALSE, sizestep=0.1, solver="dede", verbose = TRUE)
 ```
+Note that the number of iterations was set to 500 to keep the build time of the vignette within acceptable limits. For the inference results reported in Boersch-Supan and Johnson [-@deBInfer] the MCMC procedure was run for 100000 iterations, which took about 4 hours on a 2014 Apple Mac mini with a 2.6 GHz Intel i5 processor.
+
+## MCMC diagnostics
 
 We plot and summarize the MCMC chains
 ```{r message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8}
 par(mfrow = c(3,4))
 plot(dede_rev, ask=FALSE, auto.layout=FALSE)
 ```
-From the traceplot we can see that the burnin period is **about 200 samples**. We can remove the burnin and have a look at parameter correlations, and the overlap between the posterior and prior densities.
+From the traceplot we can see that with only 500 iterations the chains have neither mixed well, nor reached stationarity. For demonstration purposes we remove a burnin period of 100 samples and have a look at parameter correlations, and the overlap between the posterior and prior densities.
 ```{r, fig.width = 8, fig.height = 8}
 burnin = 50
 pairs(dede_rev, burnin = burnin, scatter=TRUE, trend=TRUE)
 post_prior_densplot(dede_rev, burnin = burnin)
-summary(dede_rev)
 ```
-We simulate DE model trajectories from the posterior and calculate the HPD interval for the deterministic part of the model.
+More control over the `post_prior_densplot` can be achieved by plotting the parameters individually, using the `param` option. This way the x and y limits of the plots can be adjusted to show a larger portion of the prior support, and fancy labels can be added.
+```{r}
+par(mfrow=c(2,3), mgp=c(2.2, 0.8, 0))
+#define a fancy y axis label
+ylabel = expression(paste(Pr,"(", theta,"|", "Y", ")"))
+#plot the individual parameters
+post_prior_densplot(dede_rev, param="sr",xlab=expression(theta), 
+                    ylab=ylabel, show.obs=FALSE, xlim=c(0,8), 
+                    main=expression(paste("s",phantom()[{paste("r")}])))
+legend("topright", legend=c("Posterior","Prior"), lty = 1, col = c("black", "red"))
+post_prior_densplot(dede_rev, param="fs",xlab=expression(theta), 
+                    ylab=ylabel, show.obs=FALSE, xlim=c(-0.1,1.1), 
+                    main=expression(paste("f",phantom()[{paste("s")}])))
+post_prior_densplot(dede_rev, param="ds",xlab=expression(theta),
+                    ylab=ylabel, show.obs=FALSE, xlim=c(0,3), 
+                    main=expression(paste("d",phantom()[{paste("s")}])))
+post_prior_densplot(dede_rev, param="muz",xlab=expression(theta),
+                    ylab=ylabel, show.obs=FALSE, xlim=c(0,6), 
+                    main=expression(paste(mu,phantom()[{paste("Z")}])))
+post_prior_densplot(dede_rev, param="eta",xlab=expression(theta),
+                    ylab=ylabel, show.obs=FALSE, xlim=c(0,50), ylim=c(0,0.2), 
+                    main=expression(eta))
+post_prior_densplot(dede_rev, param="Tmin",xlab=expression(theta),
+                    ylab=ylabel, show.obs=FALSE, xlim=c(1.5,6.5), 
+                    main=expression(paste("T",phantom()[{paste("min")}])))
+```
+
+## Simulating posterior trajectories
+We simulate 100 DE model trajectories from the posterior and calculate the 95% highest posterior density interval for the deterministic part of the model.
 
 ```{r post-sims}
-post_traj <- post_sim(dede_rev, n=20, times=0:100, burnin=burnin, output = 'all')
+post_traj <- post_sim(dede_rev, n=100, times=0:100, burnin=burnin, output = 'all', prob = 0.95)
 ```
 
-We can visualise the median posterior trajectory and the associated highest posterior density interval using `r plot.type="medianHDI"` 
+We can visualise the median posterior trajectory and the highest posterior density interval using `r plot.type="medianHDI"` 
 ```{r post-sims-plot, fig.width = 8, fig.height = 3}
 #median and HDI
 par(mfrow=c(1,3))
 plot(post_traj, plot.type = "medianHDI", auto.layout = FALSE)
-legend("topright", legend=c("posterior median", "95% HDI"), lty=1, col=c("red","grey"))
+legend("topright", legend=c("posterior median", "95% HDI"), lty=1, col=c("red","grey"), bty='n')
 
 ```
-Alternatively we can plot an ensemble of posterior trajectories
+Alternatively we can plot an ensemble of posterior trajectories using `r plot.type="ensemble"` 
 ```{r post-sims-ensemble, fig.width = 8, fig.height = 6}
 plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 ```
