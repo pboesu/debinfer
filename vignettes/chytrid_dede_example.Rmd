@@ -194,7 +194,7 @@ plot(dede_rev, ask=FALSE, auto.layout=FALSE)
 ```
 From the traceplot we can see that with only 500 iterations the chains have neither mixed well, nor reached stationarity. For demonstration purposes we remove a burnin period of 100 samples and have a look at parameter correlations, and the overlap between the posterior and prior densities.
 ```{r, fig.width = 8, fig.height = 8}
-burnin = 50
+burnin = 100
 pairs(dede_rev, burnin = burnin, scatter=TRUE, trend=TRUE)
 post_prior_densplot(dede_rev, burnin = burnin)
 ```

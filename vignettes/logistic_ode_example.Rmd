@@ -172,7 +172,7 @@ abline(v=10, col="red", lty=2)
 post_prior_densplot(mcmc_samples, burnin = burnin, param="sdlog.N")
 abline(v=0.05, col="red", lty=2)
 ```
-Overlay the true underlying parameter values as vertical dashed lines shows that our estimation is doing a pretty good job.
+Overlay the true underlying parameter values as vertical dashed lines shows that our estimation is recovering the true parameters.
 
 # Posterior simulations
 We then simulate DE model trajectories from the posterior and calculate the 95% highest posterior density interval for the deterministic part of the model.
