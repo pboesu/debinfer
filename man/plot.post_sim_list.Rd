@@ -18,7 +18,7 @@
 
 \item{auto.layout}{logical, should the layout for plot.type = medianHDI be determined automatically?}
 
-\item{panel.first}{an ‘expression’ to be evaluated after the plot axes are set up but before any plotting takes place. This can be useful for adding data points.}
+\item{panel.first}{an 'expression' to be evaluated after the plot axes are set up but before any plotting takes place. This can be useful for adding data points.}
 
 \item{...}{further arguments to methods}
 }

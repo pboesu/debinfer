@@ -163,7 +163,7 @@ plot.debinfer_result <- function(x, plot.type="coda", ...){
 #' @param col color, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
 #' @param lty line type, for plot.type="medianHDI" the first element is used for the median, the second for the HDI
 #' @param auto.layout logical, should the layout for plot.type = medianHDI be determined automatically?
-#' @param panel.first an ‘expression’ to be evaluated after the plot axes are set up but before any plotting takes place. This can be useful for adding data points.
+#' @param panel.first an 'expression' to be evaluated after the plot axes are set up but before any plotting takes place. This can be useful for adding data points.
 #' @param ... further arguments to methods
 #'
 #' @export

@@ -9,7 +9,7 @@
 ##' @import coda
 ##' @import PBSddesolve
 ##' @param N integer, number of MCMC iterations
-##' @param data data.frame observations to fit the model to
+##' @param data data.frame of time course observations to fit the model to. The observations must be ordered ascending by time.
 ##' @param all.params debinfer_parlist containing all model, MCMC, and observation
 ##' @param ref.params an optional named vector containing a set of reference parameters, e.g. the true paramaters underlying a simulated data set
 ##' @param ref.inits  an optional named vector containing a set of reference initial values, e.g. the true initial values underlying a simulated data set
