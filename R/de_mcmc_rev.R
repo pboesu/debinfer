@@ -109,8 +109,12 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
   ## check the posterior probability to make sure you have reasonable
   ## starting values, and to initialize prob.old
-  samps[1,"lpost"] <- log_post_params(samp = params, data = data, sim.data = sim.start, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
-
+  try.lpost <- try(log_post_params(samp = params, data = data, sim.data = sim.start, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p))
+  if(inherits(try.lpost, "try-error")) {
+    stop("log likelihood calculation failed with current starting values")
+  } else {
+    samps[1,"lpost"] <- try.lpost
+  }
   if(!is.finite(samps[1,"lpost"])) stop("Infinite log likelihood with current starting values")
 
   print(paste("initial posterior probability = ", samps[1,"lpost"], sep=""))
