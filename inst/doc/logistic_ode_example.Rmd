@@ -6,6 +6,7 @@ output:
   pdf_document: 
     number_sections: yes
 bibliography: debinfer.bib
+csl: methods-in-ecology-and-evolution.csl
 vignette: >
   %\VignetteIndexEntry{Logistic ODE example}
   %\VignetteEncoding{UTF-8}
@@ -107,7 +108,7 @@ The user specifies the observation model such that it returns the summed log-lik
 
 ```
 
-All parameters that are used in the DE model and the observation model need to be declared for the inference procedure using the `debinfer_par()` function. The declaration describes the variable name, whether it is a DE or observation parameter and whether or not it is to be estimated. If the parameter is to be estimated, the user also needs to specify a prior distribution and a number of additional parameters for the MCMC procedure. `debinfer` currently supports priors from all probability distributions implemented in base R, as well as their truncated variants, as implemented in the `truncdist` package [@truncdist].
+All parameters that are used in the DE model and the observation model need to be declared for the inference procedure using the `debinfer_par()` function. The declaration describes the variable name, whether it is a DE or observation parameter and whether or not it is to be estimated. If the parameter is to be estimated, the user also needs to specify a prior distribution and a number of additional parameters for the MCMC procedure. `deBInfer` currently supports priors from all probability distributions implemented in base R, as well as their truncated variants, as implemented in the `truncdist` package [@truncdist].
 
 We declare the DE model parameter $r$, assign a prior $r \sim \mathcal{N}(0,1)$ and a random walk sampler with a Normal kernel (`samp.type="rw"`) and  proposal variance of 0.005.
 Similarly, we declare $K\sim \ln\mathcal{N}(1,1)$ and $\ln(\sigma^2_{obs})\sim\mathcal{N}(0,1)$. Note that we are using the asymmetric uniform proposal distribution $\mathcal{U}(\frac{a}{b}\theta^{(k)}, \frac{b}{a}\theta^{(k)})$ for the variance parameter (`samp.type="rw-unif"`), as this ensures strictly positive proposals.
@@ -172,6 +173,7 @@ abline(v=10, col="red", lty=2)
 post_prior_densplot(mcmc_samples, burnin = burnin, param="sdlog.N")
 abline(v=0.05, col="red", lty=2)
 ```
+
 Overlay the true underlying parameter values as vertical dashed lines shows that our estimation is recovering the true parameters.
 
 # Posterior simulations
@@ -190,6 +192,7 @@ legend("topleft", legend=c("posterior median", "95% HDI", "true model"),
        lty=c(2,1,1), lwd=c(3,2,2), col=c("red","grey20","darkblue"), bty='n')
 
 ```
+
 Again, this confirms that the inference procedure does indeed recover the true model.
 
 

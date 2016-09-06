@@ -6,6 +6,7 @@ output:
   pdf_document: 
     number_sections: yes
 bibliography: debinfer.bib
+csl: methods-in-ecology-and-evolution.csl
 vignette: >
   %\VignetteIndexEntry{Chytrid DDE example}
   %\VignetteEncoding{UTF-8}
@@ -90,7 +91,7 @@ CSZ.dede<-function(t,y,p){
 
 ## Observation model
 
-Eventhough the data used in this example come from an experimental study, the system is only partially observed. We know the initial conditions for all states, but we only have observations for the second generation of Zoospores $Z$. Because the observations are counts (i.e. discrete numbers), we assume that observations of the system at a set of discrete times $t'$ are independent Poisson random variables with a mean given by the solution of the DDE, at times $t'$.
+Even though the data used in this example come from an experimental study, the system is only partially observed. We know the initial conditions for all states, but we only have observations for the second generation of Zoospores $Z$. Because the observations are counts (i.e. discrete numbers), we assume that observations of the system at a set of discrete times $t'$ are independent Poisson random variables with a mean given by the solution of the DDE, at times $t'$.
 
 The observations are provided with `deBInfer`. They can be loaded with the `data()` command.
 
