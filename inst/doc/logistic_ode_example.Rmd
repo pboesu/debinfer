@@ -91,7 +91,7 @@ The appropriate log-likelihood for these data takes the form
 \begin{equation}
 \ell(\mathcal{Y}|\boldsymbol\theta) = \sum_t \ln\left(\frac{1}{\tilde{N_t}\sigma_{obs}\sqrt{2\pi}}\exp\left(-\frac{(\ln \tilde{N_t}-\ln (N_t+\varepsilon))^2}{2\sigma^2_{obs}}\right)\right)
 \end{equation}
-where $\tilde{N}_t$ are the observations, and $N_t$ are the predictions of the DE model given the current MCMC sample of the parameters $\boldsymbol{\theta}$. Further, $\varepsilon$  is a small correction needed, because the DE solution can equal zero (or less, depending on numerical precision) [@johnson2013bayesian]. We chose $\varepsilon= 10^{-6}$, which is on the same order as the  numerical precision of the default solver (`deSolve::ode`} with {`method = "lsoda"`).
+where $\tilde{N}_t$ are the observations, and $N_t$ are the predictions of the DE model given the current MCMC sample of the parameters $\boldsymbol{\theta}$. Further, $\varepsilon$  is a small correction needed, because the DE solution can equal zero (or less, depending on numerical precision) [@johnson2013bayesian]. $\varepsilon$ should therefore be at least as large as the expected numerical precision of the solver.  We chose $\varepsilon= 10^{-6}$, which is on the same order as the default numerical precision of the default solver (`deSolve::ode` with `method = "lsoda"`), but we found that the inference results were insensitive to this choice as long as $\varepsilon \leq 0.01$ . A sensitivity analysis for $\varepsilon$ can be found at the end of this document.
 
 This can be translated into an observation model function for `deBInfer`. The observation model function must have three named arguments `data`, `sim.data`, and `samp`, as these are used by the MCMC procedure to pass in the data (as a `data.frame`, i.e. indexed using the `$` operator and the column names of the input data), the current state of the Markov chain (as a named vector), and the associated DE model solution (as a matrix-like object of class `deSolve`, i.e. indexed using the `[ ]` operator and the declared names of the state variables). We can access these inputs to define the data likelihood. 
 
@@ -197,5 +197,65 @@ Lastly, we can plot an ensemble of posterior trajectories using `plot.type="ense
 ```{r post-sims-ensemble}
 plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 ```
+
+# Sensitivity analysis for $\varepsilon$
+Below is code to conduct a sensitivity analysis for the influence of the value of the correction factor $\varepsilon$ in the observation model on the posterior parameter estimates. (The vignette makes use of a precompiled Figure instead of evaluating the code, as the execution takes about 10 minutes on a modern desktop computer).
+
+ For this purpose we modify the observation model slightly, so that $\varepsilon$ can be passed in as an observation parameter, and we declare a corresponding `debinfer_par` with the name `epsilon` and add it to the parameter list.
+
+```{r epsilon-sims, eval=FALSE}
+#reformulate the observation model such that epsilon is an observation parameter
+logistic_obs_model_eps<-function(data, sim.data, samp){
+  
+  llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + samp[['epsilon']]), 
+                     sdlog=samp[['sdlog.N']], log=TRUE))
+  return(llik.N)
+}
+
+#declare epsilon
+epsilon <- debinfer_par(name="epsilon", var.type = "obs", fixed = TRUE, value = 1e-6)
+
+#set up MCMC parameters
+mcmc.pars <- setup_debinfer(r, K, sdlog.N, epsilon, N)
+```
+
+We can then manipulate the value of `epsilon` in list object `mcmc.pars` within an `lapply` call and conduct the inference for each value of `eps_range`. 
+```{r epsilon-sims-ctd, eval=FALSE}
+#define a range of epsilon values
+eps_range <- c(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1)
+
+#conduct inference for each value of eps_range
+eps_sims <- lapply(eps_range, function(x){
+  #reassign value of epsilon
+  mcmc.pars$epsilon$value <- x
+  eps_samples <- de_mcmc(N = 10000, data=N_obs, de.model=logistic_model, 
+                          obs.model=logistic_obs_model_eps, all.params=mcmc.pars,
+                          Tmax = max(N_obs$time), data.times=N_obs$time, cnt=500, 
+                          plot=FALSE, solver="ode")
+  return(eps_samples)
+})
+
+#add names to the inference runs
+names(eps_sims) <- as.character(eps_range)
+
+#collate the samples in a data.frame for easy plotting while omitting a burnin of 1000 samples
+eps_samps <- plyr::ldply(eps_sims[1:6], function(x)(x$samples[1000:10000,]), .id="epsilon")
+
+#plot sensitivity analysis
+par(mfrow = c(1,3), mar=c(3,3,2,2), mgp=c(1.7,0.5,0))
+beanplot::beanplot(eps_samps$r ~ eps_samps$epsilon, log="", what=c(0,1,1,0), 
+                   col="darkgrey", bw=2e-4, maxwidth=0.6, xlab="epsilon", ylab = "r")
+legend("bottomleft", legend=c("posterior mean", "true value"), lty = c(1,3), 
+       col = c("black", "red"), lwd=2, bty='n')
+abline(h=0.1, col='red', lwd=2, lty=3)
+beanplot::beanplot(eps_samps$K ~ eps_samps$epsilon, log="", what=c(0,1,1,0), 
+                   col="darkgrey", bw=2e-2, maxwidth=0.6, xlab="epsilon", ylab = "K")
+abline(h=10, col='red', lwd=2, lty=3)
+beanplot::beanplot(eps_samps$sdlog.N ~ eps_samps$epsilon, log="", what=c(0,1,1,0), 
+                   col="darkgrey", bw=2e-3, maxwidth=0.6, xlab="epsilon", ylab = "sdlog.N")
+abline(h=0.05, col='red', lwd=2, lty=3)
+
+```
+![Influence of $\varepsilon$ on the posterior parameter estimates](epsilon-sensitivity.pdf)
 
 # References
