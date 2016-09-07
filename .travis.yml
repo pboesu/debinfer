@@ -1,7 +1,10 @@
-# Sample .travis.yml for R projects
+#.travis.yml for deBInfer
 
 language: r
 cache: packages
+os:
+ - linux
+ - osx
 r:
  - release
  - devel
