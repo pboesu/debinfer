@@ -2,19 +2,17 @@
 
 language: r
 cache: packages
-os:
- - linux
- - osx
-before_install:
- - sudo tlmgr install framed
+matrix:
+ include:
+   - os: linux
+   - os: osx
+     before_install: sudo tlmgr install framed
 r:
  - release
  - devel
 warnings_are_errors: true
 sudo: required
-
 r_github_packages:
   - jimhester/covr
-
 after_success:
   - Rscript -e 'covr::codecov()'
