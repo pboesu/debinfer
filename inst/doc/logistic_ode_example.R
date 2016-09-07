@@ -116,3 +116,54 @@ legend("topleft", legend=c("posterior median", "95% HDI", "true model"),
 ## ----post-sims-ensemble--------------------------------------------------
 plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 
+## ----epsilon-sims, eval=FALSE--------------------------------------------
+#  #reformulate the observation model such that epsilon is an observation parameter
+#  logistic_obs_model_eps<-function(data, sim.data, samp){
+#  
+#    llik.N<-sum(dlnorm(data$N_noisy, meanlog=log(sim.data[,"N"] + samp[['epsilon']]),
+#                       sdlog=samp[['sdlog.N']], log=TRUE))
+#    return(llik.N)
+#  }
+#  
+#  #declare epsilon
+#  epsilon <- debinfer_par(name="epsilon", var.type = "obs", fixed = TRUE, value = 1e-6)
+#  
+#  #set up MCMC parameters
+#  mcmc.pars <- setup_debinfer(r, K, sdlog.N, epsilon, N)
+
+## ----epsilon-sims-ctd, eval=FALSE----------------------------------------
+#  #define a range of epsilon values
+#  eps_range <- c(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1)
+#  
+#  #conduct inference for each value of eps_range
+#  eps_sims <- lapply(eps_range, function(x){
+#    #reassign value of epsilon
+#    mcmc.pars$epsilon$value <- x
+#    eps_samples <- de_mcmc(N = 10000, data=N_obs, de.model=logistic_model,
+#                            obs.model=logistic_obs_model_eps, all.params=mcmc.pars,
+#                            Tmax = max(N_obs$time), data.times=N_obs$time, cnt=500,
+#                            plot=FALSE, solver="ode")
+#    return(eps_samples)
+#  })
+#  
+#  #add names to the inference runs
+#  names(eps_sims) <- as.character(eps_range)
+#  
+#  #collate the samples in a data.frame for easy plotting while omitting a burnin of 1000 samples
+#  eps_samps <- plyr::ldply(eps_sims[1:6], function(x)(x$samples[1000:10000,]), .id="epsilon")
+#  
+#  #plot sensitivity analysis
+#  par(mfrow = c(1,3), mar=c(3,3,2,2), mgp=c(1.7,0.5,0))
+#  beanplot::beanplot(eps_samps$r ~ eps_samps$epsilon, log="", what=c(0,1,1,0),
+#                     col="darkgrey", bw=2e-4, maxwidth=0.6, xlab="epsilon", ylab = "r")
+#  legend("bottomleft", legend=c("posterior mean", "true value"), lty = c(1,3),
+#         col = c("black", "red"), lwd=2, bty='n')
+#  abline(h=0.1, col='red', lwd=2, lty=3)
+#  beanplot::beanplot(eps_samps$K ~ eps_samps$epsilon, log="", what=c(0,1,1,0),
+#                     col="darkgrey", bw=2e-2, maxwidth=0.6, xlab="epsilon", ylab = "K")
+#  abline(h=10, col='red', lwd=2, lty=3)
+#  beanplot::beanplot(eps_samps$sdlog.N ~ eps_samps$epsilon, log="", what=c(0,1,1,0),
+#                     col="darkgrey", bw=2e-3, maxwidth=0.6, xlab="epsilon", ylab = "sdlog.N")
+#  abline(h=0.05, col='red', lwd=2, lty=3)
+#  
+

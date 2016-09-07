@@ -69,6 +69,7 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
   if(!fixed) if(!samp.type %in% c("rw", "rw-unif","ind")) stop('samp.type must be one of c("rw", "rw-unif","ind)')
   if(!fixed) if(samp.type == "rw") if(!is.numeric(prop.var) | prop.var < 0 | length(prop.var)!=1) stop("prop.var must be a numeric > 0 of length 1 for sampler type 'rw'")
   if(!fixed) if(samp.type == "rw-unif") if(!is.numeric(prop.var) | all(prop.var < 0) | length(prop.var)!=2) stop("prop.var must be a numeric > 0 of length 2 for sampler type 'rw-unif'")
+  if(!fixed) if(samp.type == "rw-unif") if(prop.var[1] >= prop.var[2])stop("prop.var[1] must be smaller than prop.var[2] for sampler type 'rw-unif'")
   #checks for prior and hypers?
   if(!is.null(joint)) stop("joint proposals are not yet implemented")
 
