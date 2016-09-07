@@ -5,11 +5,15 @@ cache: packages
 matrix:
  include:
    - os: linux
+     r: release
+   - os: linux
+     r: devel
    - os: osx
+     r: release
      before_install: sudo tlmgr install framed
-r:
- - release
- - devel
+   - os: osx
+     r: devel
+     before_install: sudo tlmgr install framed
 warnings_are_errors: true
 sudo: required
 r_github_packages:
