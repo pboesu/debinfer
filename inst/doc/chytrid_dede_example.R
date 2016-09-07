@@ -151,7 +151,7 @@ post_prior_densplot(dede_rev, param="Tmin",xlab=expression(theta),
                     main=expression(paste("T",phantom()[{paste("min")}])))
 
 ## ----post-sims-----------------------------------------------------------
-post_traj <- post_sim(dede_rev, n=100, times=0:100, burnin=burnin, output = 'all', prob = 0.95)
+post_traj <- post_sim(dede_rev, n = 100, times = seq(0,10,by=0.1), burnin = burnin, output = 'all', prob = 0.95)
 
 ## ----post-sims-plot, fig.width = 8, fig.height = 3-----------------------
 #median and HDI
@@ -162,4 +162,14 @@ legend("topright", legend=c("posterior median", "95% HDI"), lty=1, col=c("red","
 
 ## ----post-sims-ensemble, fig.width = 8, fig.height = 6-------------------
 plot(post_traj, plot.type = "ensemble", col = "#FF000040")
+
+## ----custom-sim-fig------------------------------------------------------
+plot(chytrid, xlab="Time (days)", ylab= "Zoospores x 10e4", xlim=c(0,10)) 
+
+for(i in seq_along(post_traj$sims)){
+DATA1 <- as.data.frame(post_traj$sims[i])
+lines(DATA1[,2] ~ DATA1[,1])
+lines(DATA1[,3] ~ DATA1[,1],col="red")
+lines(DATA1[,4] ~ DATA1[,1],col="blue")
+}
 

@@ -230,7 +230,7 @@ post_prior_densplot(dede_rev, param="Tmin",xlab=expression(theta),
 We simulate 100 DE model trajectories from the posterior and calculate the 95% highest posterior density interval for the deterministic part of the model.
 
 ```{r post-sims}
-post_traj <- post_sim(dede_rev, n=100, times=0:100, burnin=burnin, output = 'all', prob = 0.95)
+post_traj <- post_sim(dede_rev, n = 100, times = seq(0,10,by=0.1), burnin = burnin, output = 'all', prob = 0.95)
 ```
 
 We can visualise the median posterior trajectory and the highest posterior density interval using `r plot.type="medianHDI"` 
@@ -241,10 +241,22 @@ plot(post_traj, plot.type = "medianHDI", auto.layout = FALSE)
 legend("topright", legend=c("posterior median", "95% HDI"), lty=1, col=c("red","grey"), bty='n')
 
 ```
+
 Alternatively we can plot an ensemble of posterior trajectories using `r plot.type="ensemble"` 
 ```{r post-sims-ensemble, fig.width = 8, fig.height = 6}
 plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 ```
 
+Lastly, it is straightforward to create customized plots by accessing the simulated trajectories inside the `post_traj` object (as the class `post_sim_list` is simply a nested list). For example we can recreate Figure 5 in @deBInfer, which shows the trajectories of all three state variables in a single plot, with the following code:
 
+```{r custom-sim-fig}
+plot(chytrid, xlab="Time (days)", ylab= "Zoospores x 10e4", xlim=c(0,10)) 
+
+for(i in seq_along(post_traj$sims)){
+DATA1 <- as.data.frame(post_traj$sims[i])
+lines(DATA1[,2] ~ DATA1[,1])
+lines(DATA1[,3] ~ DATA1[,1],col="red")
+lines(DATA1[,4] ~ DATA1[,1],col="blue")
+}
+```
 # References

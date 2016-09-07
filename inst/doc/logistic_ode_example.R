@@ -165,5 +165,4 @@ plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 #  beanplot::beanplot(eps_samps$sdlog.N ~ eps_samps$epsilon, log="", what=c(0,1,1,0),
 #                     col="darkgrey", bw=2e-3, maxwidth=0.6, xlab="epsilon", ylab = "sdlog.N")
 #  abline(h=0.05, col='red', lwd=2, lty=3)
-#  
 
