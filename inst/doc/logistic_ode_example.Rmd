@@ -202,7 +202,7 @@ plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 ```
 
 # Sensitivity analysis for $\varepsilon$
-Below is code to conduct a sensitivity analysis for the influence of the value of the correction factor $\varepsilon$ in the observation model on the posterior parameter estimates. (The vignette makes use of a precompiled Figure instead of evaluating the code, as the execution takes about 10 minutes on a modern desktop computer).
+Below is code to conduct a sensitivity analysis for the influence of the value of the correction factor $\varepsilon$ in the observation model on the posterior parameter estimates. (The vignette makes use of a precompiled figure instead of evaluating the following code, as the execution takes about 10 minutes on a modern desktop computer).
 
  For this purpose we modify the observation model slightly, so that $\varepsilon$ can be passed in as an observation parameter, and we declare a corresponding `debinfer_par` with the name `epsilon` and add it to the parameter list.
 
@@ -257,7 +257,6 @@ abline(h=10, col='red', lwd=2, lty=3)
 beanplot::beanplot(eps_samps$sdlog.N ~ eps_samps$epsilon, log="", what=c(0,1,1,0), 
                    col="darkgrey", bw=2e-3, maxwidth=0.6, xlab="epsilon", ylab = "sdlog.N")
 abline(h=0.05, col='red', lwd=2, lty=3)
-
 ```
 ![Influence of $\varepsilon$ on the posterior parameter estimates](epsilon-sensitivity.pdf)
 
