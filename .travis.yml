@@ -5,6 +5,8 @@ cache: packages
 os:
  - linux
  - osx
+before_install:
+ - sudo tlmgr install framed
 r:
  - release
  - devel
