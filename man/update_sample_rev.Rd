@@ -5,7 +5,7 @@
 \title{update_sample_rev}
 \usage{
 update_sample_rev(samps, samp.p, data, sim, out, Tmax, sizestep, data.times, l,
-  solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose, ...)
+  solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, ...)
 }
 \arguments{
 \item{samps}{row vector of samples from the previous mcmc iteration}
@@ -40,7 +40,9 @@ update_sample_rev(samps, samp.p, data, sim, out, Tmax, sizestep, data.times, l,
 
 \item{w.p}{names of free parameters}
 
-\item{verbose}{logical, print additional information from sampler}
+\item{verbose.mcmc}{logical print MCMC progress messages}
+
+\item{verbose}{logical, print additional information from solver}
 
 \item{...}{further arguments to solver}
 }

@@ -22,6 +22,7 @@
 ##' @param solver the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde
 ##' @param data.times time points for which observations are available
 ##' @param verbose.mcmc logical display MCMC progress messages
+##' @param verbose logical display verbose solver output
 ##' @param ... further arguments to the solver
 ##' @return a debinfer_result object containing input parameters, data and MCMC samples
 ##' @author Philipp Boersch-Supan
@@ -30,7 +31,7 @@
 de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
                               Tmax, data.times, cnt=10,
                               plot=TRUE, sizestep=0.01, solver="ode",
-                              verbose.mcmc =TRUE, ...)
+                              verbose.mcmc =TRUE, verbose = FALSE, ...)
 {
   #check models
   if(!is.function(obs.model)) stop("obs.model must be a function")
@@ -131,7 +132,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
     out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, out = out,
                        Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, solver=solver, i=i, cnt=cnt, w.p = w.p,
-                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose = verbose, ...)
+                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, ...)
     samps[i,] <- out$s #make sure order is matched
 #     if(test){
 #       if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
@@ -184,12 +185,13 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param pdfs names of prior pdfs
 ##' @param hyper list of hyperparameters
 ##' @param w.p names of free parameters
-##' @param verbose logical, print additional information from sampler
+##' @param verbose.mcmc logical print MCMC progress messages
+##' @param verbose logical, print additional information from solver
 ##' @param ... further arguments to solver
 ##' @export
 ##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
-                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, ...)
+                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, ...)
 {
   ## read in some bits
   s<-samps

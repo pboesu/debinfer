@@ -6,7 +6,8 @@
 \usage{
 de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
   ref.inits = NULL, Tmax, data.times, cnt = 10, plot = TRUE,
-  sizestep = 0.01, solver = "ode", verbose = FALSE, ...)
+  sizestep = 0.01, solver = "ode", verbose.mcmc = TRUE, verbose = FALSE,
+  ...)
 }
 \arguments{
 \item{N}{integer, number of MCMC iterations}
@@ -35,7 +36,9 @@ de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
 
 \item{solver}{the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde}
 
-\item{verbose}{logical}
+\item{verbose.mcmc}{logical display MCMC progress messages}
+
+\item{verbose}{logical display verbose solver output}
 
 \item{...}{further arguments to the solver}
 }
