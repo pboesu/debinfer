@@ -6,16 +6,23 @@ matrix:
  include:
    - os: linux
      r: release
+     sudo: required
    - os: linux
      r: devel
+     sudo: required
    - os: osx
      r: release
-     before_install: sudo tlmgr install framed
+     sudo: required
+     before_install: 
+      - sudo tlmgr update --self
+      - sudo tlmgr install framed
    - os: osx
      r: devel
-     before_install: sudo tlmgr install framed
+     sudo: required
+     before_install: 
+      - sudo tlmgr update --self
+      - sudo tlmgr install framed
 warnings_are_errors: true
-sudo: required
 r_github_packages:
   - jimhester/covr
 after_success:
