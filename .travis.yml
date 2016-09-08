@@ -2,6 +2,7 @@
 
 language: r
 cache: packages
+r_packages: covr
 matrix:
  include:
    - os: osx
@@ -13,6 +14,8 @@ matrix:
       - sudo tlmgr install titling
    - os: osx
      r: devel
+     r_packages:
+      - covr
      sudo: required
      before_install:
       - sudo tlmgr update --self
@@ -25,7 +28,7 @@ matrix:
      r: devel
      sudo: required
 warnings_are_errors: true
-r_github_packages:
-  - jimhester/covr
+#r_github_packages:
+#  - jimhester/covr
 after_success:
   - Rscript -e 'covr::codecov()'
