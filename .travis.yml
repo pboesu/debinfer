@@ -14,7 +14,6 @@ matrix:
       - sudo tlmgr install framed
       - sudo tlmgr install titling
    - os: osx
-     osx_image: xcode7.3
      disable_homebrew: true
      r: devel
      r_packages:
@@ -28,6 +27,8 @@ matrix:
       - truncdist
      sudo: required
      before_install:
+      - curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
+      - sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
       - sudo tlmgr update --self
       - sudo tlmgr install framed
       - sudo tlmgr install titling
