@@ -97,7 +97,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   samps <- coda::mcmc(matrix(numeric((np+1)*N), ncol=np+1, nrow=N, dimnames = list(NULL, c(p.names, "lpost"))))
 
   #initialize the mcmc structure with the starting values
-  samps[1,1:np] <- params
+  samps[1,seq_len(np)] <- params
 
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in p.
@@ -200,7 +200,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
   ints <- out$inits
 
   #randomize updating order
-  x<-1:l #make this the not joint paramters
+  x<-seq_len(l) #make this the not joint parameters
   #then get the number of joint blocks and add the joint blocks
   s.x<-sample(x) #and resample order
 
@@ -449,7 +449,7 @@ log_prior_params<-function(samp, pdfs, w.p, hyper){
   }
 
   ##print(c(as.numeric(samp), w.p, hyper[1]))
-  for(i in 1:len){
+  for(i in seq_len(len)){
     p<-w.p[i]
     s<-as.numeric(samp[p])
 

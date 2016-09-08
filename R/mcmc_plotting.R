@@ -27,7 +27,7 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
   old.par <- par(no.readonly=TRUE)
 
   # make layout for plot layout
-  laymat<-diag(1:np) #histograms
+  laymat<-diag(seq_len(np)) #histograms
   laymat[lower.tri(laymat)]<-(np + 1):(np + (np^2 - np) / 2) #correlations
   laymat[upper.tri(laymat)]<-(np + (np^2 - np) / 2 + 1):np^2 #heatmaps
 
@@ -36,14 +36,14 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
   par(mar=c(2,2,0.6,0.6), mgp = c(3,0.5,0)) #define marginals etc.
 
   # Draw histograms, tweak arguments of hist to make nicer figures
-  for(i in 1:np){
+  for(i in seq_len(np)){
     hist(x$samples[,i],main="")
     title(main=colnames(x$samples)[i], line = -0.1, xpd=TRUE)
   }
 
   # Write correlations to upper diagonal part of the graph
   # Again, tweak accordingly
-  for(i in 1:(np-1))
+  for(i in seq_len(np-1))
     for(j in (i+1):np){
       plot.default(-1:1,-1:1, type = "n",xlab="",ylab="",xaxt="n",yaxt="n")
       text(x=0,y=0,labels=paste(cors[i,j]),cex=2)
@@ -61,7 +61,7 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
 
 
   for(i in 2:np)
-    for(j in 1:(i-1)){
+    for(j in seq_len(i-1)){
       if (scatter == TRUE){
         plot.default(x$samples[,i],x$samples[,j], pch=16, cex=0.3, col='darkgrey', ...)
       } else {
@@ -176,7 +176,7 @@ plot.post_sim_list <- function(x, plot.type="medianHDI", col = c("red","darkgrey
       nplots <- length(x$median)
       par(mfrow=n2mfrow(nplots))
     }
-    for (i in 1:length(x$median)){
+    for (i in seq_along(x$median)){
       #if no ylims given, use HDI to determine them
       if("ylim" %in% names(list(...))) { plot(x$time, x$median[[i]], type='l', col = col[1], lty = lty[1], ylab = names(x$median)[i], xlab = "time", panel.first=panel.first, ...) } else {
         plot(x$time, x$median[[i]], type='l', col = col[1], lty = lty[1], ylim  = c(min(x$HDI[[i]][,1]),max(x$HDI[[i]][,2])),  ylab = names(x$median)[i], xlab = "time", panel.first=panel.first,...)
