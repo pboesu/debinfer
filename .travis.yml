@@ -4,24 +4,25 @@ language: r
 cache: packages
 matrix:
  include:
-   - os: linux
-     r: release
-     sudo: required
-   - os: linux
-     r: devel
-     sudo: required
    - os: osx
      r: release
      sudo: required
      before_install: 
       - sudo tlmgr update --self
       - sudo tlmgr install framed
+      - sudo tlmgr install titling
    - os: osx
      r: devel
      sudo: required
      before_install: 
       - sudo tlmgr update --self
       - sudo tlmgr install framed
+   - os: linux
+     r: release
+     sudo: required
+   - os: linux
+     r: devel
+     sudo: required
 warnings_are_errors: true
 r_github_packages:
   - jimhester/covr
