@@ -25,6 +25,7 @@ matrix:
       - truncdist
      sudo: required
      before_install:
+      - brew install gcc48 --with-fortran
       - sudo tlmgr update --self
       - sudo tlmgr install framed
       - sudo tlmgr install titling
