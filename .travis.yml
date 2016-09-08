@@ -34,6 +34,9 @@ matrix:
    - os: linux
      r: devel
      sudo: required
+  allow_failures:
+  - os: osx
+    r: devel
 warnings_are_errors: true
 #r_github_packages:
 #  - jimhester/covr
