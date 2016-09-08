@@ -7,16 +7,17 @@ matrix:
    - os: osx
      r: release
      sudo: required
-     before_install: 
+     before_install:
       - sudo tlmgr update --self
       - sudo tlmgr install framed
       - sudo tlmgr install titling
    - os: osx
      r: devel
      sudo: required
-     before_install: 
+     before_install:
       - sudo tlmgr update --self
       - sudo tlmgr install framed
+      - sudo tlmgr install titling
    - os: linux
      r: release
      sudo: required
