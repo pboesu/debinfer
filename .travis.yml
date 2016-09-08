@@ -16,6 +16,13 @@ matrix:
      r: devel
      r_packages:
       - covr
+      - coda
+      - deSolve
+      - mvtnorm
+      - PBSddesolve
+      - plyr
+      - RColorBrewer
+      - truncdist
      sudo: required
      before_install:
       - sudo tlmgr update --self
