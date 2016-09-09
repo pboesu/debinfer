@@ -2,7 +2,6 @@
 
 language: r
 cache: packages
-r_packages: covr
 matrix:
  include:
    - os: osx
@@ -17,9 +16,6 @@ matrix:
      disable_homebrew: true
      r: devel
      r_packages:
-      - openssl
-      - httr
-      - covr
       - coda
       - deSolve
       - mvtnorm
@@ -36,12 +32,13 @@ matrix:
       - sudo tlmgr install titling
    - os: linux
      r: release
+     r_packages: covr
      sudo: required
    - os: linux
      r: devel
+     r_packages: covr
      sudo: required
+     after_success: Rscript -e 'covr::codecov()'
  allow_failures:
   - os: osx
 warnings_are_errors: true
-after_success:
-  - Rscript -e 'covr::codecov()'
