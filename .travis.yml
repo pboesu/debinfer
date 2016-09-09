@@ -1,11 +1,44 @@
-# Sample .travis.yml for R projects
+#.travis.yml for deBInfer
 
 language: r
+cache: packages
+matrix:
+ include:
+   - os: osx
+     r: release
+     disable_homebrew: true
+     sudo: required
+     before_install:
+      - sudo tlmgr update --self
+      - sudo tlmgr install framed
+      - sudo tlmgr install titling
+   - os: osx
+     disable_homebrew: true
+     r: devel
+     r_packages:
+      - coda
+      - deSolve
+      - mvtnorm
+      - PBSddesolve
+      - plyr
+      - RColorBrewer
+      - truncdist
+     sudo: required
+     before_install:
+      - curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
+      - sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
+      - sudo tlmgr update --self
+      - sudo tlmgr install framed
+      - sudo tlmgr install titling
+   - os: linux
+     r: release
+     r_packages: covr
+     sudo: required
+   - os: linux
+     r: devel
+     r_packages: covr
+     sudo: required
+     after_success: Rscript -e 'covr::codecov()'
+ allow_failures:
+  - os: osx
 warnings_are_errors: true
-sudo: required
-
-r_github_packages:
-  - jimhester/covr
-
-after_success:
-  - Rscript -e 'covr::codecov()'

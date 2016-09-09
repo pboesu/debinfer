@@ -21,7 +21,8 @@
 ##' @param sizestep timestep for solver to return values at, only used if data.times is missing
 ##' @param solver the solver to use. 1 or "ode" = deSolve::ode; 2 or "dde" = PBSddesolve::dde; 3 or "dede" = deSolve::dde
 ##' @param data.times time points for which observations are available
-##' @param verbose logical
+##' @param verbose.mcmc logical display MCMC progress messages
+##' @param verbose logical display verbose solver output
 ##' @param ... further arguments to the solver
 ##' @return a debinfer_result object containing input parameters, data and MCMC samples
 ##' @author Philipp Boersch-Supan
@@ -30,7 +31,7 @@
 de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
                               Tmax, data.times, cnt=10,
                               plot=TRUE, sizestep=0.01, solver="ode",
-                              verbose =FALSE, ...)
+                              verbose.mcmc =TRUE, verbose = FALSE, ...)
 {
   #check models
   if(!is.function(obs.model)) stop("obs.model must be a function")
@@ -54,7 +55,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   inits <- sapply(all.params, function(x) x$value)[is.init]
   names(inits) <- p.names[is.init]
   #inits are matched by order in deSolve. inform user of input order
-  print(paste("Order of initial conditions is ", names(inits)))
+  message(paste("Order of initial conditions is ", paste(names(inits), collapse = ", ")))
 
   hyper = lapply(all.params, function(x) x$hyper)[is.free]
   names(hyper) <- p.names[is.free]
@@ -83,7 +84,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   if(!is.null(ref.params) && !is.null(ref.inits)){
     sim.ref<-solve_de(sim = de.model, params = ref.params, inits = ref.inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
     prob.ref<-log_post_params(samp = ref.params, data = data, sim.data = sim.ref, w.p = w.p, obs.model = obs.model, pdfs = pdfs, hyper = hyper)
-    print(paste("(unnormalized) posterior probability of the reference parameters= ",
+    message(paste("(unnormalized) posterior probability of the reference parameters= ",
                 prob.ref, sep=""))
   }
 
@@ -96,7 +97,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   samps <- coda::mcmc(matrix(numeric((np+1)*N), ncol=np+1, nrow=N, dimnames = list(NULL, c(p.names, "lpost"))))
 
   #initialize the mcmc structure with the starting values
-  samps[1,1:np] <- params
+  samps[1,seq_len(np)] <- params
 
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in p.
@@ -117,7 +118,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   }
   if(!is.finite(samps[1,"lpost"])) stop("Infinite log likelihood with current starting values")
 
-  print(paste("initial posterior probability = ", samps[1,"lpost"], sep=""))
+  message(paste("initial posterior probability = ", samps[1,"lpost"], sep=""))
 
 
 
@@ -131,7 +132,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
     out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, out = out,
                        Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, solver=solver, i=i, cnt=cnt, w.p = w.p,
-                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose = verbose, ...)
+                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, ...)
     samps[i,] <- out$s #make sure order is matched
 #     if(test){
 #       if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
@@ -141,8 +142,8 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
     ## printing and plotting output so we can watch the progress
     if(i%%cnt == 0){
-      print(paste("sample number", i, sep=" "))
-      if(plot) plot(window(samps, 1, i), density=FALSE, ask=FALSE)#use window.mcmc
+      if (verbose.mcmc) message(paste("sample number", i, sep=" "))
+      if (plot)         plot(window(samps, 1, i), density=FALSE, ask=FALSE)#use window.mcmc
     }
 
   }
@@ -184,12 +185,13 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param pdfs names of prior pdfs
 ##' @param hyper list of hyperparameters
 ##' @param w.p names of free parameters
-##' @param verbose logical, print additional information from sampler
+##' @param verbose.mcmc logical print MCMC progress messages
+##' @param verbose logical, print additional information from solver
 ##' @param ... further arguments to solver
 ##' @export
 ##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
-                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose, ...)
+                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, ...)
 {
   ## read in some bits
   s<-samps
@@ -198,7 +200,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
   ints <- out$inits
 
   #randomize updating order
-  x<-1:l #make this the not joint paramters
+  x<-seq_len(l) #make this the not joint parameters
   #then get the number of joint blocks and add the joint blocks
   s.x<-sample(x) #and resample order
 
@@ -247,7 +249,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
         if (!inherits(sim.new, "try-error")){
           s.new["lpost"] <- log_post_params(samp = s.new, data = data, sim.data = sim.new, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p)
         } else {
-          if (verbose) print(paste("Solver failed with current state =", s, "and proposal", samp.p[[k]]$name,"=",q$b ))
+          if (verbose) message(paste("Solver failed with current state =", s, "and proposal", paste(samp.p[[k]]$name,"=",q$b , collapse = ", ")))
           s.new["lpost"] <- -Inf
           }
 
@@ -255,16 +257,16 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
         A<-exp( s.new["lpost"] + q$lbak - s["lpost"] - q$lfwd )
       } else {
         A<-0
-        if (verbose) print(paste("posterior not finite for proposal", samp.p[[k]]$name,"=",q$b ))
+        if (verbose) message(paste("posterior not finite for proposal", paste(samp.p[[k]]$name,"=",q$b , collapse = ", ")))
       }
     } else {
       A<-0
-      if (verbose) print(paste("proposal outside prior support for", samp.p[[k]]$name,"=",q$b))
+      if (verbose) message(paste("proposal outside prior support for", paste(samp.p[[k]]$name,"=",q$b , collapse = ", ")))
     }
 
       ## print some output so we can follow the progress
-      if(i%%cnt==0){
-        print(paste("proposing " , samp.p[[k]]$name, ": prob.old = ",
+      if(verbose.mcmc && i%%cnt==0  ){
+        message(paste("proposing " , samp.p[[k]]$name, ": prob.old = ",
                     signif(s["lpost"], digits=5),
                     "; prob.new = ", signif(s.new["lpost"], digits=5), "; A = ",
                     signif(A, digits=5),
@@ -447,7 +449,7 @@ log_prior_params<-function(samp, pdfs, w.p, hyper){
   }
 
   ##print(c(as.numeric(samp), w.p, hyper[1]))
-  for(i in 1:len){
+  for(i in seq_len(len)){
     p<-w.p[i]
     s<-as.numeric(samp[p])
 

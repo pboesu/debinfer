@@ -74,7 +74,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   prob.old<-log_post_params(samp=params, w.p=w.p, data=data, p=p.old, pdfs=pdfs, hyper=hyper, sim.data=sim.old, sds=sds, obs.model=obs.model)
   print(paste(Sys.time()," posterior likelihood of the real parameters= ", prob.old, sep=""))
 
-  for(k in 1:np) p.old[w.p[k]]<-samps[1,k]
+  for(k in seq_len(np)) p.old[w.p[k]]<-samps[1,k]
 
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in
@@ -95,20 +95,20 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
   }
 
 
-  for(i in 1:N){
+  for(i in seq_len(N)){
     if(i%%cnt == 0){
       print(paste(Sys.time(), " sample number", i, sep=" "))
       ##for(j in 1:np) print(paste(w.p[j], "=", samps[i,j], sep=" "))
       if(verbose) print(samps[i,])
       if(plot){
         if(np>1 ) par(mfrow=c(ceiling(np/3),3), bty="n")
-        for(j in 1:np) plot(samps[0:i,j], type="l", main=w.p[j])
+        for(j in seq_len(np)) plot(samps[0:i,j], type="l", main=w.p[j])
       }
     }
 
     samps[i+1,]<-samps[i,]
 
-    for(k in 1:np){
+    for(k in seq_len(np)){
       p.new<-p.old
 
       u<-runif(1)
@@ -242,7 +242,7 @@ dde_mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
   np<-length(all.params)
 
   ltot<-0
-  for(i in 1:l) ltot<-ltot+length(samp.p[[i]]$params)
+  for(i in seq_len(l)) ltot<-ltot+length(samp.p[[i]]$params)
 
   ## for testing, here is code that calculates (and prints out) the
   ## posterior prob of the "real" parameters, which can be passed in
@@ -266,11 +266,11 @@ dde_mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
   names(samps)<-c(names(all.params), "lpost")
 
   ## initialize the samps structure and p
-  samps[1,1:np]<-p<-all.params
+  samps[1,seq_len(np)]<-p<-all.params
 
   ## initialize the data frame with the starting values passed into
   ## the function in the structure samp.p
-  for(i in 1:l){
+  for(i in seq_len(l)){
     samps[1, samp.p[[i]]$params]<-samp.p[[i]]$start
     p[samp.p[[i]]$params]<-samp.p[[i]]$start
   }
@@ -353,7 +353,7 @@ update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
   p<-out$p
 
   #randomize updating order
-  x<-1:l
+  x<-seq_len(l)
   s.x<-sample(x)
 
   for(k in s.x){
@@ -376,7 +376,7 @@ update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
     }
     ## write the proposed params into the p.new and s.new.
 
-    for(j in 1:length(samp.p[[k]]$params)){
+    for(j in seq_along(samp.p[[k]]$params)){
       ww<-samp.p[[k]]$params[j]
       p.new[ww]<-s.new[ww]<-q$b[j]
     }
@@ -430,7 +430,7 @@ update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
 ##' @author Philipp Boersch-Supan
 check_zeros<-function(s.p, q.b){
   z<-0
-  for(j in 1:length(s.p$params)){
+  for(j in seq_along(s.p$params)){
     if(s.p$params[j]=="l.M.HP") next
     if(q.b[j]<0) z<-1
     if(s.p$params[j]=="fs"){
@@ -560,10 +560,10 @@ propose_joint<-function(samp, samp.p){
 plot_output<-function(i, samps, samp.p, l, ltot, my.par=c(2,4), plot.post=TRUE){
 
   if( ltot > 1 ) par(mfrow=my.par, bty="n")
-  for( j in 1:l ){
+  for( j in seq_len(l)){
     ww<-samp.p[[j]]$params
-    for(k in 1:length(ww)){
-      plot(samps[1:(i-1),ww[k]], type="l", xlab="sample", ylab=ww[k])
+    for(k in seq_along(ww)){
+      plot(samps[seq_len(i-1),ww[k]], type="l", xlab="sample", ylab=ww[k])
     }
   }
   if(plot.post){

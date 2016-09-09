@@ -23,13 +23,13 @@ log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds){
   gamma<-p["gamma"]
   l.temp<-sim.data$l*alpha
   n.temp<-sim.data$n*gamma
-  
+
   llik.L<-sum(dnorm(data$L, mean=l.temp, sd=sds$L, log=TRUE))
   ##  print("here")
   llik.Negg<-sum(dnorm(data$Negg, mean=n.temp, sd=sds$Negg, log=TRUE))
-  
+
   llik<-llik.L+llik.Negg
-  
+
   if(length(w.p)==1) lprior<-as.numeric(log.prior.params(samp, w.p, hyper))
   else {
     lprior<-sum(log.prior.params(samp, w.p, hyper))
@@ -40,7 +40,7 @@ log.post.params<-function(samp, w.p, data, p, hyper, sim.data, sds){
   if(is.na(llik)) break
   if(is.na(lprior)) break
 
-  return( llik + lprior )	
+  return( llik + lprior )
 }
 
 
@@ -58,9 +58,9 @@ log.prior.params<-function(samp, w.p, hyper){
     lp<-data.frame(matrix(0, nrow=1, ncol=len))
     names(lp)<-w.p
   }
-  
+
   ##print(c(as.numeric(samp), w.p, hyper[1]))
-  for(i in 1:len){
+  for(i in seq_len(len)){
     p<-w.p[i]
     s<-as.numeric(samp[p])
 
@@ -91,7 +91,7 @@ make.hypers<-function(J.EAm=NULL, y.EX=NULL, v=NULL, k.M=NULL,
 
   hyper<-list(J.EAm=J.EAm, y.EX=y.EX, v=v, k.M=k.M, g=g, kap=kap,
   k.J=k.J, M.HP=M.HP, shape=shape, gamma=gamma, X.h=X.h, vol=vol)
-  
+
   return(hyper)
 
 }
