@@ -17,6 +17,7 @@ matrix:
      disable_homebrew: true
      r: devel
      r_packages:
+      - openssl
       - httr
       - covr
       - coda
