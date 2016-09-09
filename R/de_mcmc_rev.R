@@ -162,7 +162,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
     ref.inits = ref.inits,
     iter = N,
     data = data,
-    samples = as.mcmc(samps[,w.p]),
+    samples = coda::as.mcmc(samps[,w.p]),
     solver = solver,
     lpost = samps[,"lpost"]
   )
