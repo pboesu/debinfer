@@ -181,7 +181,7 @@ iter <- 500
 dede_rev <- de_mcmc(N = iter, data = chytrid, de.model = CSZ.dede,
                     obs.model = chytrid_obs_model, all.params = mcmc.pars,
                     Tmax = max(chytrid$time), data.times = c(0,chytrid$time), cnt = 50,
-                    plot = FALSE, sizestep = 0.1, solver = "dede", verbose = TRUE)
+                    plot = FALSE, sizestep = 0.1, solver = "dede", verbose.mcmc = TRUE)
 ```
 Note that the number of iterations was set to 500 to keep the build time of the vignette within acceptable limits. For the inference results reported in Boersch-Supan and Johnson [-@deBInfer] the MCMC procedure was run for 100000 iterations, which took about 4 hours on a 2014 Apple Mac mini with a 2.6 GHz Intel i5 processor.
 
