@@ -14,7 +14,7 @@ matrix:
       - sudo tlmgr install framed
       - sudo tlmgr install titling
    - os: osx
-     disable_homebrew: true
+     disable_homebrew: false
      r: devel
      r_packages:
       - covr
