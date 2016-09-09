@@ -17,6 +17,7 @@ matrix:
      disable_homebrew: true
      r: devel
      r_packages:
+      - httr
       - covr
       - coda
       - deSolve
