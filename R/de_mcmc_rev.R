@@ -36,7 +36,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   #check models
   if(!is.function(obs.model)) stop("obs.model must be a function")
   if(!identical(formalArgs(obs.model), c("data", "sim.data", "samp" ))) stop("obs.model must be a function with arguments 'data', 'sim.data', 'samp'")
-  if(!is.function(de.model)) stop("de.model must be a function")
+  if(!(is.function(de.model) || is.character(de.model))) stop("de.model must be a function or character")
 
   #get names, identify free parameters and inits
   p.names <- sapply(all.params, function(x) x$name)
