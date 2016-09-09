@@ -13,7 +13,7 @@ matrix:
       - sudo tlmgr install framed
       - sudo tlmgr install titling
    - os: osx
-     disable_homebrew: true
+     disable_homebrew: false
      r: devel
      r_packages:
       - coda
@@ -23,6 +23,9 @@ matrix:
       - plyr
       - RColorBrewer
       - truncdist
+      - knitr
+      - rmarkdown
+      - testthat
      sudo: required
      before_install:
       - curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
@@ -39,6 +42,4 @@ matrix:
      r_packages: covr
      sudo: required
      after_success: Rscript -e 'covr::codecov()'
- allow_failures:
-  - os: osx
 warnings_are_errors: true
