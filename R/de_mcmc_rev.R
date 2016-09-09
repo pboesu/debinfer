@@ -42,6 +42,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   p.names <- sapply(all.params, function(x) x$name)
   is.free <- !sapply(all.params, function(x) x$fixed)
   is.init <- sapply(all.params, function(x) x$var.type)=="init"
+  is.de <- sapply(all.params, function(x) x$var.type)=="de"
 
   #get all start values
   p.start <- lapply(all.params, function(x) x$value)[is.free]
@@ -102,10 +103,14 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in p.
 
-  sim.start<-solve_de(sim = de.model, params = params, inits = inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
+  sim.start<-solve_de(sim = de.model, params = params[is.de], inits = inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
 
   ## check that solver provides simulation values for all observations
-  if(!all(data.times %in% sim.start[,"time"])) stop("solver times do not cover all data times")
+  if(inherits(sim.start, "try-error")) {
+    stop("solver failed on start values")
+    } else {
+       if(!all(data.times %in% sim.start[,"time"])) stop("solver times do not cover all data times")
+    }
 
 
   ## check the posterior probability to make sure you have reasonable
@@ -237,7 +242,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
       if (samp.p[[k]]$var.type == "obs"){
         sim.new <- sim.old #keep using last available de solution
       } else { #compute new solution
-       sim.new<-solve_de(sim = sim , params = p.new, inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
+       sim.new<-solve_de(sim = sim , params = p.new[is.de], inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
       }
 
 
