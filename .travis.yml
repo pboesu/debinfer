@@ -24,6 +24,7 @@ matrix:
       - RColorBrewer
       - truncdist
       - knitr
+      - rmarkdown
      sudo: required
      before_install:
       - curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
