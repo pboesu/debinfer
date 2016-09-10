@@ -25,7 +25,8 @@ Imports:
     grDevices,
     plyr,
     PBSddesolve,
-    methods
+    methods,
+    microbenchmark
 Suggests:
     testthat,
     knitr,
