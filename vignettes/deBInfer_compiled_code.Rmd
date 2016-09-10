@@ -191,7 +191,7 @@ The model can now be run as follows:
 ```{r run-c-model}
 parms <- c(k1 = 0.04, k2 = 1e4, k3=3e7)
 Y     <- c(y1 = 1.0, y2 = 0.0, y3 = 0.0)
-times <- c(0, 0.4*10^(0:11) )
+times <- seq(0, 0.75*10^4, length.out = 1000)
 
 out <- ode(Y, times, func = "derivs", parms = parms,
            jacfunc = "jac", dllname = "mymod",
@@ -199,7 +199,7 @@ out <- ode(Y, times, func = "derivs", parms = parms,
 plot(out)
 ```
 
-We can determine the speed improvement using the `microbenchmark` package, which shows us that the `C` version of the models is solved about 40 times faster than the `R` version.
+We can determine the speed improvement using the `microbenchmark` package, which shows us that the `C` version of the models is solved about 10 times faster than the `R` version.
 ```{r r-c-speed}
 comp <- microbenchmark::microbenchmark(
   C = ode(Y, times, func = "derivs", parms = parms,
