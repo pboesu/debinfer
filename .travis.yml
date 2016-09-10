@@ -1,6 +1,7 @@
 #.travis.yml for deBInfer
 
 language: r
+r_build_args: --compact-vignettes="gs+qpdf"
 cache: packages
 matrix:
  include:
