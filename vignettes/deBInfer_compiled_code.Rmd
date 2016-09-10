@@ -13,6 +13,10 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
+```{r opts, echo=FALSE, results='hide'}
+knitr::opts_chunk$set(dev='png', dpi=150)
+```
+
 DE models in R are easy to implement, allow simple interactive
 development using readable code and access to `R`s high-level procedures. All of which were part of our motivation to develop `deBInfer` as an R based inference package. However, the `deSolve` package also allows the evaluation of DE models that are defined in lower-level languages such as `C` and `FORTRAN`. These compiled models have the benefit of increased simulation speed. As the DE model is evaluated many times during the MCMC procedure, even moderate speed-ups from using compiled models may result in large absolute time savings.
 

@@ -1,3 +1,6 @@
+## ----opts, echo=FALSE, results='hide'------------------------------------
+knitr::opts_chunk$set(dev='png')
+
 ## ----r-model-------------------------------------------------------------
 modelR <- function(t, Y, parameters) {
   with (as.list(parameters),{
