@@ -150,8 +150,12 @@ post_prior_densplot <- function(result, param="all", burnin=NULL, prior.col="red
 #' @import coda
 #' @export
 plot.debinfer_result <- function(x, plot.type="coda", ...){
+  # store old par
+  old.par <- par(no.readonly=TRUE)
   if (plot.type=="coda") plot(x$samples, ...)
   if (plot.type=="post_prior") post_prior_densplot(x, ...)
+  # restore old par
+  par(old.par)
   }
 
 #' Plot posterior trajectory
