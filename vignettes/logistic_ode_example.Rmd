@@ -1,7 +1,7 @@
 ---
 title: "Bayesian inference for the logistic growth model"
-author: "Philipp H Boersch-Supan and Leah R Johnson"
-date: '`r format(Sys.Date(), "%B %d, %Y")`'
+author: "Philipp H Boersch-Supan, Sadie J Ryan, and Leah R Johnson"
+date: "September 2016"
 output: 
   pdf_document: 
     number_sections: yes
@@ -12,6 +12,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 ---
+
+```{r opts, echo=FALSE, results='hide'}
+knitr::opts_chunk$set(dev='png', dpi=150)
+```
 
 #Preliminaries
 This vignette illustrates the steps needed to perform inference for an ODE model, the logistic growth model. A detailed description of the rationale behind the Bayesian inference approach for differential equations can be found in the preprint describing the `deBInfer` package [@deBInfer]. The vignette also illustrates how to simulate noisy observations from an existing DE model. Conducting inference on a model with known parameters is good practice, when developing models for actual data, as it provides validation of the inference procedure.
@@ -54,7 +58,7 @@ We then pick a set of parameter values $(r=0.1, K=10)$ and an initial condition 
 y <- c(N = 0.1)
 parms <- c(r = 0.1, K = 10)
 times <- seq(0, 120, 1)
-out <- ode(y, times, logistic_model, parms, method='lsoda')
+out <- ode(y, times, logistic_model, parms, method="lsoda")
 ```
 
 We can plot this numerical solution.
@@ -76,8 +80,8 @@ N_obs <- as.data.frame(out[c(1,runif(35, 0, nrow(out))),])
 and we "add" lognormal noise with a known "observation" standard deviation $\sigma^2_{obs}=0.05$.
 ```{r}
 # add lognormal noise
-  parms['sdlog.N'] <- 0.05
-  N_obs$N_noisy <- rlnorm(nrow(N_obs), log(N_obs$N),parms['sdlog.N'])
+  parms["sdlog.N"] <- 0.05
+  N_obs$N_noisy <- rlnorm(nrow(N_obs), log(N_obs$N),parms["sdlog.N"])
 #observations must be ordered for solver to work
 N_obs <- N_obs[order(N_obs$time),]
 #Plot true and noisy observations
@@ -102,7 +106,7 @@ The user specifies the observation model such that it returns the summed log-lik
   logistic_obs_model <- function(data, sim.data, samp){
 
     llik.N <- sum(dlnorm(data$N_noisy, meanlog = log(sim.data[,"N"] + 1e-6), 
-                       sdlog = samp[['sdlog.N']], log = TRUE))
+                       sdlog = samp[["sdlog.N"]], log = TRUE))
     return(llik.N)
   }
 
@@ -140,7 +144,7 @@ mcmc.pars <- setup_debinfer(r, K, sdlog.N, N)
 
 #Conduct inference
 Finally we use deBInfer to estimate the parameters of the original model. `de_mcmc` is the workhorse of the package and runs the MCMC estimation. The progress of the MCMC procedure can be monitored using the `cnt`, `plot` and `verbose` options: Every `cnt` iterations the function will print out information about the current state, and, if `plot=TRUE`, traceplots of the chains will be plotted. Setting `verbose=TRUE` will print additional information. Note that frequent plotting will substantially slow down the MCMC sampler, and should be used only on short runs when tuning the sampler.
-```{r deBinfer, results="hide"}
+```{r deBinfer, results="hide", message=FALSE}
 # do inference with deBInfer
   # MCMC iterations
   iter <- 5000
@@ -148,7 +152,7 @@ Finally we use deBInfer to estimate the parameters of the original model. `de_mc
   mcmc_samples <- de_mcmc(N = iter, data = N_obs, de.model = logistic_model, 
                           obs.model = logistic_obs_model, all.params = mcmc.pars,
                           Tmax = max(N_obs$time), data.times = N_obs$time, cnt = 500, 
-                          plot = FALSE, solver = "ode")
+                          plot = FALSE, verbose.mcmc = FALSE, solver = "ode")
 
 ```
 
@@ -157,14 +161,14 @@ We plot and summarize the MCMC chains
 plot(mcmc_samples)
 ```
 
-From the traceplot we can see that the burnin period is about 250 samples. We can remove the burnin and have a look at parameter correlations using `pairs.debinfer_result`.
+From the traceplot we can see that the burnin period extends through about 250 iterations. We can remove the burnin and have a look at parameter correlations using `pairs.debinfer_result`.
 ```{r}
 burnin <- 250
 pairs(mcmc_samples, burnin = burnin, scatter=TRUE, trend=TRUE)
 ```
 
 And we can look at the overlap between the posterior and prior densities using `post_prior_densplot`. 
-```{r}
+```{r post-dens, fig.height=5}
 par(mfrow = c(1,3))
 post_prior_densplot(mcmc_samples, burnin = burnin, param = "r")
 abline(v = 0.1, col = "red", lty = 2)
@@ -180,7 +184,7 @@ Overlay the true underlying parameter values as vertical dashed lines shows that
 We then simulate DE model trajectories from the posterior and calculate the 95% highest posterior density interval for the deterministic part of the model.
 
 ```{r post-sims}
-post_traj <- post_sim(mcmc_samples, n=500, times=0:100, burnin=burnin, output = 'all', prob = 0.95)
+post_traj <- post_sim(mcmc_samples, n=500, times=0:100, burnin=burnin, output = "all", prob = 0.95)
 ```
 
 We can visualise the median posterior trajectory and the associated highest posterior density interval using `plot.type="medianHDI"`. The `panel.first` option can be used to add the trajectory of the true model, which is stored in `out`.
@@ -191,7 +195,7 @@ plot(post_traj, plot.type = "medianHDI", lty = c(2,1), lwd = 3, col = c("red","g
   )
   legend("topleft", legend = c("posterior median", "95% HDI", "true model"),
   lty = c(2,1,1), lwd = c(3,2,2), col = c("red","grey20","darkblue"),
-  bty = 'n')
+  bty = "n")
 ```
 
 Again, this confirms that the inference procedure does indeed recover the true model.
@@ -211,8 +215,8 @@ Below is code to conduct a sensitivity analysis for the influence of the value o
 #reformulate the observation model such that epsilon is an observation parameter
 logistic_obs_model_eps <- function(data, sim.data, samp){
   
-  llik.N <- sum(dlnorm(data$N_noisy, meanlog = log(sim.data[,"N"] + samp[['epsilon']]),
-                       sdlog = samp[['sdlog.N']], log = TRUE))
+  llik.N <- sum(dlnorm(data$N_noisy, meanlog = log(sim.data[,"N"] + samp[["epsilon"]]),
+                       sdlog = samp[["sdlog.N"]], log = TRUE))
   return(llik.N)
 }
 
@@ -226,10 +230,10 @@ mcmc.pars <- setup_debinfer(r, K, sdlog.N, epsilon, N)
 
 We can then manipulate the value of `epsilon` in list object `mcmc.pars` within an `lapply` call and conduct the inference for each value of `eps_range`. 
 ```{r epsilon-sims-ctd, eval=FALSE}
-#define a range of epsilon values
+# define a range of epsilon values
 eps_range <- c(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1)
 
-#conduct inference for each value of eps_range
+# conduct inference for each value of eps_range
 eps_sims <- lapply(eps_range, function(x){
   #reassign value of epsilon
   mcmc.pars$epsilon$value <- x
@@ -240,25 +244,29 @@ eps_sims <- lapply(eps_range, function(x){
   return(eps_samples)
 })
 
-#add names to the inference runs
+# add names to the inference runs
 names(eps_sims) <- as.character(eps_range)
 
-#collate the samples in a data.frame for easy plotting while omitting a burnin of 1000 samples
+# collate the samples in a data.frame for easy plotting while omitting 
+# a burnin of 1000 samples
 eps_samps <- plyr::ldply(eps_sims, function(x)(x$samples[1000:10000,]), .id = "epsilon")
 
-#plot sensitivity analysis
+# plot sensitivity analysis
 par(mfrow = c(1,3), mar = c(3,3,2,2), mgp = c(1.7,0.5,0))
 beanplot::beanplot(eps_samps$r ~ eps_samps$epsilon, log = "", what = c(0,1,1,0), 
-                   col = "darkgrey", bw = 2e-4, maxwidth = 0.6, xlab = "epsilon", ylab = "r")
+                   col = "darkgrey", bw = 2e-4, maxwidth = 0.6, xlab = "epsilon",
+                   ylab = "r")
 legend("bottomleft", legend = c("posterior mean", "true value"), lty = c(1,3), 
-       col = c("black", "red"), lwd = 2, bty = 'n')
-abline(h = 0.1, col = 'red', lwd = 2, lty = 3)
+       col = c("black", "red"), lwd = 2, bty = "n")
+abline(h = 0.1, col = "red", lwd = 2, lty = 3)
 beanplot::beanplot(eps_samps$K ~ eps_samps$epsilon, log = "", what = c(0,1,1,0), 
-                   col = "darkgrey", bw = 2e-2, maxwidth = 0.6, xlab = "epsilon", ylab = "K")
-abline(h = 10, col = 'red', lwd = 2, lty = 3)
+                   col = "darkgrey", bw = 2e-2, maxwidth = 0.6, xlab = "epsilon"
+                   , ylab = "K")
+abline(h = 10, col = "red", lwd = 2, lty = 3)
 beanplot::beanplot(eps_samps$sdlog.N ~ eps_samps$epsilon, log="", what=c(0,1,1,0), 
-                   col = "darkgrey", bw = 2e-3, maxwidth = 0.6, xlab = "epsilon", ylab = "sdlog.N")
-abline(h = 0.05, col = 'red', lwd = 2, lty = 3)
+                   col = "darkgrey", bw = 2e-3, maxwidth = 0.6, xlab = "epsilon",
+                   ylab = "sdlog.N")
+abline(h = 0.05, col = "red", lwd = 2, lty = 3)
 ```
 ![Influence of $\varepsilon$ on the posterior parameter estimates](epsilon-sensitivity.pdf)
 

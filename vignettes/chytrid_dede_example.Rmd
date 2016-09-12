@@ -1,7 +1,7 @@
 ---
 title: "Bayesian inference for a population growth model of the chytrid fungus"
 author: "Philipp H Boersch-Supan and Leah R Johnson"
-date: '`r format(Sys.Date(), "%B %d, %Y")`'
+date: "September 2016"
 output: 
   pdf_document: 
     number_sections: yes
@@ -12,6 +12,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 ---
+
+```{r opts, echo=FALSE, results='hide'}
+knitr::opts_chunk$set(dev="png", dpi=150)
+```
 
 #Preliminaries
 
@@ -100,7 +104,7 @@ data(chytrid)
 #have a look at the variables
 head(chytrid)
 #plot the data
-plot(chytrid, xlab = 'Time (days)', ylab = 'Zoospores x 10e4', xlim = c(0,10))
+plot(chytrid, xlab = "Time (days)", ylab = "Zoospores x 10e4", xlim = c(0,10))
 ```
 
 The log-likelihood of the data given the parameters, underlying model, and initial conditions is then a sum over the $n$ observations at each time point in $t'$
@@ -118,8 +122,8 @@ chytrid_obs_model <- function(data, sim.data, samp) {
   llik.Z <- 0
   for(i in unique(data$time)){
     try(llik.Z <- llik.Z + sum(dpois(data$count[data$time == i], 
-                                     lambda = (sim.data[,'Z'][sim.data[,'time'] == i] + ec),
-                                     log = TRUE)))
+                                lambda = (sim.data[,"Z"][sim.data[,"time"] == i] + ec),
+                                log = TRUE)))
   }
   llik <- llik.Z
   return(llik)
@@ -173,7 +177,7 @@ mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
 ```
 
 `de_mcmc` is the workhorse of the package and runs the MCMC estimation. The progress of the MCMC procedure can be monitored using the `cnt`, `plot` and `verbose` options: Every `cnt` iterations the function will print out information about the current state, and, if `plot=TRUE`, traceplots of the chains will be plotted. Setting `verbose=TRUE` will print additional information. Note that frequent plotting will substantially slow down the MCMC sampler, and should be used only on short runs when tuning the sampler.
-```{r de_mcmc, results='hide'}
+```{r de_mcmc, results='hide', message=FALSE}
 # do inference with deBInfer
 # MCMC iterations
 iter <- 500
@@ -181,7 +185,7 @@ iter <- 500
 dede_rev <- de_mcmc(N = iter, data = chytrid, de.model = CSZ.dede,
                     obs.model = chytrid_obs_model, all.params = mcmc.pars,
                     Tmax = max(chytrid$time), data.times = c(0,chytrid$time), cnt = 50,
-                    plot = FALSE, sizestep = 0.1, solver = "dede", verbose.mcmc = TRUE)
+                    plot = FALSE, sizestep = 0.1, solver = "dede", verbose.mcmc = FALSE)
 ```
 Note that the number of iterations was set to 500 to keep the build time of the vignette within acceptable limits. For the inference results reported in Boersch-Supan and Johnson [-@deBInfer] the MCMC procedure was run for 100000 iterations, which took about 4 hours on a 2014 Apple Mac mini with a 2.6 GHz Intel i5 processor.
 
@@ -230,7 +234,7 @@ We simulate 100 DE model trajectories from the posterior and calculate the 95% h
 
 ```{r post-sims}
 post_traj <- post_sim(dede_rev, n = 100, times = seq(0,10,by = 0.1), burnin = burnin, 
-                      output = 'all', prob = 0.95)
+                      output = "all", prob = 0.95)
 ```
 
 We can visualise the median posterior trajectory and the highest posterior density interval using `r plot.type="medianHDI"` 
@@ -239,7 +243,7 @@ We can visualise the median posterior trajectory and the highest posterior densi
 par(mfrow = c(1,3))
 plot(post_traj, plot.type = "medianHDI", auto.layout = FALSE)
 legend("topright", legend = c("posterior median", "95% HDI"), lty = 1, 
-       col = c("red","grey"), bty = 'n')
+       col = c("red","grey"), bty = "n")
 
 ```
 
@@ -260,4 +264,5 @@ for(i in seq_along(post_traj$sims)) {
   lines(DATA1[,4] ~ DATA1[,1],col = "blue")
   }
 ```
+
 # References
