@@ -25,11 +25,14 @@ Imports:
     grDevices,
     plyr,
     PBSddesolve,
-    methods,
-    microbenchmark
+    methods
 Suggests:
     testthat,
     knitr,
     rmarkdown,
-    devtools
-VignetteBuilder: knitr
+    devtools,
+    R.rsp,
+    microbenchmark
+VignetteBuilder:
+    knitr,
+    R.rsp
