@@ -36,12 +36,13 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   #check models
   if(!is.function(obs.model)) stop("obs.model must be a function")
   if(!identical(formalArgs(obs.model), c("data", "sim.data", "samp" ))) stop("obs.model must be a function with arguments 'data', 'sim.data', 'samp'")
-  if(!is.function(de.model)) stop("de.model must be a function")
+  if(!(is.function(de.model) || is.character(de.model))) stop("de.model must be a function or character")
 
   #get names, identify free parameters and inits
   p.names <- sapply(all.params, function(x) x$name)
   is.free <- !sapply(all.params, function(x) x$fixed)
   is.init <- sapply(all.params, function(x) x$var.type)=="init"
+  is.de <- sapply(all.params, function(x) x$var.type)=="de"
 
   #get all start values
   p.start <- lapply(all.params, function(x) x$value)[is.free]
@@ -102,10 +103,14 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in p.
 
-  sim.start<-solve_de(sim = de.model, params = params, inits = inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
+  sim.start<-solve_de(sim = de.model, params = params[is.de], inits = inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
 
   ## check that solver provides simulation values for all observations
-  if(!all(data.times %in% sim.start[,"time"])) stop("solver times do not cover all data times")
+  if(inherits(sim.start, "try-error")) {
+    stop("solver failed on start values")
+    } else {
+       if(!all(data.times %in% sim.start[,"time"])) stop("solver times do not cover all data times")
+    }
 
 
   ## check the posterior probability to make sure you have reasonable
@@ -132,7 +137,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
     out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, out = out,
                        Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, solver=solver, i=i, cnt=cnt, w.p = w.p,
-                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, ...)
+                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, is.de=is.de, ...)
     samps[i,] <- out$s #make sure order is matched
 #     if(test){
 #       if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
@@ -157,7 +162,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
     ref.inits = ref.inits,
     iter = N,
     data = data,
-    samples = as.mcmc(samps[,w.p]),
+    samples = coda::as.mcmc(samps[,w.p]),
     solver = solver,
     lpost = samps[,"lpost"]
   )
@@ -187,11 +192,12 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param w.p names of free parameters
 ##' @param verbose.mcmc logical print MCMC progress messages
 ##' @param verbose logical, print additional information from solver
+##' @param is.de logical, parameter is an input for the solver
 ##' @param ... further arguments to solver
 ##' @export
 ##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
-                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, ...)
+                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, is.de, ...)
 {
   ## read in some bits
   s<-samps
@@ -237,7 +243,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
       if (samp.p[[k]]$var.type == "obs"){
         sim.new <- sim.old #keep using last available de solution
       } else { #compute new solution
-       sim.new<-solve_de(sim = sim , params = p.new, inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
+       sim.new<-solve_de(sim = sim , params = p.new[is.de], inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
       }
 
 

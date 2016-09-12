@@ -4,3 +4,5 @@
 .RData
 figs/
 sandbox/*.pdf
+*.o
+*.so

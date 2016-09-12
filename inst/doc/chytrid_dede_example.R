@@ -113,7 +113,7 @@ iter <- 500
 dede_rev <- de_mcmc(N = iter, data = chytrid, de.model = CSZ.dede,
                     obs.model = chytrid_obs_model, all.params = mcmc.pars,
                     Tmax = max(chytrid$time), data.times = c(0,chytrid$time), cnt = 50,
-                    plot = FALSE, sizestep = 0.1, solver = "dede", verbose = TRUE)
+                    plot = FALSE, sizestep = 0.1, solver = "dede", verbose.mcmc = TRUE)
 
 ## ----message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8----------
 par(mfrow = c(3,4))

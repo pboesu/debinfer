@@ -7,3 +7,4 @@
 ^conversion_notes\.html$
 ^\.travis\.yml$
 ^codecov\.yml$
+^docs$

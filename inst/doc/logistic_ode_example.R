@@ -152,7 +152,7 @@ plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 #  names(eps_sims) <- as.character(eps_range)
 #  
 #  #collate the samples in a data.frame for easy plotting while omitting a burnin of 1000 samples
-#  eps_samps <- plyr::ldply(eps_sims[1:6], function(x)(x$samples[1000:10000,]), .id = "epsilon")
+#  eps_samps <- plyr::ldply(eps_sims, function(x)(x$samples[1000:10000,]), .id = "epsilon")
 #  
 #  #plot sensitivity analysis
 #  par(mfrow = c(1,3), mar = c(3,3,2,2), mgp = c(1.7,0.5,0))
