@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>Home. deBInfer 0.3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="index.html">deBInfer 0.3</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="reference.html">Reference</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <div class="row">
+  <div class="span8">
+    <p><em>This is the development version of an R package implementing <a href="https://arxiv.org/abs/1605.00021">Bayesian inference for differential equation models</a>. The package is derived from methods and code published in <a href="http://dx.doi.org/10.1002%2Fece3.334">Voyles et al. (2012)</a> and  <a href="http://doi.org/10.1890/12-0650.1">Johnson et al. (2013)</a>. Software development is supported by <a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1341649">NSF grant PLR-1341649</a>.</em></p>
+
+<p><em>For more information read our <a href="https://arxiv.org/abs/1605.00021">preprint</a> or get in touch with <a href="mailto:pboesu@gmail.com">pboesu@gmail.com</a></em></p>
+
+<p><a href="https://travis-ci.org/pboesu/debinfer"><img src="https://travis-ci.org/pboesu/debinfer.svg?branch=master" alt="Travis-CI Build Status"/></a>
+<a href="https://codecov.io/gh/pboesu/debinfer"><img src="https://codecov.io/gh/pboesu/debinfer/branch/master/graph/badge.svg" alt="codecov"/></a>
+<a href="https://zenodo.org/badge/latestdoi/21877/pboesu/debinfer"><img src="https://zenodo.org/badge/21877/pboesu/debinfer.svg" alt="DOI"/></a></p>
+
+<h2>deBInfer: Bayesian inference for dynamical models of biological systems in R</h2>
+
+<ol>
+<li>Differential equations (DEs) are commonly used to model the temporal evolution of biological systems, but statistical    methods for comparing DE models to data and for parameter inference are relatively poorly developed.  This is especially problematic in the context of biological systems where observations are often noisy and only a small number of time points may be available.</li>
+<li>Bayesian approaches offer a coherent framework for parameter inference that can account for multiple sources of uncertainty, while making use of prior information. We present deBInfer, an R package implementing a Bayesian framework for parameter inference in DEs. This approach offers a rigorous methodology for parameter inference as well as modeling the link between unobservable model states and parameters, and observable quantities. </li>
+<li>deBInfer  provides templates for the DE model, the observation model and data likelihood, and the model parameters and their prior distributions. A Markov chain Monte Carlo (MCMC) procedure processes these inputs to estimate the posterior distributions of the parameters and any derived quantities, including the model trajectories. Further functionality is provided to facilitate MCMC diagnostics and the visualisation of the posterior distributions of model parameters and trajectories. </li>
+<li> The templating approach makes deBInfer applicable to a wide range of DE models and we demonstrate its application to ordinary and delay DE models for population ecology. </li>
+</ol>
+
+  </div>
+
+  <div class="span3 offset1 sidebar">
+        <h2>Authors</h2>
+    <ul>
+      <li><a href='mailto:pboesu@gmail.com'>Philipp H Boersch-Supan</a> [aut, cre]</li>
+      <li><a href='mailto:lrjohnson0@gmail.com'>Leah R Johnson</a> [aut]</li>
+      <li><a href='mailto:datamonkey@gmail.com'>Sadie J Ryan</a> [aut]</li>
+    </ul>
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="https://getbootstrap.com/2.0.4/">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

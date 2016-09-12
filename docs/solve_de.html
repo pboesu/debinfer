@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>solve_de. deBInfer 0.3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="index.html">deBInfer 0.3</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="reference.html">Reference</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>solve_de</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><span class="functioncall"><a href='solve_de.html'>solve_de</a></span><span class="keyword">(</span><span class="symbol">sim</span><span class="keyword">,</span> <span class="symbol">params</span><span class="keyword">,</span> <span class="symbol">inits</span><span class="keyword">,</span> <span class="symbol">Tmax</span><span class="keyword">,</span> <span class="argument">numsteps</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="number">10000</span><span class="keyword">,</span> <span class="argument">solver</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="string">"ode"</span><span class="keyword">,</span>
+  <span class="argument">sizestep</span>&nbsp;<span class="argument">=</span>&nbsp;NULL<span class="keyword">,</span> <span class="argument">verbose</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="number">FALSE</span><span class="keyword">,</span> <span class="argument">data.times</span>&nbsp;<span class="argument">=</span>&nbsp;NULL<span class="keyword">,</span> <span class="argument">method</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="string">"lsoda"</span><span class="keyword">,</span>
+  <span class="symbol">...</span><span class="keyword">)</span></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>sim</dt>
+      <dd>function; solver compatible specification of the DE</dd>
+      <dt>params</dt>
+      <dd>numeric; named vector of parameter values</dd>
+      <dt>inits</dt>
+      <dd>numeric; initial values. Must be in the same order as specified within sim!</dd>
+      <dt>Tmax</dt>
+      <dd>numeric; maximum timestep</dd>
+      <dt>numsteps</dt>
+      <dd>numeric</dd>
+      <dt>solver</dt>
+      <dd>Choice of solver to use 1 or &quot;ode&quot; = deSolve::ode, 2 or &quot;dde&quot; = PBSddesolve::dde, 3 or &quot;dede&quot; = deSolve::dede</dd>
+      <dt>sizestep</dt>
+      <dd>for solver</dd>
+      <dt>verbose</dt>
+      <dd>passed to deSolve::ode</dd>
+      <dt>data.times</dt>
+      <dd>numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL. If value is supplied it takes precendence over any value supplied to <code>numsteps</code> or <code>sizesteps</code>.</dd>
+      <dt>method</dt>
+      <dd>solver method</dd>
+      <dt>...</dt>
+      <dd>additional arguments to solver</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+integrated ode - describe structure
+</dl></p>
+
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>solve_de</p>
+
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'><span class="symbol">example</span></div>
+<div class='output'>function (topic, package = NULL, lib.loc = NULL, character.only = FALSE, 
+    give.lines = FALSE, local = FALSE, echo = TRUE, verbose = getOption(&quot;verbose&quot;), 
+    setRNG = FALSE, ask = getOption(&quot;example.ask&quot;), prompt.prefix = abbreviate(topic, 
+        6), run.dontrun = FALSE, run.donttest = interactive()) 
+{
+    if (!character.only) {
+        topic &lt;- substitute(topic)
+        if (!is.character(topic)) 
+            topic &lt;- deparse(topic)[1L]
+    }
+    pkgpaths &lt;- find.package(package, lib.loc, verbose = verbose)
+    file &lt;- index.search(topic, pkgpaths, TRUE)
+    if (!length(file)) {
+        warning(gettextf(&quot;no help found for %s&quot;, sQuote(topic)), 
+            domain = NA)
+        return(invisible())
+    }
+    packagePath &lt;- dirname(dirname(file))
+    pkgname &lt;- basename(packagePath)
+    lib &lt;- dirname(packagePath)
+    tf &lt;- tempfile(&quot;Rex&quot;)
+    tools::Rd2ex(.getHelpFile(file), tf, commentDontrun = !run.dontrun, 
+        commentDonttest = !run.donttest)
+    if (!file.exists(tf)) {
+        if (give.lines) 
+            return(character())
+        warning(gettextf(&quot;%s has a help file but no examples&quot;, 
+            sQuote(topic)), domain = NA)
+        return(invisible())
+    }
+    on.exit(unlink(tf))
+    if (give.lines) 
+        return(readLines(tf))
+    if (pkgname != &quot;base&quot;) 
+        library(pkgname, lib.loc = lib, character.only = TRUE)
+    if (!is.logical(setRNG) || setRNG) {
+        if ((exists(&quot;.Random.seed&quot;, envir = .GlobalEnv))) {
+            oldSeed &lt;- get(&quot;.Random.seed&quot;, envir = .GlobalEnv)
+            on.exit(assign(&quot;.Random.seed&quot;, oldSeed, envir = .GlobalEnv), 
+                add = TRUE)
+        }
+        else {
+            oldRNG &lt;- RNGkind()
+            on.exit(RNGkind(oldRNG[1L], oldRNG[2L]), add = TRUE)
+        }
+        if (is.logical(setRNG)) {
+            RNGkind(&quot;default&quot;, &quot;default&quot;)
+            set.seed(1)
+        }
+        else eval(setRNG)
+    }
+    zz &lt;- readLines(tf, n = 1L)
+    skips &lt;- 0L
+    if (echo) {
+        zcon &lt;- file(tf, open = &quot;rt&quot;)
+        while (length(zz) &amp;&amp; !length(grep(&quot;^### \\*\\*&quot;, zz))) {
+            skips &lt;- skips + 1L
+            zz &lt;- readLines(zcon, n = 1L)
+        }
+        close(zcon)
+    }
+    if (ask == &quot;default&quot;) 
+        ask &lt;- echo &amp;&amp; grDevices::dev.interactive(orNone = TRUE)
+    if (ask) {
+        if (.Device != &quot;null device&quot;) {
+            oldask &lt;- grDevices::devAskNewPage(ask = TRUE)
+            if (!oldask) 
+                on.exit(grDevices::devAskNewPage(oldask), add = TRUE)
+        }
+        op &lt;- options(device.ask.default = TRUE)
+        on.exit(options(op), add = TRUE)
+    }
+    source(tf, local, echo = echo, prompt.echo = paste0(prompt.prefix, 
+        getOption(&quot;prompt&quot;)), continue.echo = paste0(prompt.prefix, 
+        getOption(&quot;continue&quot;)), verbose = verbose, max.deparse.length = Inf, 
+        encoding = &quot;UTF-8&quot;, skip.echo = skips, keep.source = TRUE)
+}
+&lt;bytecode: 0x9bff020&gt;
+&lt;environment: namespace:utils&gt;
+</div></pre>
+  </div>
+  <div class="span4 sidebar">
+    <!-- <ul>
+      <li>solve_de</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+
+
+
+
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="https://getbootstrap.com/2.0.4/">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>
