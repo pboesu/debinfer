@@ -2,7 +2,7 @@
 
 #' Summary of the inference results
 #'
-#' Currently just a wrapper for coda::summary.mcmc
+#' A wrapper for coda::summary.mcmc
 #'
 #' @param object a deBInfer_result object
 #' @param ... further arguments to summary.mcmc

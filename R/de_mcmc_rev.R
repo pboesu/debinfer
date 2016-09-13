@@ -171,7 +171,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
 ##' update_sample_rev
 ##'
-##' This is the workhorse of the MCMC algorithm.
+##' This is the workhorse of the MCMC algorithm
 ##'
 ##' @param samps row vector of samples from the previous mcmc iteration
 ##' @param samp.p the parlist created by setup_debinfer
@@ -374,7 +374,6 @@ propose_joint_rev<-function(samps, s.p){
 
 ##' draw from prior
 ##'
-##' details of this function
 ##' @title prior_draw_rev
 ##' @param b current value of a parameter
 ##' @param hypers list of hyper parameters, named appropriately for the corresponding prior.pdf

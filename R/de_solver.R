@@ -19,10 +19,8 @@
 #' @param ... additional arguments to solver
 #'
 #'
-#' @return integrated ode - describe structure
+#' @return integrated ode object. Data structure depends on the employed solver.
 #'
-#'
-#' @examples example
 #' @export
 solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
                     solver="ode", sizestep=NULL, verbose=FALSE, data.times=NULL, method = "lsoda", ...){
@@ -60,17 +58,16 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 #' @import PBSddesolve
 #' @param x debinfer_result object
 #' @param n number of simulations
-#' @param output character, "median", "mult", hdi
+#' @param output character, "sims", "all", "HDI"
 #' @param burnin integer, number of samples to discard from the start of the mcmc chain
 #' @param times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.
 #' @param prob A numeric scalar in the interval (0,1) giving the target probability content of the intervals. The nominal probability content of the intervals is the multiple of 1/nrow(obj) nearest to prob.
 #' @param ... additional arguments to solver
-#' @return a list of de solutions
+#' @return a post_sim object containing a list of de solutions or summaries thereof
 #' @import coda
 #' @import plyr
-#' @examples example
 #' @export
-post_sim<-function(x, n=100, times, output='all', burnin=NULL, prob = 0.95, ...)
+post_sim<-function(x, n=100, times, output = "all" , burnin = NULL, prob = 0.95, ...)
 {
 #sample parameter values
   if(!is.null(burnin)) x$samples <- window(x$samples, burnin, nrow(x$samples))
