@@ -25,7 +25,6 @@
 ##' @param verbose logical display verbose solver output
 ##' @param ... further arguments to the solver
 ##' @return a debinfer_result object containing input parameters, data and MCMC samples
-##' @author Philipp Boersch-Supan
 ##' @importFrom methods formalArgs
 ##' @export
 de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, ref.inits=NULL,
@@ -195,7 +194,6 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param is.de logical, parameter is an input for the solver
 ##' @param ... further arguments to solver
 ##' @export
-##' @author Philipp Boersch-Supan
 update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
                         data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, is.de, ...)
 {
@@ -303,7 +301,6 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
 ##' @param samps current sample of the MCMC chain
 ##' @param s.p debinfer_par object representing the parameter that is to be proposed
 ##' @import stats
-##' @author Philipp Boersch-Supan
 propose_single_rev<-function(samps, s.p)
 { ## I'm feeding in the variance, so I need to take the square root....
 
@@ -342,7 +339,6 @@ propose_single_rev<-function(samps, s.p)
 ##' @param s.p debinfer_par object representing the parameter that is to be proposed
 ##' @import stats
 ##' @import mvtnorm
-##' @author Philipp Boersch-Supan
 propose_joint_rev<-function(samps, s.p){
 
 
@@ -384,7 +380,6 @@ propose_joint_rev<-function(samps, s.p){
 ##' @param hypers list of hyper parameters, named appropriately for the corresponding prior.pdf
 ##' @param prior.pdf string name of probability distribution following base R conventions, or those of additionally loaded packages
 ##' @import stats
-##' @author Philipp Boersch-Supan
 prior_draw_rev<-function(b, hypers, prior.pdf){
     #assemble random number generator function name
     rand <- paste("r", prior.pdf, sep="")
