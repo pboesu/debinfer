@@ -1,3 +1,6 @@
+## ----opts, echo=FALSE, results='hide'------------------------------------
+knitr::opts_chunk$set(dev='png', dpi=150)
+
 ## ----install1, eval=FALSE------------------------------------------------
 #  install.packages("devtools")
 
@@ -24,7 +27,7 @@ logistic_model <- function (time, y, parms) {
 y <- c(N = 0.1)
 parms <- c(r = 0.1, K = 10)
 times <- seq(0, 120, 1)
-out <- ode(y, times, logistic_model, parms, method='lsoda')
+out <- ode(y, times, logistic_model, parms, method="lsoda")
 
 ## ---- echo=FALSE---------------------------------------------------------
 plot(out)
@@ -37,8 +40,8 @@ N_obs <- as.data.frame(out[c(1,runif(35, 0, nrow(out))),])
 
 ## ------------------------------------------------------------------------
 # add lognormal noise
-  parms['sdlog.N'] <- 0.05
-  N_obs$N_noisy <- rlnorm(nrow(N_obs), log(N_obs$N),parms['sdlog.N'])
+  parms["sdlog.N"] <- 0.05
+  N_obs$N_noisy <- rlnorm(nrow(N_obs), log(N_obs$N),parms["sdlog.N"])
 #observations must be ordered for solver to work
 N_obs <- N_obs[order(N_obs$time),]
 #Plot true and noisy observations
@@ -50,7 +53,7 @@ points(N_obs$time, N_obs$N_noisy, col="red")
   logistic_obs_model <- function(data, sim.data, samp){
 
     llik.N <- sum(dlnorm(data$N_noisy, meanlog = log(sim.data[,"N"] + 1e-6), 
-                       sdlog = samp[['sdlog.N']], log = TRUE))
+                       sdlog = samp[["sdlog.N"]], log = TRUE))
     return(llik.N)
   }
 
@@ -75,7 +78,7 @@ N <- debinfer_par(name = "N", var.type = "init", fixed = TRUE, value = 0.1)
 ## ----setup---------------------------------------------------------------
 mcmc.pars <- setup_debinfer(r, K, sdlog.N, N)
 
-## ----deBinfer, results="hide"--------------------------------------------
+## ----deBinfer, results="hide", message=FALSE-----------------------------
 # do inference with deBInfer
   # MCMC iterations
   iter <- 5000
@@ -83,7 +86,7 @@ mcmc.pars <- setup_debinfer(r, K, sdlog.N, N)
   mcmc_samples <- de_mcmc(N = iter, data = N_obs, de.model = logistic_model, 
                           obs.model = logistic_obs_model, all.params = mcmc.pars,
                           Tmax = max(N_obs$time), data.times = N_obs$time, cnt = 500, 
-                          plot = FALSE, solver = "ode")
+                          plot = FALSE, verbose.mcmc = FALSE, solver = "ode")
 
 
 ## ----message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8----------
@@ -93,7 +96,7 @@ plot(mcmc_samples)
 burnin <- 250
 pairs(mcmc_samples, burnin = burnin, scatter=TRUE, trend=TRUE)
 
-## ------------------------------------------------------------------------
+## ----post-dens, fig.height=5---------------------------------------------
 par(mfrow = c(1,3))
 post_prior_densplot(mcmc_samples, burnin = burnin, param = "r")
 abline(v = 0.1, col = "red", lty = 2)
@@ -103,7 +106,7 @@ post_prior_densplot(mcmc_samples, burnin = burnin, param = "sdlog.N")
 abline(v = 0.05, col = "red", lty = 2)
 
 ## ----post-sims-----------------------------------------------------------
-post_traj <- post_sim(mcmc_samples, n=500, times=0:100, burnin=burnin, output = 'all', prob = 0.95)
+post_traj <- post_sim(mcmc_samples, n=500, times=0:100, burnin=burnin, output = "all", prob = 0.95)
 
 ## ----post-sims-plot------------------------------------------------------
 #median and HDI
@@ -112,7 +115,7 @@ plot(post_traj, plot.type = "medianHDI", lty = c(2,1), lwd = 3, col = c("red","g
   )
   legend("topleft", legend = c("posterior median", "95% HDI", "true model"),
   lty = c(2,1,1), lwd = c(3,2,2), col = c("red","grey20","darkblue"),
-  bty = 'n')
+  bty = "n")
 
 ## ----post-sims-ensemble--------------------------------------------------
 plot(post_traj, plot.type = "ensemble", col = "#FF000040")
@@ -121,8 +124,8 @@ plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 #  #reformulate the observation model such that epsilon is an observation parameter
 #  logistic_obs_model_eps <- function(data, sim.data, samp){
 #  
-#    llik.N <- sum(dlnorm(data$N_noisy, meanlog = log(sim.data[,"N"] + samp[['epsilon']]),
-#                         sdlog = samp[['sdlog.N']], log = TRUE))
+#    llik.N <- sum(dlnorm(data$N_noisy, meanlog = log(sim.data[,"N"] + samp[["epsilon"]]),
+#                         sdlog = samp[["sdlog.N"]], log = TRUE))
 #    return(llik.N)
 #  }
 #  
@@ -134,10 +137,10 @@ plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 #  mcmc.pars <- setup_debinfer(r, K, sdlog.N, epsilon, N)
 
 ## ----epsilon-sims-ctd, eval=FALSE----------------------------------------
-#  #define a range of epsilon values
+#  # define a range of epsilon values
 #  eps_range <- c(1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1)
 #  
-#  #conduct inference for each value of eps_range
+#  # conduct inference for each value of eps_range
 #  eps_sims <- lapply(eps_range, function(x){
 #    #reassign value of epsilon
 #    mcmc.pars$epsilon$value <- x
@@ -148,23 +151,27 @@ plot(post_traj, plot.type = "ensemble", col = "#FF000040")
 #    return(eps_samples)
 #  })
 #  
-#  #add names to the inference runs
+#  # add names to the inference runs
 #  names(eps_sims) <- as.character(eps_range)
 #  
-#  #collate the samples in a data.frame for easy plotting while omitting a burnin of 1000 samples
+#  # collate the samples in a data.frame for easy plotting while omitting
+#  # a burnin of 1000 samples
 #  eps_samps <- plyr::ldply(eps_sims, function(x)(x$samples[1000:10000,]), .id = "epsilon")
 #  
-#  #plot sensitivity analysis
+#  # plot sensitivity analysis
 #  par(mfrow = c(1,3), mar = c(3,3,2,2), mgp = c(1.7,0.5,0))
 #  beanplot::beanplot(eps_samps$r ~ eps_samps$epsilon, log = "", what = c(0,1,1,0),
-#                     col = "darkgrey", bw = 2e-4, maxwidth = 0.6, xlab = "epsilon", ylab = "r")
+#                     col = "darkgrey", bw = 2e-4, maxwidth = 0.6, xlab = "epsilon",
+#                     ylab = "r")
 #  legend("bottomleft", legend = c("posterior mean", "true value"), lty = c(1,3),
-#         col = c("black", "red"), lwd = 2, bty = 'n')
-#  abline(h = 0.1, col = 'red', lwd = 2, lty = 3)
+#         col = c("black", "red"), lwd = 2, bty = "n")
+#  abline(h = 0.1, col = "red", lwd = 2, lty = 3)
 #  beanplot::beanplot(eps_samps$K ~ eps_samps$epsilon, log = "", what = c(0,1,1,0),
-#                     col = "darkgrey", bw = 2e-2, maxwidth = 0.6, xlab = "epsilon", ylab = "K")
-#  abline(h = 10, col = 'red', lwd = 2, lty = 3)
+#                     col = "darkgrey", bw = 2e-2, maxwidth = 0.6, xlab = "epsilon"
+#                     , ylab = "K")
+#  abline(h = 10, col = "red", lwd = 2, lty = 3)
 #  beanplot::beanplot(eps_samps$sdlog.N ~ eps_samps$epsilon, log="", what=c(0,1,1,0),
-#                     col = "darkgrey", bw = 2e-3, maxwidth = 0.6, xlab = "epsilon", ylab = "sdlog.N")
-#  abline(h = 0.05, col = 'red', lwd = 2, lty = 3)
+#                     col = "darkgrey", bw = 2e-3, maxwidth = 0.6, xlab = "epsilon",
+#                     ylab = "sdlog.N")
+#  abline(h = 0.05, col = "red", lwd = 2, lty = 3)
 

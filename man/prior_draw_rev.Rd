@@ -16,10 +16,4 @@ prior_draw_rev(b, hypers, prior.pdf)
 \description{
 draw from prior
 }
-\details{
-details of this function
-}
-\author{
-Philipp Boersch-Supan
-}
 

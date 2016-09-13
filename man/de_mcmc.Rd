@@ -49,7 +49,4 @@ a debinfer_result object containing input parameters, data and MCMC samples
 Bayesian inference for a deterministic DE model (with models
 solved via an DE solver) with an observation model.
 }
-\author{
-Philipp Boersch-Supan
-}
 

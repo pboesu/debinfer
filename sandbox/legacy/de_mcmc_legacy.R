@@ -227,7 +227,6 @@ propose<-function(b, sd)##, i, freq=50, size=50 )##l=5, h=6)
 ##' @param myswitch
 ##' @param mymap
 ##' @return
-##' @author Philipp Boersch-Supan
 dde_mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
                    Tmax, cnt=10, burnin=0.1,
                    plot=TRUE, sizestep=0.01, w.t=1, which=2,
@@ -343,7 +342,6 @@ dde_mcmc<-function(N, data, all.params, inits, sim=DEB1, samp.p,
 ##' @param mymap
 ##' @param test
 ##' @return
-##' @author Philipp Boersch-Supan
 update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
                         w.t, l, which, i, cnt,  myswitch=NULL, mymap=NULL, test=TRUE, ...)
 {
@@ -427,7 +425,6 @@ update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
 ##' @param s.p
 ##' @param q.b
 ##' @return
-##' @author Philipp Boersch-Supan
 check_zeros<-function(s.p, q.b){
   z<-0
   for(j in seq_along(s.p$params)){
@@ -449,7 +446,6 @@ check_zeros<-function(s.p, q.b){
 ##' @param samps
 ##' @param s.p
 ##' @return
-##' @author Philipp Boersch-Supan
 propose_params<-function(samps, s.p)
 {
   if(length(s.p$params)==1){
@@ -471,7 +467,6 @@ propose_params<-function(samps, s.p)
 ##' @param samps
 ##' @param s.p
 ##' @return
-##' @author Philipp Boersch-Supan
 propose_single<-function(samps, s.p)##, i, freq=50, size=50 )##l=5, h=6)
 { ## I'm feeding in the variance, so I need to take the square root....
 
@@ -511,7 +506,6 @@ propose_single<-function(samps, s.p)##, i, freq=50, size=50 )##l=5, h=6)
 ##' @param samp
 ##' @param samp.p
 ##' @return
-##' @author Philipp Boersch-Supan
 propose_joint<-function(samp, samp.p){
 
 
@@ -556,7 +550,6 @@ propose_joint<-function(samp, samp.p){
 ##' @param my.par
 ##' @param plot.post
 ##' @return
-##' @author Philipp Boersch-Supan
 plot_output<-function(i, samps, samp.p, l, ltot, my.par=c(2,4), plot.post=TRUE){
 
   if( ltot > 1 ) par(mfrow=my.par, bty="n")
@@ -584,7 +577,6 @@ plot_output<-function(i, samps, samp.p, l, ltot, my.par=c(2,4), plot.post=TRUE){
 ##' @param hyp
 ##' @param p
 ##' @return
-##' @author Philipp Boersch-Supan
 prior_draw<-function(b, hyp, p){
 
   param1<-hyp[1]
@@ -643,7 +635,6 @@ prior_draw<-function(b, hyp, p){
 ##' @param myswitch
 ##' @param mymap
 ##' @return
-##' @author Philipp Boersch-Supan
 ##'
 ##' @export
 ##'

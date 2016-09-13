@@ -50,9 +50,6 @@ update_sample_rev(samps, samp.p, data, sim, out, Tmax, sizestep, data.times, l,
 \item{...}{further arguments to solver}
 }
 \description{
-This is the workhorse of the MCMC algorithm.
-}
-\author{
-Philipp Boersch-Supan
+This is the workhorse of the MCMC algorithm
 }
 

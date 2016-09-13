@@ -13,8 +13,5 @@
 \description{
 Simulated data from the logistic growth model with N_0=0.1, r=0.1 and K=10
 }
-\author{
-Philipp Boersch-Supan
-}
 \keyword{data}
 
