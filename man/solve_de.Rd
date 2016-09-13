@@ -32,12 +32,9 @@ solve_de(sim, params, inits, Tmax, numsteps = 10000, solver = "ode",
 \item{...}{additional arguments to solver}
 }
 \value{
-integrated ode - describe structure
+integrated ode object. Data structure depends on the employed solver.
 }
 \description{
 solve_de
-}
-\examples{
-example
 }
 

@@ -14,7 +14,4 @@ propose_single_rev(samps, s.p)
 \description{
 propose a parameter individually
 }
-\author{
-Philipp Boersch-Supan
-}
 
