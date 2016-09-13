@@ -1,6 +1,6 @@
 ---
 title: "Bayesian inference for a population growth model of the chytrid fungus"
-author: "Philipp H Boersch-Supan and Leah R Johnson"
+author: "Philipp H Boersch-Supan, Sadie J Ryan, and Leah R Johnson"
 date: "September 2016"
 output: 
   pdf_document: 
