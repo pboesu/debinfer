@@ -2,8 +2,9 @@ citHeader("To cite deBInfer in publications, please use:")
 
 citEntry(entry = "Article",
          title        = "{deBinfer}: Bayesian inference for dynamical models of biological systems",
-         author       = personList(as.person("Philipp Boersch-Supan"),
-                                   as.person("Leah Johnson")),
+         author       = personList(as.person("Philipp H Boersch-Supan"),
+                                   as.person("Sadie J Ryan"),
+                                   as.person("Leah R Johnson")),
          journal      = "arXiv [q-bio.QM]",
          year         = "2016",
          volume       = "1605.00021",
@@ -11,7 +12,7 @@ citEntry(entry = "Article",
          url          = "https://arxiv.org/abs/1605.00021",
 
          textVersion  =
-           paste("Philipp Boersch-Supan and Leah Johnson (2016).",
+           paste("Philipp H Boersch-Supan, Sadie J Ryan, and Leah R Johnson (2016).",
                  "deBInfer: Bayesian inference for dynamical models of biological systems in R.",
                  "arXiv:1605.00021.",
                  "URL https://arxiv.org/abs/1605.00021")
