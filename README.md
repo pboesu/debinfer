@@ -1,5 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/pboesu/debinfer.svg?branch=master)](https://travis-ci.org/pboesu/debinfer)
 [![codecov](https://codecov.io/gh/pboesu/debinfer/branch/master/graph/badge.svg)](https://codecov.io/gh/pboesu/debinfer)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/deBInfer)](https://cran.r-project.org/package=deBInfer)
 [![DOI](https://zenodo.org/badge/21877/pboesu/debinfer.svg)](https://zenodo.org/badge/latestdoi/21877/pboesu/debinfer)
 
 
