@@ -11,7 +11,7 @@
 setup_debinfer <- function(...)
 { parlist <- list(...)
   if (!all(sapply(parlist, class) == "debinfer_par")) stop("input arguments need to be of class debinfer_par")
-  names(parlist)<-sapply(parlist, function(x)x$name)
+  names(parlist)<-vapply(parlist, function(x) x$name, character(1))
   structure(parlist, class="debinfer_parlist")
 }
 
@@ -51,7 +51,7 @@ logd_prior <- function(x, pdf, hypers){
 #' @param fixed boolean; TRUE = parameter is taken to be fixed, FALSE = parameter is to be estimated by MCMC
 #' @param value numeric; parameter value. For fixed parameters this is the value used in the analysis for free parameters this is the starting value used when setting up the MCMC chain
 #' @param joint integer; number of block for joint proposal; NULL means the parameter is not to be jointly proposed
-#' @param prior character; name of the probability distribution for the prior on the parameter. must conform to standard R naming of d/r function pairs, i.e. beta ( foo = beta), binomial binom, Cauchy cauchy, chi-squared chisq, exponential exp, Fisher F f, gamma gamma, geometric geom, hypergeometric hyper, logistic logis, lognormal lnorm, negative binomial nbinom, normal norm, Poisson pois, Student t t, uniform unif, Weibull weibull, mvnorm
+#' @param prior character; name of the probability distribution for the prior on the parameter. Must conform to standard R naming of d/r function pairs, e.g. beta ( foo = beta), binomial binom, Cauchy cauchy, chi-squared chisq, exponential exp, Fisher F f, gamma gamma, geometric geom, hypergeometric hyper, logistic logis, lognormal lnorm, negative binomial nbinom, normal norm, Poisson pois, Student t t, uniform unif, Weibull weibull. Priors from the truncdist package are available by default. User priors can be provided but must be available in the environment from which de_mcmc is called.
 #' @param hypers list of numeric vectors, hyperparameters for the prior; mean only for mvnorm. Can include trunc for truncated pdfs from package truncdist.
 #' @param prop.var numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter
 #' @param samp.type character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution

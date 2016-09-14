@@ -35,13 +35,14 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   #check models
   if(!is.function(obs.model)) stop("obs.model must be a function")
   if(!identical(formalArgs(obs.model), c("data", "sim.data", "samp" ))) stop("obs.model must be a function with arguments 'data', 'sim.data', 'samp'")
-  if(!(is.function(de.model) || is.character(de.model))) stop("de.model must be a function or character")
+  if(!(is.function(de.model) || is.character(de.model))) stop("de.model must be a function or function name (character)")
+  if(!inherits(all.params, "debinfer_parlist")) stop("all.params must be of class debinfer_parlist")
 
   #get names, identify free parameters and inits
-  p.names <- sapply(all.params, function(x) x$name)
-  is.free <- !sapply(all.params, function(x) x$fixed)
-  is.init <- sapply(all.params, function(x) x$var.type)=="init"
-  is.de <- sapply(all.params, function(x) x$var.type)=="de"
+  p.names <- vapply(all.params, function(x) x$name, character(1))
+  is.free <- !vapply(all.params, function(x) x$fixed, logical(1))
+  is.init <- vapply(all.params, function(x) x$var.type, character(1))=="init"
+  is.de <- vapply(all.params, function(x) x$var.type, character(1))=="de"
 
   #get all start values
   p.start <- lapply(all.params, function(x) x$value)[is.free]
@@ -52,7 +53,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   params <- unlist(lapply(all.params, function(x) x$value))
   names(params) <-  p.names
   #initial values for DE (no re-ordering!)
-  inits <- sapply(all.params, function(x) x$value)[is.init]
+  inits <- vapply(all.params, function(x) x$value, numeric(1))[is.init]
   names(inits) <- p.names[is.init]
   #inits are matched by order in deSolve. inform user of input order
   message(paste("Order of initial conditions is ", paste(names(inits), collapse = ", ")))

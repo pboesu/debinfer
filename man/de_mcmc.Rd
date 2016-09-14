@@ -16,7 +16,7 @@ de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
 
 \item{de.model}{a function defining a DE model, compliant with the solvers in deSolve or PBSddesolve}
 
-\item{obs.model}{a function defining an observation model}
+\item{obs.model}{a function defining an observation model. Must be a function with arguments 'data', 'sim.data', 'samp'.}
 
 \item{all.params}{debinfer_parlist containing all model, MCMC, and observation}
 

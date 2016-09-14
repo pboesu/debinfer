@@ -33,8 +33,8 @@ is.debinfer_result <- function(x){
 #' @export
 deinits <- function(x){
   if (is.debinfer_result(x)){
-    is.init <- sapply(x$all.params, function(x) x$var.type)=="init"
-    inits <- sapply(x$all.params, function(x) x$value)[is.init]
+    is.init <- vapply(x$all.params, function(x) x$var.type, character(1))=="init"
+    inits <- vapply(x$all.params, function(x) x$value, numeric(1))[is.init]
     return(inits)
   } else NULL
 }
@@ -48,8 +48,8 @@ deinits <- function(x){
 #' @export
 depars <- function(x){
   if (is.debinfer_result(x)){
-    is.depar <- sapply(x$all.params, function(x) x$var.type)=="de"
-    depars <- sapply(x$all.params, function(x) x$value)[is.depar]
+    is.depar <- vapply(x$all.params, function(x) x$var.type, character(1))=="de"
+    depars <- vapply(x$all.params, function(x) x$value, numeric(1))[is.depar]
     return(depars)
   } else NULL
 }
