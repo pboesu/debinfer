@@ -13,9 +13,6 @@
 Replicated spore counts of an experimental culture of the chytrid fungus \emph{Batrachochytrium dendrobatidis}.
 This dataset is a subset of the observations from the experimental study conducted by Voyles et al. (2012).
 }
-\author{
-Philipp Boersch-Supan
-}
 \references{
 Voyles et al. 2012, Ecol Evol 9:2241-2249 \url{http://dx.doi.org/10.1002\%2Fece3.334}
 }

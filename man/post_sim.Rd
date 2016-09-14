@@ -14,7 +14,7 @@ post_sim(x, n = 100, times, output = "all", burnin = NULL, prob = 0.95,
 
 \item{times}{numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL.}
 
-\item{output}{character, "median", "mult", hdi}
+\item{output}{character, "sims", "all", "HDI"}
 
 \item{burnin}{integer, number of samples to discard from the start of the mcmc chain}
 
@@ -23,12 +23,9 @@ post_sim(x, n = 100, times, output = "all", burnin = NULL, prob = 0.95,
 \item{...}{additional arguments to solver}
 }
 \value{
-a list of de solutions
+a post_sim object containing a list of de solutions or summaries thereof
 }
 \description{
 post_sim
-}
-\examples{
-example
 }
 

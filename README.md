@@ -1,7 +1,3 @@
-*This is the development version of an R package implementing [Bayesian inference for differential equation models](https://arxiv.org/abs/1605.00021). The package is derived from methods and code published in [Voyles et al. (2012)](http://dx.doi.org/10.1002%2Fece3.334) and  [Johnson et al. (2013)](http://doi.org/10.1890/12-0650.1). Software development is supported by [NSF grant PLR-1341649](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1341649).*
-
-*For more information read our [preprint](https://arxiv.org/abs/1605.00021) or get in touch with pboesu@gmail.com*
-
 [![Travis-CI Build Status](https://travis-ci.org/pboesu/debinfer.svg?branch=master)](https://travis-ci.org/pboesu/debinfer)
 [![codecov](https://codecov.io/gh/pboesu/debinfer/branch/master/graph/badge.svg)](https://codecov.io/gh/pboesu/debinfer)
 [![DOI](https://zenodo.org/badge/21877/pboesu/debinfer.svg)](https://zenodo.org/badge/latestdoi/21877/pboesu/debinfer)
@@ -13,3 +9,7 @@
 2. Bayesian approaches offer a coherent framework for parameter inference that can account for multiple sources of uncertainty, while making use of prior information. We present deBInfer, an R package implementing a Bayesian framework for parameter inference in DEs. This approach offers a rigorous methodology for parameter inference as well as modeling the link between unobservable model states and parameters, and observable quantities. 
 3. deBInfer  provides templates for the DE model, the observation model and data likelihood, and the model parameters and their prior distributions. A Markov chain Monte Carlo (MCMC) procedure processes these inputs to estimate the posterior distributions of the parameters and any derived quantities, including the model trajectories. Further functionality is provided to facilitate MCMC diagnostics and the visualisation of the posterior distributions of model parameters and trajectories. 
 4.  The templating approach makes deBInfer applicable to a wide range of DE models and we demonstrate its application to ordinary and delay DE models for population ecology. 
+
+For more information read our [preprint](https://arxiv.org/abs/1605.00021) or get in touch with pboesu@gmail.com
+
+Software development is supported by [NSF grant PLR-1341649](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1341649).

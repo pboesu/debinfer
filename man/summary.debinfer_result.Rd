@@ -12,7 +12,7 @@
 \item{...}{further arguments to summary.mcmc}
 }
 \description{
-Currently just a wrapper for coda::summary.mcmc
+A wrapper for coda::summary.mcmc
 }
 \seealso{
 \code{\link[coda]{summary.mcmc}}

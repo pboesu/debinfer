@@ -1,3 +1,6 @@
+## ----opts, echo=FALSE, results='hide'------------------------------------
+knitr::opts_chunk$set(dev="png", dpi=150)
+
 ## ----install1, eval=FALSE------------------------------------------------
 #  install.packages("devtools")
 
@@ -53,7 +56,7 @@ data(chytrid)
 #have a look at the variables
 head(chytrid)
 #plot the data
-plot(chytrid, xlab = 'Time (days)', ylab = 'Zoospores x 10e4', xlim = c(0,10))
+plot(chytrid, xlab = "Time (days)", ylab = "Zoospores x 10e4", xlim = c(0,10))
 
 ## ----obs-model-----------------------------------------------------------
 # observation model
@@ -63,8 +66,8 @@ chytrid_obs_model <- function(data, sim.data, samp) {
   llik.Z <- 0
   for(i in unique(data$time)){
     try(llik.Z <- llik.Z + sum(dpois(data$count[data$time == i], 
-                                     lambda = (sim.data[,'Z'][sim.data[,'time'] == i] + ec),
-                                     log = TRUE)))
+                                lambda = (sim.data[,"Z"][sim.data[,"time"] == i] + ec),
+                                log = TRUE)))
   }
   llik <- llik.Z
   return(llik)
@@ -105,7 +108,7 @@ Z <- debinfer_par(name = "Z", var.type = "init", fixed = TRUE, value = 0)
 # ----setup---------------------------------------------------------------
 mcmc.pars <- setup_debinfer(sr, fs, ds, muz, eta, Tmin, C, S, Z)
 
-## ----de_mcmc, results='hide'---------------------------------------------
+## ----de_mcmc, results='hide', message=FALSE------------------------------
 # do inference with deBInfer
 # MCMC iterations
 iter <- 500
@@ -113,7 +116,7 @@ iter <- 500
 dede_rev <- de_mcmc(N = iter, data = chytrid, de.model = CSZ.dede,
                     obs.model = chytrid_obs_model, all.params = mcmc.pars,
                     Tmax = max(chytrid$time), data.times = c(0,chytrid$time), cnt = 50,
-                    plot = FALSE, sizestep = 0.1, solver = "dede", verbose.mcmc = TRUE)
+                    plot = FALSE, sizestep = 0.1, solver = "dede", verbose.mcmc = FALSE)
 
 ## ----message=FALSE, warning=FALSE,fig.width = 8, fig.height = 8----------
 par(mfrow = c(3,4))
@@ -151,14 +154,14 @@ post_prior_densplot(dede_rev, param = "Tmin",xlab = expression(theta),
 
 ## ----post-sims-----------------------------------------------------------
 post_traj <- post_sim(dede_rev, n = 100, times = seq(0,10,by = 0.1), burnin = burnin, 
-                      output = 'all', prob = 0.95)
+                      output = "all", prob = 0.95)
 
 ## ----post-sims-plot, fig.width = 8, fig.height = 3-----------------------
 #median and HDI
 par(mfrow = c(1,3))
 plot(post_traj, plot.type = "medianHDI", auto.layout = FALSE)
 legend("topright", legend = c("posterior median", "95% HDI"), lty = 1, 
-       col = c("red","grey"), bty = 'n')
+       col = c("red","grey"), bty = "n")
 
 
 ## ----post-sims-ensemble, fig.width = 8, fig.height = 6-------------------

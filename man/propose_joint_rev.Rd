@@ -17,7 +17,4 @@ joint proposal function
 \details{
 Function to jointly propose parameters using a multivariate normal proposal distribution
 }
-\author{
-Philipp Boersch-Supan
-}
 

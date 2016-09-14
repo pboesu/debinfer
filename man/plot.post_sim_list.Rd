@@ -12,13 +12,13 @@
 
 \item{plot.type}{character, which type of plot. Options are "ensemble" and "medianHDI".}
 
-\item{col}{color, for plot.type="medianHDI" the first element is used for the median, the second for the HDI}
+\item{col}{color, for plot.type = "medianHDI" the first element is used for the median, the second for the HDI}
 
-\item{lty}{line type, for plot.type="medianHDI" the first element is used for the median, the second for the HDI}
+\item{lty}{line type, for plot.type = "medianHDI" the first element is used for the median, the second for the HDI}
 
-\item{auto.layout}{logical, should the layout for plot.type = medianHDI be determined automatically?}
+\item{auto.layout}{logical, should the layout for plot.type = "medianHDI" be determined automatically?}
 
-\item{panel.first}{an 'expression' to be evaluated after the plot axes are set up but before any plotting takes place. This can be useful for adding data points.}
+\item{panel.first}{an expression to be evaluated after the plot axes are set up but before any plotting takes place. This can be useful for adding data points.}
 
 \item{...}{further arguments to methods}
 }

@@ -9,7 +9,7 @@ logd_prior(x, pdf, hypers)
 \arguments{
 \item{x}{numeric; vector of values.}
 
-\item{pdf}{character; name of a probability function. must conform to base R nomenclature. can include trunc for truncated pdfs from package truncdist.}
+\item{pdf}{character; name of a probability function. Must conform to base R nomenclature of d/r function pairs. Can include trunc for truncated pdfs from package truncdist.}
 
 \item{hypers}{list; a list of parameters to be passed to the density function.}
 }

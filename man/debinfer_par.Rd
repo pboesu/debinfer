@@ -18,19 +18,19 @@ debinfer_par(name, var.type, fixed, value, joint = NULL, prior = NULL,
 
 \item{joint}{integer; number of block for joint proposal; NULL means the parameter is not to be jointly proposed}
 
-\item{prior}{character; name of the probability distribution for the prior on the parameter. must conform to standard R naming i.e. beta ( foo = beta), binomial binom, Cauchy cauchy, chi-squared chisq, exponential exp, Fisher F f, gamma gamma, geometric geom, hypergeometric hyper, logistic logis, lognormal lnorm, negative binomial nbinom, normal norm, Poisson pois, Student t t, uniform unif, Weibull weibull, mvnorm}
+\item{prior}{character; name of the probability distribution for the prior on the parameter. must conform to standard R naming of d/r function pairs, i.e. beta ( foo = beta), binomial binom, Cauchy cauchy, chi-squared chisq, exponential exp, Fisher F f, gamma gamma, geometric geom, hypergeometric hyper, logistic logis, lognormal lnorm, negative binomial nbinom, normal norm, Poisson pois, Student t t, uniform unif, Weibull weibull, mvnorm}
 
-\item{hypers}{list of numeric vectors, hyperparameters for the prior; mean only for mvnorm.}
+\item{hypers}{list of numeric vectors, hyperparameters for the prior; mean only for mvnorm. Can include trunc for truncated pdfs from package truncdist.}
 
 \item{prop.var}{numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter}
 
-\item{samp.type}{character; type of sampler: "rw" random walk, "ind" = idenpendence}
+\item{samp.type}{character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution}
 }
 \value{
 returns an object of class debinfer_par to be fed to the mcmc setup function
 }
 \description{
 Creates an object containing all the necessary bits for a parameter i.e. initial values, prior distributions,
-hyper-parameters, tuning parameters etc. to set up a debinfer analysis
+hyper-parameters, tuning parameters, etc. to set up a debinfer analysis
 }
 
