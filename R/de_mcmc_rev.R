@@ -14,7 +14,7 @@
 ##' @param ref.params an optional named vector containing a set of reference parameters, e.g. the true paramaters underlying a simulated data set
 ##' @param ref.inits  an optional named vector containing a set of reference initial values, e.g. the true initial values underlying a simulated data set
 ##' @param de.model a function defining a DE model, compliant with the solvers in deSolve or PBSddesolve
-##' @param obs.model a function defining an observation model
+##' @param obs.model a function defining an observation model. Must be a function with arguments 'data', 'sim.data', 'samp'.
 ##' @param Tmax maximum timestep for solver
 ##' @param cnt integer interval at which to print and possibly plot information on the current state of the MCMC chain
 ##' @param plot logical, plot traces for all parameters at the interval defined by \code{cnt}
