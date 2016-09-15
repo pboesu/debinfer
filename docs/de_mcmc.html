@@ -2,11 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>de_mcmc. deBInfer 0.3</title>
+<title>de_mcmc. deBInfer 0.4.1.9000</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="author" content="
-Philipp Boersch-Supan
-">
+<meta name="author" content="">
 
 <link href="css/bootstrap.css" rel="stylesheet">
 <link href="css/bootstrap-responsive.css" rel="stylesheet">
@@ -34,7 +32,7 @@ Philipp Boersch-Supan
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">deBInfer 0.3</a>
+      <a class="brand" href="index.html">deBInfer 0.4.1.9000</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -70,7 +68,7 @@ Philipp Boersch-Supan
       <dt>de.model</dt>
       <dd>a function defining a DE model, compliant with the solvers in deSolve or PBSddesolve</dd>
       <dt>obs.model</dt>
-      <dd>a function defining an observation model</dd>
+      <dd>a function defining an observation model. Must be a function with arguments &#39;data&#39;, &#39;sim.data&#39;, &#39;samp&#39;.</dd>
       <dt>all.params</dt>
       <dd>debinfer_parlist containing all model, MCMC, and observation</dd>
       <dt>ref.params</dt>
@@ -123,10 +121,6 @@ solved via an DE solver) with an observation model.</p>
     </ul> -->
 
 
-
-    <h2>Author</h2>
-    
-Philipp Boersch-Supan
 
 
   </div>
