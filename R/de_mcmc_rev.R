@@ -148,7 +148,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
     ## printing and plotting output so we can watch the progress
     if(i%%cnt == 0){
       if (verbose.mcmc) message(paste("sample number", i, sep=" "))
-      if (plot)         plot(window(samps, 1, i), density=FALSE, ask=FALSE)#use window.mcmc
+      if (plot)         plot(window(samps[, is.free], 1, i), density=FALSE, ask=FALSE)#use window.mcmc
     }
 
   }
