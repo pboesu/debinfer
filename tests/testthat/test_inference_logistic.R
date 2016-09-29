@@ -39,7 +39,6 @@ test_that("Inference on simulated data with known inits. ", {
     return(llik)
   }
 
-  library(deBInfer)
   r <- debinfer_par(name = "r", var.type = "de", fixed = FALSE,
                     value = 0.5, prior="norm", hypers=list(mean = 0, sd = 1),
                     prop.var=5e-5, samp.type="rw")
@@ -115,7 +114,7 @@ test_that("Inference on simulated data with unknown inits. ", {
     return(llik)
   }
 
-  library(deBInfer)
+
   r <- debinfer_par(name = "r", var.type = "de", fixed = FALSE,
                     value = 0.5, prior="norm", hypers=list(mean = 0, sd = 1),
                     prop.var=5e-5, samp.type="rw")
