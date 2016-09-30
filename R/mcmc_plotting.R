@@ -15,7 +15,7 @@
 #' @param ... further arguments to plot.default (the call that draws the scatter/contour plot)
 #' @import MASS
 #' @import RColorBrewer
-#' @importFrom graphics abline contour hist layout lines par plot plot.default points text title
+#' @importFrom graphics abline contour hist layout lines par plot plot.default points text title strwidth
 #' @import stats
 #' @export
 pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL, medians=TRUE, ...){
