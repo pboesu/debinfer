@@ -46,7 +46,7 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
   for(i in seq_len(np-1))
     for(j in (i+1):np){
       plot.default(-1:1,-1:1, type = "n",xlab="",ylab="",xaxt="n",yaxt="n")
-      text(x=0,y=0,labels=paste(cors[i,j]),cex=2)
+      text(x=0,y=0,labels=paste(cors[i,j]),cex= 1 + 1.8/strwidth("0.00") * abs(cors[i,j]))
     }
 
   # Plot heatmaps, here I use kde2d function for density estimation
