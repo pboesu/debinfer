@@ -328,7 +328,18 @@ propose_single_rev<-function(samps, s.p)
  if(type=="ind"){
     out<-prior_draw_rev(b, hyps, s.p$prior)
     return(out)
-  }
+    }
+ if(type=="rw-ref01"){
+   sd<-sqrt(var)
+   b.new <- rnorm(1, b, sd=sd)
+   while(b.new > 1 || b.new < 0){
+     if(b.new > 1) b.new <- 2 - b.new
+     if(b.new < 0) b.new <- abs(b.new)
+   }
+   lfwd<-dnorm(b.new, b, sd=sd, log=TRUE)
+   lbak<-dnorm(b, b.new, sd=sd, log=TRUE)
+   return(list(b=b.new, lfwd=lfwd, lbak=lbak))
+ }
 
 }
 
