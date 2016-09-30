@@ -333,13 +333,17 @@ propose_single_rev<-function(samps, s.p)
    sd<-sqrt(var)
    b.new <- rnorm(1, b, sd=sd)
    while(b.new > 1 || b.new < 0){
-     if(b.new > 1) b.new <- 2 - b.new
-     if(b.new < 0) b.new <- abs(b.new)
+     if(b.new > 1) b.new <- 2 - b.new; #print(b.new)
+     if(b.new < 0) b.new <- abs(b.new); #print(b.new)
    }
    lfwd<-dnorm(b.new, b, sd=sd, log=TRUE)
    lbak<-dnorm(b, b.new, sd=sd, log=TRUE)
    return(list(b=b.new, lfwd=lfwd, lbak=lbak))
  }
+  #for generalised reflecting sampler: calculate support of prior using qprior
+  #ideally do this in setup_mcmc, to avoid doing the calculation for every proposal
+  #use support as bounds and then use reflction as described in Yang and Rodriguez 2013
+  #i.e. x < a --> x = 2a-x; x > b --> x = 2b-x
 
 }
 
