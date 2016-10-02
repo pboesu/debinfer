@@ -24,7 +24,7 @@ debinfer_par(name, var.type, fixed, value, joint = NULL, prior = NULL,
 
 \item{prop.var}{numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter}
 
-\item{samp.type}{character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution}
+\item{samp.type}{character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution, "rw-ref" = reflecting random walk sampler on the bounds of the prior support (cf. Hoff 2009, Chapter 10.5.1; Yang and Rodriguez 2013)}
 }
 \value{
 returns an object of class debinfer_par to be fed to the mcmc setup function
@@ -32,5 +32,9 @@ returns an object of class debinfer_par to be fed to the mcmc setup function
 \description{
 Creates an object containing all the necessary bits for a parameter i.e. initial values, prior distributions,
 hyper-parameters, tuning parameters, etc. to set up a debinfer analysis
+}
+\references{
+Hoff 2009, A First Course in Bayesian Statistical Methods, Springer
+            Yang and Rodriguez 2013, PNAS 110:19307–19312 \url{http://doi.org/10.1073/pnas.1311790110}
 }
 
