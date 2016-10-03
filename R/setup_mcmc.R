@@ -58,7 +58,7 @@ logd_prior <- function(x, pdf, hypers){
 #'
 #' @return returns an object of class debinfer_par to be fed to the mcmc setup function
 #' @references Hoff 2009, A First Course in Bayesian Statistical Methods, Springer
-#'             Yang and Rodriguez 2013, PNAS 110:19307–19312 \url{http://doi.org/10.1073/pnas.1311790110}
+#'             Yang and Rodriguez 2013, PNAS 110:19307-19312 \url{http://doi.org/10.1073/pnas.1311790110}
 #' @export
 debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, hypers=NULL, prop.var=NULL, samp.type=NULL){
   #check inputs
