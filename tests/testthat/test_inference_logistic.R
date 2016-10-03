@@ -73,6 +73,14 @@ test_that("Inference on simulated data with known inits. ", {
   expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"r"])/parms["r"]),1,tolerance = 1e-2)
   expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"K"])/parms["K"]),1,tolerance = 1e-2)
   expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"logsd.N"])/parms["logsd.N"]),1,tolerance = 1e-1)
+
+  #test utility function for checking results class
+  expect_equal(is.debinfer_result(mcmc_samples), TRUE)
+
+  #test extractor functions
+  expect_equal(deinits(mcmc_samples), c(N=0.1))
+  expect_equal(depars(mcmc_samples), c(r=0.5, K=5))
+
 })
 
 

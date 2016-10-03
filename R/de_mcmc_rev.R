@@ -328,7 +328,24 @@ propose_single_rev<-function(samps, s.p)
  if(type=="ind"){
     out<-prior_draw_rev(b, hyps, s.p$prior)
     return(out)
-  }
+    }
+ if(type=="rw-ref"){
+   l.bound <- s.p$bounds[1]
+   u.bound <- s.p$bounds[2]
+   sd<-sqrt(var)
+   b.new <- rnorm(1, b, sd=sd)
+   while(b.new > u.bound || b.new < l.bound){
+     if(b.new > u.bound) b.new <- 2*u.bound - b.new; #print(b.new)
+     if(b.new < l.bound) b.new <- 2*l.bound - b.new; #print(b.new)
+   }
+   lfwd<-dnorm(b.new, b, sd=sd, log=TRUE)
+   lbak<-dnorm(b, b.new, sd=sd, log=TRUE)
+   return(list(b=b.new, lfwd=lfwd, lbak=lbak))
+ }
+  #for generalised reflecting sampler: calculate support of prior using qprior
+  #ideally do this in setup_mcmc, to avoid doing the calculation for every proposal
+  #use support as bounds and then use reflction as described in Yang and Rodriguez 2013
+  #i.e. x < a --> x = 2a-x; x > b --> x = 2b-x
 
 }
 
