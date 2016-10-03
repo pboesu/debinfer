@@ -54,9 +54,11 @@ logd_prior <- function(x, pdf, hypers){
 #' @param prior character; name of the probability distribution for the prior on the parameter. Must conform to standard R naming of d/r function pairs, e.g. beta ( foo = beta), binomial binom, Cauchy cauchy, chi-squared chisq, exponential exp, Fisher F f, gamma gamma, geometric geom, hypergeometric hyper, logistic logis, lognormal lnorm, negative binomial nbinom, normal norm, Poisson pois, Student t t, uniform unif, Weibull weibull. Priors from the truncdist package are available by default. User priors can be provided but must be available in the environment from which de_mcmc is called.
 #' @param hypers list of numeric vectors, hyperparameters for the prior; mean only for mvnorm. Can include trunc for truncated pdfs from package truncdist.
 #' @param prop.var numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter
-#' @param samp.type character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution
+#' @param samp.type character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution, "rw-ref" = reflecting random walk sampler on the bounds of the prior support (cf. Hoff 2009, Chapter 10.5.1; Yang and Rodriguez 2013)
 #'
 #' @return returns an object of class debinfer_par to be fed to the mcmc setup function
+#' @references Hoff 2009, A First Course in Bayesian Statistical Methods, Springer
+#'             Yang and Rodriguez 2013, PNAS 110:19307-19312 \url{http://doi.org/10.1073/pnas.1311790110}
 #' @export
 debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, hypers=NULL, prop.var=NULL, samp.type=NULL){
   #check inputs
@@ -66,12 +68,20 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
   if(!is.numeric(value)) stop("value must be numeric")
   if(!fixed & (is.null(prior) | is.null(hypers) | is.null(prop.var) | is.null(samp.type))) stop("free parameters require a specification of prior, hypers, prop.var and samp.type")
   if(fixed & !(is.null(prior) | is.null(hypers) | is.null(prop.var) | is.null(samp.type))) warning(paste(name, "is treated as a fixed parameters. Ignoring prior, hypers, prop.var and samp.type specification."))
-  if(!fixed) if(!samp.type %in% c("rw", "rw-unif","ind")) stop('samp.type must be one of c("rw", "rw-unif","ind)')
+  if(!fixed) if(!samp.type %in% c("rw", "rw-unif","ind", "rw-ref")) stop('samp.type must be one of c("rw", "rw-unif","ind", "rw-ref")')
   if(!fixed) if(samp.type == "rw") if(!is.numeric(prop.var) | prop.var < 0 | length(prop.var)!=1) stop("prop.var must be a numeric > 0 of length 1 for sampler type 'rw'")
+  if(!fixed) if(samp.type == "rw-ref") if(!is.numeric(prop.var) | prop.var < 0 | length(prop.var)!=1) stop("prop.var must be a numeric > 0 of length 1 for sampler type 'rw-ref'")
+  if(!fixed) if(samp.type == "rw-ref") if(prop.var >= 1) warning("prop.var should be << 1 for efficient sampling with sampler type 'rw-ref'")
   if(!fixed) if(samp.type == "rw-unif") if(!is.numeric(prop.var) | all(prop.var < 0) | length(prop.var)!=2) stop("prop.var must be a numeric > 0 of length 2 for sampler type 'rw-unif'")
   if(!fixed) if(samp.type == "rw-unif") if(prop.var[1] >= prop.var[2])stop("prop.var[1] must be smaller than prop.var[2] for sampler type 'rw-unif'")
   #checks for prior and hypers?
   if(!is.null(joint)) stop("joint proposals are not yet implemented")
+  #get limits of prior support for reflection sampler
+  if(!fixed){
+    bounds <-  do.call(paste("q", prior, sep=""), c(list(p = c(0,1)), hypers))
+  } else {
+    bounds <- NA
+  }
 
   structure(list(name = name,
               var.type = var.type,
@@ -79,6 +89,7 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
               value = value,
               joint = joint,
               prior = prior,
+              bounds = bounds,
               hypers = hypers,
               prop.var = prop.var,
               samp.type = samp.type), class = "debinfer_par")
