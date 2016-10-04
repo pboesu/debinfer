@@ -4,14 +4,14 @@
 \alias{debinfer_cov}
 \title{debinfer_cov}
 \usage{
-debinfer_cov(var.names, sigma = diag(length(names)), joint.block)
+debinfer_cov(var.names, sigma = diag(length(names)), name)
 }
 \arguments{
 \item{var.names}{names of the parameters that are to be proposed together}
 
 \item{sigma}{covariance matrix}
 
-\item{joint.block}{name of the joint block}
+\item{name}{name of the joint block}
 }
 \value{
 a debinfer_cov object
