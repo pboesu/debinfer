@@ -102,16 +102,17 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
 #'
 #' @param var.names names of the parameters that are to be proposed together
 #' @param sigma covariance matrix
+#' @param samp.type character; type of sampler. currently only "rw" = Normal random walk is implemented for multivariate proposals
 #' @param name name of the joint block
 #'
 #' @return a debinfer_cov object
 #' @export
 #'
-debinfer_cov <- function(var.names, sigma=diag(length(names)), name ){
+debinfer_cov <- function(var.names, sigma=diag(length(names)), name , samp.type = "rw"){
   if(!is.character(var.names)) stop("var.names must be a character vector")
   if(class(sigma)!= "matrix" || !is.numeric(sigma)) stop("sigma must be a numeric matrix")
   if(any(dim(sigma)!=length(var.names))) stop("length(var.names) does not match dimensions of sigma")
   colnames(sigma)<-var.names
   rownames(sigma)<-var.names
-  structure(list(sigma=sigma, name = name), class="debinfer_cov")
+  structure(list(sigma=sigma, name = name, samp.type = samp.type), class="debinfer_cov")
 }
