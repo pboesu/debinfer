@@ -53,9 +53,9 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   is.free <- !vapply(all.params, function(x) x$fixed, logical(1))
   is.init <- vapply(all.params, function(x) x$var.type, character(1))=="init"
   is.de <- vapply(all.params, function(x) x$var.type, character(1))=="de"
-  #identify joint proposal and split into blocks
-  is.single <- vapply(all.params, function(x) is.null(x$joint), logical(1))
-  joint.blocks <- unique(vapply(all.params[!is.single], function(x) x$joint, character(1)))
+  #identify free parameters with joint proposal and split into blocks
+  is.single <- vapply(all.params, function(x) is.null(x$joint) , logical(1)) & is.free
+  joint.blocks <- unique(vapply(all.params[!is.single & is.free], function(x) x$joint, character(1)))
 
   #get all start values
   p.start <- lapply(all.params, function(x) x$value)[is.free]
