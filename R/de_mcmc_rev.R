@@ -42,12 +42,12 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   is.par <- vapply(all.params, class, character(1)) == "debinfer_par"
   is.cov <- vapply(all.params, class, character(1)) == "debinfer_cov"
   #subset into parameters and covariance matrices
-  all.params <- all.params[is.par]
   if (any(is.cov)){
     cov.matrices <- all.params[is.cov]
   } else {
     cov.matrices <- NULL
   }
+  all.params <- all.params[is.par]
   #identify free parameters and inits
   p.names <- vapply(all.params, function(x) x$name, character(1))
   is.free <- !vapply(all.params, function(x) x$fixed, logical(1))
@@ -243,15 +243,25 @@ update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizes
       ##print(paste(s.p$params, " proposing single ", sep=" "))
       q<-propose_single_rev(samps = s, s.p = samp.p[[k]])
     }
-    else {#if k is a joint block
-      ##print(paste(s.p$params, " proposing jointly ", sep=" "))
-      q<-propose_joint_rev(samps = s, s.p = samp.p[[k]])
+    else {
+     if (k %in% joint.blocks){
+       ##print(paste(s.p$params, " proposing jointly ", sep=" "))
+       q<-propose_joint_rev(samps = s, s.ps = samp.p, cov.mat = cov.mats[[k]])
+     } else {stop("Parameter is neither in a joint block nor set up for individual proposals. This should not happen.")}
+
     }
 
     ## automatically reject if the proposed parameter value is
     ## outside of the prior support
-    qprior <- logd_prior(q$b, pdfs[[k]], hypers=hyper[[k]])
-    if (is.finite(qprior)){
+    if (k %in% singles){
+      qprior <- logd_prior(q$b, pdfs[[k]], hypers=hyper[[k]])
+    } else {
+      if (k %in% joint.blocks){
+        qprior <- sapply(dimnames(cov.mats[[k]]$sigma)[[1]], function(x) logd_prior(q$b[x], pdfs[[x]], hypers=hyper[[x]]))
+      }
+    }
+
+    if (all(is.finite(qprior))){
       ## write the proposed params into the p.new and s.new.
 
       #for(j in 1:length(samp.p[[k]]$name)){#this will need to be able to handle joint proposals
@@ -376,31 +386,33 @@ propose_single_rev<-function(samps, s.p)
 ##' Function to jointly propose parameters using a multivariate normal proposal distribution
 ##' @title propose_joint
 ##' @param samps current sample of the MCMC chain
-##' @param s.p debinfer_par object representing the parameter that is to be proposed
+##' @param s.ps debinfer_parlist object representing the parameters that are to be proposed
+##' @param cov.mat debinfer_cov object; covariance matrix for the proposal
 ##' @import stats
 ##' @import mvtnorm
-propose_joint_rev<-function(samps, s.p){
+propose_joint_rev<-function(samps, s.ps, cov.mat){
 
 
   b<-NULL
-  if(s.p$type=="rw"){
-    b<-as.numeric(samps[s.p$params])
-    sigma<-s.p$var
+  joint.pars <- dimnames(cov.mat$sigma)[[1]]
+  if(cov.mat$samp.type == "rw"){
+    b<-samps[joint.pars]
 
-    b.new<-rmvnorm(1, mean=b, sigma=sigma)
-    lfwd<-dmvnorm(b.new, b, sigma, log=TRUE)
-    lbak<-dmvnorm(b, b.new, sigma, log=TRUE)
+    b.new<-rmvnorm(1, mean=b, sigma=cov.mat$sigma)
+    lfwd<-dmvnorm(b.new, b, cov.mat$sigma, log=TRUE)
+    lbak<-dmvnorm(b, b.new, cov.mat$sigma, log=TRUE)
   }
-  else if(s.p$type=="ind"){
-    if(is.null(s.p$mean)) stop("not enough info for the independence sampler")
-    mean<-as.numeric(s.p$mean)
-    b<-as.numeric(samps[s.p$params])
-    sigma<-s.p$var
-
-    b.new<-rmvnorm(1, mean=mean, sigma=sigma)
-    lfwd<-dmvnorm(b.new, mean, sigma, log=TRUE)
-    lbak<-dmvnorm(b, mean, sigma, log=TRUE)
-  }
+  else if(cov.mat$samp.type =="ind"){
+    stop("multivariate independence sampler not yet implemented")
+    # if(is.null(s.p$mean)) stop("not enough info for the independence sampler")
+    # mean<-as.numeric(s.p$mean)
+    # b<-as.numeric(samps[s.p$params])
+    # sigma<-s.p$var
+    #
+    # b.new<-rmvnorm(1, mean=mean, sigma=sigma)
+    # lfwd<-dmvnorm(b.new, mean, sigma, log=TRUE)
+    # lbak<-dmvnorm(b, mean, sigma, log=TRUE)
+  } else stop(paste("unknown sampler type for multivariate block", k))
 
   ##print(c(b, b.new, lfwd, lbak))
 
