@@ -62,19 +62,19 @@ mcmc.pars <- setup_debinfer(r, K, logsd.N, N)
 mcmc.pars.ref <- setup_debinfer(r, K, logsd.N.ref, N)
 # do inference with deBInfer
 # MCMC iterations
-iter = 5000
+iter = 15000
 # define burnin
 burnin = 2000
 # inference call
 
-bm <- microbenchmark::microbenchmark(
-rw_unif = de_mcmc(N = iter, data=N_obs, de.model=logistic_model, obs.model=logistic_obs_model, all.params=mcmc.pars,
-                        Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter+1,
-                        plot=FALSE, sizestep=0.1, solver=1),
-rw_ref = de_mcmc(N = iter, data=N_obs, de.model=logistic_model, obs.model=logistic_obs_model, all.params=mcmc.pars.ref,
-                        Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter+1,
-                        plot=FALSE, sizestep=0.1, solver=1),
-times=10)
+# bm <- microbenchmark::microbenchmark(
+# rw_unif = de_mcmc(N = iter, data=N_obs, de.model=logistic_model, obs.model=logistic_obs_model, all.params=mcmc.pars,
+#                         Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter+1,
+#                         plot=FALSE, sizestep=0.1, solver=1),
+# rw_ref = de_mcmc(N = iter, data=N_obs, de.model=logistic_model, obs.model=logistic_obs_model, all.params=mcmc.pars.ref,
+#                         Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter+1,
+#                         plot=FALSE, sizestep=0.1, solver=1),
+# times=10)
 
 rw_unif <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model, obs.model=logistic_obs_model, all.params=mcmc.pars,
                   Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter+1,
@@ -83,7 +83,9 @@ rw_ref <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model, obs.model=logis
                  Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter+1,
                  plot=FALSE, sizestep=0.1, solver=1)
 
-plot(window(rw_unif$samples, 3300, 5000))
-coda::effectiveSize(window(rw_unif$samples, 3300, 5000))
-plot(window(rw_ref$samples, 3300, 5000))
-coda::effectiveSize(window(rw_ref$samples, 3300, 5000))
+plot(window(rw_unif$samples, 3300, iter))
+coda::effectiveSize(window(rw_unif$samples, 3300, iter))
+coda::rejectionRate(window(rw_unif$samples, 3300, iter))
+plot(window(rw_ref$samples, 3300, iter))
+coda::effectiveSize(window(rw_ref$samples, 3300, iter))
+coda::rejectionRate(window(rw_ref$samples, 3300, iter))
