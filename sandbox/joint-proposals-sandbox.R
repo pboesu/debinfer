@@ -9,15 +9,15 @@ debinfer_cov <- function(var.names, sigma=diag(length(names)), joint.block ){
   structure(list(sigma=sigma, joint.block = joint.block), class="debinfer_cov")
 }
 
-sigma1 <- debinfer_cov(c("r", "K"), sigma = matrix(c(1,0.25,0.25,1),2), "sigma1")
+#how can you have a multivariate idependence sampler??
 
-
+  
 dmvnorm(x=c(0,0))
 dmvnorm(x=c(0,0), mean=c(1,1))
 
 sigma <- matrix(c(4,2,2,3), ncol=2)
-x <- mvtnorm::rmvnorm(n=500, mean=c(0,0), sigma=sigma1$sigma)
-xcolMeans(x)
+x <- rmvnorm(n=500, mean=c(1,2), sigma=sigma)
+colMeans(x)
 var(x)
 
 x <- rmvnorm(n=500, mean=c(1,2), sigma=sigma, method="chol")

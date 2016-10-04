@@ -10,9 +10,7 @@
 #' @export
 setup_debinfer <- function(...)
 { parlist <- list(...)
-  if (!all(sapply(parlist, class) %in% c("debinfer_par", "debinfer_cov"))) stop("input arguments need to be of class debinfer_par")
-  #check for joint proposals
-  #for each unique cov matrix, check that dimensions and dimension names match names and number of associated parameters
+  if (!all(sapply(parlist, class) == "debinfer_par")) stop("input arguments need to be of class debinfer_par")
   names(parlist)<-vapply(parlist, function(x) x$name, character(1))
   structure(parlist, class="debinfer_parlist")
 }
@@ -77,7 +75,7 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
   if(!fixed) if(samp.type == "rw-unif") if(!is.numeric(prop.var) | all(prop.var < 0) | length(prop.var)!=2) stop("prop.var must be a numeric > 0 of length 2 for sampler type 'rw-unif'")
   if(!fixed) if(samp.type == "rw-unif") if(prop.var[1] >= prop.var[2])stop("prop.var[1] must be smaller than prop.var[2] for sampler type 'rw-unif'")
   #checks for prior and hypers?
-  if(!is.null(joint)) if(!is.character(joint)) stop("joint needs to be of type character (name of covariance matrix)")
+  if(!is.null(joint)) stop("joint proposals are not yet implemented")
   #get limits of prior support for reflection sampler
   if(!fixed){
     bounds <-  do.call(paste("q", prior, sep=""), c(list(p = c(0,1)), hypers))
@@ -95,23 +93,4 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
               hypers = hypers,
               prop.var = prop.var,
               samp.type = samp.type), class = "debinfer_par")
-}
-
-
-#' debinfer_cov
-#'
-#' @param var.names names of the parameters that are to be proposed together
-#' @param sigma covariance matrix
-#' @param name name of the joint block
-#'
-#' @return a debinfer_cov object
-#' @export
-#'
-debinfer_cov <- function(var.names, sigma=diag(length(names)), name ){
-  if(!is.character(var.names)) stop("var.names must be a character vector")
-  if(class(sigma)!= "matrix" || !is.numeric(sigma)) stop("sigma must be a numeric matrix")
-  if(any(dim(sigma)!=length(var.names))) stop("length(var.names) does not match dimensions of sigma")
-  colnames(sigma)<-var.names
-  rownames(sigma)<-var.names
-  structure(list(sigma=sigma, name = name), class="debinfer_cov")
 }
