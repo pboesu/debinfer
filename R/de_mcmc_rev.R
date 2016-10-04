@@ -38,11 +38,24 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   if(!(is.function(de.model) || is.character(de.model))) stop("de.model must be a function or function name (character)")
   if(!inherits(all.params, "debinfer_parlist")) stop("all.params must be of class debinfer_parlist")
 
-  #get names, identify free parameters and inits
+  #identify cov matrices
+  is.par <- vapply(all.params, class, character(1)) == "debinfer_par"
+  is.cov <- vapply(all.params, class, character(1)) == "debinfer_cov"
+  #subset into parameters and covariance matrices
+  all.params <- all.params[is.par]
+  if (any(is.cov)){
+    cov.matrices <- all.params[is.cov]
+  } else {
+    cov.matrices <- NULL
+  }
+  #identify free parameters and inits
   p.names <- vapply(all.params, function(x) x$name, character(1))
   is.free <- !vapply(all.params, function(x) x$fixed, logical(1))
   is.init <- vapply(all.params, function(x) x$var.type, character(1))=="init"
   is.de <- vapply(all.params, function(x) x$var.type, character(1))=="de"
+  #identify joint proposal and split into blocks
+  is.single <- vapply(all.params, function(x) is.null(x$joint), logical(1))
+  joint.blocks <- unique(vapply(all.params[!is.single], function(x) x$joint, character(1)))
 
   #get all start values
   p.start <- lapply(all.params, function(x) x$value)[is.free]
@@ -71,6 +84,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   ## loops later.
 
   n.free <- sum(is.free)
+  n.joints <- length(joint.blocks)
   np<-length(all.params)
 
 
@@ -135,9 +149,10 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 
     ## the meat of the MCMC is found in the function update.samps (see below)
 
-    out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, out = out,
-                       Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, solver=solver, i=i, cnt=cnt, w.p = w.p,
-                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, is.de=is.de, ...)
+    out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], cov.mats = cov.matrices, data = data, sim = de.model, out = out,
+                       Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free + n.joints, solver=solver, i=i, cnt=cnt, w.p = w.p,
+                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, is.de=is.de,
+                       is.single = is.single, joint.blocks = joint.blocks, ...)
     samps[i,] <- out$s #make sure order is matched
 #     if(test){
 #       if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
@@ -176,6 +191,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##'
 ##' @param samps row vector of samples from the previous mcmc iteration
 ##' @param samp.p the parlist created by setup_debinfer
+##' @param cov.mats the covariance matrices
 ##' @param data the observation
 ##' @param sim the de.model
 ##' @param out list containing the initial or previous update i.e. list(s=samps[i-1,], inits=inits, p=params, sim.old=sim.start)
@@ -193,10 +209,13 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param verbose.mcmc logical print MCMC progress messages
 ##' @param verbose logical, print additional information from solver
 ##' @param is.de logical, parameter is an input for the solver
+##' @param is.single parameter is to be proposed individually
+##' @param joint.blocks names of joint blocks
 ##' @param ... further arguments to solver
 ##' @export
-update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
-                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, is.de, ...)
+update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizestep,
+                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, is.de,
+                        is.single, joint.blocks, ...)
 {
   ## read in some bits
   s<-samps
@@ -204,10 +223,13 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
   p<-out$p
   ints <- out$inits
 
+  singles <- names(is.single)[is.single]
+  singles.blocks <- c(singles,joint.blocks)
+
   #randomize updating order
-  x<-seq_len(l) #make this the not joint parameters
+  #x<-seq_along(singles) # this is the sum of not joint parameters and joint blocks
   #then get the number of joint blocks and add the joint blocks
-  s.x<-sample(x) #and resample order
+  s.x<-sample(singles.blocks) #resample order
 
   for(k in s.x){
 
@@ -217,7 +239,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
 
     #pick
 
-    if(is.null(samp.p[[k]]$joint)){#if k is a single par
+    if(k %in% singles){#if k is a single par
       ##print(paste(s.p$params, " proposing single ", sep=" "))
       q<-propose_single_rev(samps = s, s.p = samp.p[[k]])
     }
