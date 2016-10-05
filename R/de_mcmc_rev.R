@@ -421,7 +421,7 @@ propose_joint_rev<-function(samps, s.ps, cov.mat){
     # b.new<-rmvnorm(1, mean=mean, sigma=sigma)
     # lfwd<-dmvnorm(b.new, mean, sigma, log=TRUE)
     # lbak<-dmvnorm(b, mean, sigma, log=TRUE)
-  } else stop(paste("unknown sampler type for multivariate block", k))
+  } else stop(paste("unknown sampler type for multivariate block", cov.mat$name))
 
   ##print(c(b, b.new, lfwd, lbak))
 
