@@ -47,7 +47,7 @@ test_that("Inference on simulated data with known inits. ", {
                     prop.var=0.1, samp.type="rw", joint="sigma1")
 
   #define covariance matrix
-  sigma1 <- debinfer_cov(c("r", "K"), sigma = matrix(c(1,0.25,0.25,1),2), name = "sigma1")
+  sigma1 <- debinfer_cov(c("r", "K"), sigma = matrix(c(5e-5,0.25,0.25,0.1),2), name = "sigma1")
 
   logsd.N <- debinfer_par(name = "logsd.N", var.type = "obs", fixed = FALSE,
                           value = 1, prior="lnorm", hypers=list(meanlog = 0, sdlog = 1),
@@ -62,7 +62,7 @@ test_that("Inference on simulated data with known inits. ", {
 
   # do inference with deBInfer
   # MCMC iterations
-  iter = 500
+  iter = 5000
   # define burnin
   burnin = 2
   # inference call
