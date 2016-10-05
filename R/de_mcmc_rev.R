@@ -451,6 +451,7 @@ prior_draw_rev<-function(b, hypers, prior.pdf){
     dens <- paste("d", prior.pdf, sep="")
     lfwd<-do.call(dens, c(x=b.new,  hypers, log=TRUE))
     lbak<-do.call(dens, c(x=unname(b),  hypers, log=TRUE))
+    names(b.new) <- names(b)
 
   return(list(b=b.new, lfwd=lfwd, lbak=lbak))
 }
