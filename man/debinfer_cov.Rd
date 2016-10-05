@@ -4,7 +4,7 @@
 \alias{debinfer_cov}
 \title{debinfer_cov}
 \usage{
-debinfer_cov(var.names, sigma = diag(length(names)), name)
+debinfer_cov(var.names, sigma = diag(length(names)), name, samp.type = "rw")
 }
 \arguments{
 \item{var.names}{names of the parameters that are to be proposed together}
@@ -12,6 +12,8 @@ debinfer_cov(var.names, sigma = diag(length(names)), name)
 \item{sigma}{covariance matrix}
 
 \item{name}{name of the joint block}
+
+\item{samp.type}{character; type of sampler. currently only "rw" = Normal random walk is implemented for multivariate proposals}
 }
 \value{
 a debinfer_cov object

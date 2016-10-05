@@ -407,7 +407,7 @@ propose_joint_rev<-function(samps, s.ps, cov.mat){
   if(cov.mat$samp.type == "rw"){
     b<-samps[joint.pars]
 
-    b.new<-rmvnorm(1, mean=b, sigma=cov.mat$sigma)
+    b.new<-rmvnorm(1, mean=b, sigma=cov.mat$sigma, method="svd")
     lfwd<-dmvnorm(b.new, b, cov.mat$sigma, log=TRUE)
     lbak<-dmvnorm(b, b.new, cov.mat$sigma, log=TRUE)
   }
