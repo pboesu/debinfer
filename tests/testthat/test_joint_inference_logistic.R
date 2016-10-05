@@ -62,7 +62,7 @@ test_that("Inference on simulated data with known inits. ", {
 
   # do inference with deBInfer
   # MCMC iterations
-  iter = 5
+  iter = 500
   # define burnin
   burnin = 2
   # inference call

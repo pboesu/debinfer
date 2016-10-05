@@ -257,7 +257,8 @@ update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizes
       qprior <- logd_prior(q$b, pdfs[[k]], hypers=hyper[[k]])
     } else {
       if (k %in% joint.blocks){
-        qprior <- sapply(dimnames(cov.mats[[k]]$sigma)[[1]], function(x) logd_prior(q$b[x], pdfs[[x]], hypers=hyper[[x]]))
+        qprior <- sapply(dimnames(cov.mats[[k]]$sigma)[[1]], function(x) logd_prior(q$b[x], pdfs[[x]], hypers=hyper[[x]]), USE.NAMES = FALSE)##TIDY UP
+        if(verbose.mcmc) message(paste("assessing logd_prior for join proposal", dimnames(cov.mats[[k]]$sigma)[[1]], q$b, "; qprior = ", qprior))
       }
     }
 
@@ -265,13 +266,16 @@ update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizes
       ## write the proposed params into the p.new and s.new.
 
       #for(j in 1:length(samp.p[[k]]$name)){#this will need to be able to handle joint proposals
-        ww<-samp.p[[k]]$name
-        if (samp.p[[k]]$var.type== "de" || samp.p[[k]]$var.type == "obs") p.new[ww]<-s.new[ww]<-q$b#[j]
-        if (samp.p[[k]]$var.type== "init") i.new[ww]<-s.new[ww]<-q$b#[j]
+        #ww<-samp.p[[k]]$name
+      if (k %in% singles) jj <- k else jj <- dimnames(cov.mats[[k]]$sigma)[[1]] ##TIDY UP
+      for (j in jj){
+        if (samp.p[[j]]$var.type== "de" || samp.p[[j]]$var.type == "obs")
+        if (samp.p[[j]]$var.type== "init") i.new[j]<-s.new[j]<-q$b[j]
+      }
       #}
 
       ## simulate the dynamics forward with the new parameters, but only if parameter in question is not an observation parameter
-      if (samp.p[[k]]$var.type == "obs"){
+      if (all(vapply(jj, function(x) samp.p[[x]]$var.type, character(1)) == "obs")){ ##TIDY UP
         sim.new <- sim.old #keep using last available de solution
       } else { #compute new solution
        sim.new<-solve_de(sim = sim , params = p.new[is.de], inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
@@ -337,7 +341,7 @@ update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizes
 propose_single_rev<-function(samps, s.p)
 { ## I'm feeding in the variance, so I need to take the square root....
 
-  b<-as.numeric(samps[s.p$name])
+  b<-samps[s.p$name]
   var<-s.p$prop.var
   type<-s.p$samp.type
   hyps<-s.p$hypers
@@ -420,7 +424,7 @@ propose_joint_rev<-function(samps, s.ps, cov.mat){
   ##samp[s]<-b.new
 
   ##stop()
-  return(list(b=b.new, lfwd=lfwd, lbak=lbak))
+  return(list(b=b.new[1,], lfwd=lfwd, lbak=lbak))
 
 }
 
@@ -441,7 +445,7 @@ prior_draw_rev<-function(b, hypers, prior.pdf){
     #assemble density function name
     dens <- paste("d", prior.pdf, sep="")
     lfwd<-do.call(dens, c(x=b.new,  hypers, log=TRUE))
-    lbak<-do.call(dens, c(x=b,  hypers, log=TRUE))
+    lbak<-do.call(dens, c(x=unname(b),  hypers, log=TRUE))
 
   return(list(b=b.new, lfwd=lfwd, lbak=lbak))
 }
