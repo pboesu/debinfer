@@ -148,7 +148,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   for(i in 2:N){
 
     ## the meat of the MCMC is found in the function update.samps (see below)
-
+    #if(verbose.mcmc) message(i)
     out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], cov.mats = cov.matrices, data = data, sim = de.model, out = out,
                        Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free + n.joints, solver=solver, i=i, cnt=cnt, w.p = w.p,
                        obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, is.de=is.de,
@@ -258,7 +258,7 @@ update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizes
     } else {
       if (k %in% joint.blocks){
         qprior <- sapply(dimnames(cov.mats[[k]]$sigma)[[1]], function(x) logd_prior(q$b[x], pdfs[[x]], hypers=hyper[[x]]), USE.NAMES = FALSE)##TIDY UP
-        if(verbose.mcmc) message(paste("assessing logd_prior for join proposal", dimnames(cov.mats[[k]]$sigma)[[1]], q$b, "; qprior = ", qprior))
+        #if(verbose.mcmc) message(paste("assessing logd_prior for join proposal", dimnames(cov.mats[[k]]$sigma)[[1]], q$b, "; qprior = ", qprior))
       }
     }
 
@@ -269,16 +269,18 @@ update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizes
         #ww<-samp.p[[k]]$name
       if (k %in% singles) jj <- k else jj <- dimnames(cov.mats[[k]]$sigma)[[1]] ##TIDY UP
       for (j in jj){
-        if (samp.p[[j]]$var.type== "de" || samp.p[[j]]$var.type == "obs")
+        if (samp.p[[j]]$var.type== "de" || samp.p[[j]]$var.type == "obs")  p.new[j]<-s.new[j]<-q$b[j]
         if (samp.p[[j]]$var.type== "init") i.new[j]<-s.new[j]<-q$b[j]
       }
       #}
 
       ## simulate the dynamics forward with the new parameters, but only if parameter in question is not an observation parameter
       if (all(vapply(jj, function(x) samp.p[[x]]$var.type, character(1)) == "obs")){ ##TIDY UP
-        sim.new <- sim.old #keep using last available de solution
+        sim.new <- sim.old
+        #if(verbose.mcmc)message(paste("keeping simulation",jj))#keep using last available de solution
       } else { #compute new solution
        sim.new<-solve_de(sim = sim , params = p.new[is.de], inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
+       #if(verbose.mcmc)message(paste("renewing simulation",jj))#keep using last available de solution
       }
 
 
@@ -350,6 +352,7 @@ propose_single_rev<-function(samps, s.p)
       l<-var[1]
       h<-var[2]
       b.new<-runif(1, l/h*b, h/l*b)
+      names(b.new) <- names(b)
       lfwd<-dunif(b.new, l/h*b, h/l*b, log=TRUE)
       lbak<-dunif(b, l/h*b.new, h/l*b.new, log=TRUE)
       return(list(b=b.new, lfwd=lfwd, lbak=lbak))
@@ -357,6 +360,7 @@ propose_single_rev<-function(samps, s.p)
   if(type=="rw"){
       sd<-sqrt(var)
       b.new<-rnorm(1, b, sd=sd)
+      names(b.new) <- names(b)
       lfwd<-dnorm(b.new, b, sd=sd, log=TRUE)
       lbak<-dnorm(b, b.new, sd=sd, log=TRUE)
       return(list(b=b.new, lfwd=lfwd, lbak=lbak))
@@ -370,6 +374,7 @@ propose_single_rev<-function(samps, s.p)
    u.bound <- s.p$bounds[2]
    sd<-sqrt(var)
    b.new <- rnorm(1, b, sd=sd)
+   names(b.new) <- names(b)
    while(b.new > u.bound || b.new < l.bound){
      if(b.new > u.bound) b.new <- 2*u.bound - b.new; #print(b.new)
      if(b.new < l.bound) b.new <- 2*l.bound - b.new; #print(b.new)
