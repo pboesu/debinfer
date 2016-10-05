@@ -47,7 +47,7 @@ test_that("Inference on simulated data with known inits. ", {
                     prop.var=0.1, samp.type="rw", joint="sigma1")
 
   #define covariance matrix
-  sigma1 <- debinfer_cov(c("r", "K"), sigma = matrix(c(0.4,0.25,0.25,0.4),2), name = "sigma1")
+  sigma1 <- debinfer_cov(c("r", "K"), sigma = matrix(c(5e-05, -1e-05,-1e-05,  1e-03),2, byrow = TRUE), name = "sigma1")
 
   logsd.N <- debinfer_par(name = "logsd.N", var.type = "obs", fixed = FALSE,
                           value = 1, prior="lnorm", hypers=list(meanlog = 0, sdlog = 1),
@@ -74,7 +74,7 @@ test_that("Inference on simulated data with known inits. ", {
   #check accuracy of estimation (threshold is 1% of true de parameter value and 10% of true observation noise)
   expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"r"])/parms["r"]),1,tolerance = 1e-2)
   expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"K"])/parms["K"]),1,tolerance = 1e-2)
-  expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"logsd.N"])/parms["logsd.N"]),1,tolerance = 5e-1)
+  expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"logsd.N"])/parms["logsd.N"]),1,tolerance = 1e-1)
 
   #test utility function for checking results class
   expect_equal(is.debinfer_result(mcmc_samples), TRUE)
