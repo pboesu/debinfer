@@ -19,7 +19,7 @@ knitr::opts_chunk$set(dev="png", dpi=150)
 
 #Preliminaries
 
-This vignette illustrates the steps needed to perform inference for a DDE model of population growth in a fungal pathogen. A detailed description of the rationale behind the Bayesian inference approach for differential equations can be found in the preprint describing the `deBInfer` package [@deBInfer]. 
+This vignette illustrates the steps needed to perform inference for a DDE model of population growth in a fungal pathogen. A detailed description of the rationale behind the Bayesian inference approach for differential equations can be found in the paper describing the `deBInfer` package [@deBInfer]. 
 
 This example assumes that `deBInfer` is installed and loaded. If this is not the case it needs to be installed from CRAN:
 ```{r install1, eval=FALSE}
