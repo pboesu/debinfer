@@ -71,7 +71,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   #inits are matched by order in deSolve. inform user of input order
   message(paste("Order of initial conditions is ", paste(names(inits), collapse = ", ")))
 
-  hyper = lapply(all.params, function(x) x$hyper)[is.free]
+  hyper = lapply(all.params, function(x) x$hypers)[is.free]
   names(hyper) <- p.names[is.free]
   pdfs = lapply(all.params, function(x) x$prior)[is.free]
   names(pdfs) = p.names[is.free]
