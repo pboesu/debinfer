@@ -9,10 +9,15 @@
 #' @return returns an S3 object of class debinfer_parlist to be fed to the mcmc function
 #' @export
 setup_debinfer <- function(...)
-{ parlist <- list(...)
-  if (!all(sapply(parlist, class) == "debinfer_par")) stop("input arguments need to be of class debinfer_par")
-  names(parlist)<-vapply(parlist, function(x) x$name, character(1))
-  structure(parlist, class="debinfer_parlist")
+{
+  parlist <- list(...)
+  if (!all(sapply(parlist, class) %in% c("debinfer_par", "debinfer_cov")))
+    stop("input arguments need to be of class debinfer_par")
+  #check for joint proposals
+  #for each unique cov matrix, check that dimensions and dimension names match names and number of associated parameters
+  names(parlist) <- vapply(parlist, function(x)
+    x$name, character(1))
+  structure(parlist, class = "debinfer_parlist")
 }
 
 
@@ -75,7 +80,7 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
   if(!fixed) if(samp.type == "rw-unif") if(!is.numeric(prop.var) | all(prop.var < 0) | length(prop.var)!=2) stop("prop.var must be a numeric > 0 of length 2 for sampler type 'rw-unif'")
   if(!fixed) if(samp.type == "rw-unif") if(prop.var[1] >= prop.var[2])stop("prop.var[1] must be smaller than prop.var[2] for sampler type 'rw-unif'")
   #checks for prior and hypers?
-  if(!is.null(joint)) stop("joint proposals are not yet implemented")
+  if(!is.null(joint)) if(!is.character(joint)) stop("joint needs to be of type character (name of covariance matrix)")
   #get limits of prior support for reflection sampler
   if(!fixed){
     bounds <-  do.call(paste("q", prior, sep=""), c(list(p = c(0,1)), hypers))
@@ -84,13 +89,35 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
   }
 
   structure(list(name = name,
-              var.type = var.type,
-              fixed = fixed,
-              value = value,
-              joint = joint,
-              prior = prior,
-              bounds = bounds,
-              hypers = hypers,
-              prop.var = prop.var,
-              samp.type = samp.type), class = "debinfer_par")
+                 var.type = var.type,
+                 fixed = fixed,
+                 value = value,
+                 joint = joint,
+                 prior = prior,
+                 bounds = bounds,
+                 hypers = hypers,
+                 prop.var = prop.var,
+                 samp.type = samp.type), class = "debinfer_par")
 }
+
+#' debinfer_cov
+#'
+#' @param var.names names of the parameters that are to be proposed together
+#' @param sigma covariance matrix
+#' @param samp.type character; type of sampler. currently only "rw" = Normal random walk is implemented for multivariate proposals
+#' @param name name of the joint block
+#'
+#' @return a debinfer_cov object
+#' @export
+#'
+debinfer_cov <- function(var.names, sigma=diag(length(names)), name , samp.type = "rw"){
+  if(!is.character(var.names)) stop("var.names must be a character vector")
+  if(class(sigma)!= "matrix" || !is.numeric(sigma)) stop("sigma must be a numeric matrix")
+  if (!isSymmetric(sigma)) stop("sigma must be symmetric")
+  if (!all(eigen(sigma, only.values = TRUE)$values>0)) warning("sigma does not appear to be positive semi-definite")
+  if(any(dim(sigma)!=length(var.names))) stop("length(var.names) does not match dimensions of sigma")
+  colnames(sigma)<-var.names
+  rownames(sigma)<-var.names
+  structure(list(sigma=sigma, name = name, samp.type = samp.type), class="debinfer_cov")
+}
+

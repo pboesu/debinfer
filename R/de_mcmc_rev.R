@@ -38,11 +38,24 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   if(!(is.function(de.model) || is.character(de.model))) stop("de.model must be a function or function name (character)")
   if(!inherits(all.params, "debinfer_parlist")) stop("all.params must be of class debinfer_parlist")
 
-  #get names, identify free parameters and inits
+  #identify cov matrices
+  is.par <- vapply(all.params, class, character(1)) == "debinfer_par"
+  is.cov <- vapply(all.params, class, character(1)) == "debinfer_cov"
+  #subset into parameters and covariance matrices
+  if (any(is.cov)){
+    cov.matrices <- all.params[is.cov]
+  } else {
+    cov.matrices <- NULL
+  }
+  all.params <- all.params[is.par]
+  #identify free parameters and inits
   p.names <- vapply(all.params, function(x) x$name, character(1))
   is.free <- !vapply(all.params, function(x) x$fixed, logical(1))
   is.init <- vapply(all.params, function(x) x$var.type, character(1))=="init"
   is.de <- vapply(all.params, function(x) x$var.type, character(1))=="de"
+  #identify free parameters with joint proposal and split into blocks
+  is.single <- vapply(all.params, function(x) is.null(x$joint) , logical(1)) & is.free
+  joint.blocks <- unique(vapply(all.params[!is.single & is.free], function(x) x$joint, character(1)))
 
   #get all start values
   p.start <- lapply(all.params, function(x) x$value)[is.free]
@@ -58,7 +71,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   #inits are matched by order in deSolve. inform user of input order
   message(paste("Order of initial conditions is ", paste(names(inits), collapse = ", ")))
 
-  hyper = lapply(all.params, function(x) x$hyper)[is.free]
+  hyper = lapply(all.params, function(x) x$hypers)[is.free]
   names(hyper) <- p.names[is.free]
   pdfs = lapply(all.params, function(x) x$prior)[is.free]
   names(pdfs) = p.names[is.free]
@@ -71,6 +84,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   ## loops later.
 
   n.free <- sum(is.free)
+  n.joints <- length(joint.blocks)
   np<-length(all.params)
 
 
@@ -134,10 +148,11 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   for(i in 2:N){
 
     ## the meat of the MCMC is found in the function update.samps (see below)
-
-    out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], data = data, sim = de.model, out = out,
-                       Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free, solver=solver, i=i, cnt=cnt, w.p = w.p,
-                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, is.de=is.de, ...)
+    #if(verbose.mcmc) message(i)
+    out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], cov.mats = cov.matrices, data = data, sim = de.model, out = out,
+                       Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free + n.joints, solver=solver, i=i, cnt=cnt, w.p = w.p,
+                       obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, is.de=is.de,
+                       is.single = is.single, joint.blocks = joint.blocks, ...)
     samps[i,] <- out$s #make sure order is matched
 #     if(test){
 #       if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
@@ -176,6 +191,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##'
 ##' @param samps row vector of samples from the previous mcmc iteration
 ##' @param samp.p the parlist created by setup_debinfer
+##' @param cov.mats the covariance matrices
 ##' @param data the observation
 ##' @param sim the de.model
 ##' @param out list containing the initial or previous update i.e. list(s=samps[i-1,], inits=inits, p=params, sim.old=sim.start)
@@ -193,10 +209,13 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param verbose.mcmc logical print MCMC progress messages
 ##' @param verbose logical, print additional information from solver
 ##' @param is.de logical, parameter is an input for the solver
+##' @param is.single parameter is to be proposed individually
+##' @param joint.blocks names of joint blocks
 ##' @param ... further arguments to solver
 ##' @export
-update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
-                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, is.de, ...)
+update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizestep,
+                        data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, is.de,
+                        is.single, joint.blocks, ...)
 {
   ## read in some bits
   s<-samps
@@ -204,10 +223,13 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
   p<-out$p
   ints <- out$inits
 
+  singles <- names(is.single)[is.single]
+  singles.blocks <- c(singles,joint.blocks)
+
   #randomize updating order
-  x<-seq_len(l) #make this the not joint parameters
+  #x<-seq_along(singles) # this is the sum of not joint parameters and joint blocks
   #then get the number of joint blocks and add the joint blocks
-  s.x<-sample(x) #and resample order
+  s.x<-sample(singles.blocks) #resample order
 
   for(k in s.x){
 
@@ -217,32 +239,48 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
 
     #pick
 
-    if(is.null(samp.p[[k]]$joint)){#if k is a single par
+    if(k %in% singles){#if k is a single par
       ##print(paste(s.p$params, " proposing single ", sep=" "))
       q<-propose_single_rev(samps = s, s.p = samp.p[[k]])
     }
-    else {#if k is a joint block
-      ##print(paste(s.p$params, " proposing jointly ", sep=" "))
-      q<-propose_joint_rev(samps = s, s.p = samp.p[[k]])
+    else {
+     if (k %in% joint.blocks){
+       ##print(paste(s.p$params, " proposing jointly ", sep=" "))
+       q<-propose_joint_rev(samps = s, s.ps = samp.p, cov.mat = cov.mats[[k]])
+     } else {stop("Parameter is neither in a joint block nor set up for individual proposals. This should not happen.")}
+
     }
 
     ## automatically reject if the proposed parameter value is
     ## outside of the prior support
-    qprior <- logd_prior(q$b, pdfs[[k]], hypers=hyper[[k]])
-    if (is.finite(qprior)){
+    if (k %in% singles){
+      qprior <- logd_prior(q$b, pdfs[[k]], hypers=hyper[[k]])
+    } else {
+      if (k %in% joint.blocks){
+        qprior <- sapply(dimnames(cov.mats[[k]]$sigma)[[1]], function(x) logd_prior(q$b[x], pdfs[[x]], hypers=hyper[[x]]), USE.NAMES = FALSE)##TIDY UP
+        #if(verbose.mcmc) message(paste("assessing logd_prior for join proposal", dimnames(cov.mats[[k]]$sigma)[[1]], q$b, "; qprior = ", qprior))
+      }
+    }
+
+    if (all(is.finite(qprior))){
       ## write the proposed params into the p.new and s.new.
 
       #for(j in 1:length(samp.p[[k]]$name)){#this will need to be able to handle joint proposals
-        ww<-samp.p[[k]]$name
-        if (samp.p[[k]]$var.type== "de" || samp.p[[k]]$var.type == "obs") p.new[ww]<-s.new[ww]<-q$b#[j]
-        if (samp.p[[k]]$var.type== "init") i.new[ww]<-s.new[ww]<-q$b#[j]
+        #ww<-samp.p[[k]]$name
+      if (k %in% singles) jj <- k else jj <- dimnames(cov.mats[[k]]$sigma)[[1]] ##TIDY UP
+      for (j in jj){
+        if (samp.p[[j]]$var.type== "de" || samp.p[[j]]$var.type == "obs")  p.new[j]<-s.new[j]<-q$b[j]
+        if (samp.p[[j]]$var.type== "init") i.new[j]<-s.new[j]<-q$b[j]
+      }
       #}
 
       ## simulate the dynamics forward with the new parameters, but only if parameter in question is not an observation parameter
-      if (samp.p[[k]]$var.type == "obs"){
-        sim.new <- sim.old #keep using last available de solution
+      if (all(vapply(jj, function(x) samp.p[[x]]$var.type, character(1)) == "obs")){ ##TIDY UP
+        sim.new <- sim.old
+        #if(verbose.mcmc)message(paste("keeping simulation",jj))#keep using last available de solution
       } else { #compute new solution
        sim.new<-solve_de(sim = sim , params = p.new[is.de], inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
+       #if(verbose.mcmc)message(paste("renewing simulation",jj))#keep using last available de solution
       }
 
 
@@ -305,7 +343,7 @@ update_sample_rev<-function(samps, samp.p, data, sim, out, Tmax, sizestep,
 propose_single_rev<-function(samps, s.p)
 { ## I'm feeding in the variance, so I need to take the square root....
 
-  b<-as.numeric(samps[s.p$name])
+  b<-samps[s.p$name]
   var<-s.p$prop.var
   type<-s.p$samp.type
   hyps<-s.p$hypers
@@ -314,6 +352,7 @@ propose_single_rev<-function(samps, s.p)
       l<-var[1]
       h<-var[2]
       b.new<-runif(1, l/h*b, h/l*b)
+      names(b.new) <- names(b)
       lfwd<-dunif(b.new, l/h*b, h/l*b, log=TRUE)
       lbak<-dunif(b, l/h*b.new, h/l*b.new, log=TRUE)
       return(list(b=b.new, lfwd=lfwd, lbak=lbak))
@@ -321,6 +360,7 @@ propose_single_rev<-function(samps, s.p)
   if(type=="rw"){
       sd<-sqrt(var)
       b.new<-rnorm(1, b, sd=sd)
+      names(b.new) <- names(b)
       lfwd<-dnorm(b.new, b, sd=sd, log=TRUE)
       lbak<-dnorm(b, b.new, sd=sd, log=TRUE)
       return(list(b=b.new, lfwd=lfwd, lbak=lbak))
@@ -334,6 +374,7 @@ propose_single_rev<-function(samps, s.p)
    u.bound <- s.p$bounds[2]
    sd<-sqrt(var)
    b.new <- rnorm(1, b, sd=sd)
+   names(b.new) <- names(b)
    while(b.new > u.bound || b.new < l.bound){
      if(b.new > u.bound) b.new <- 2*u.bound - b.new; #print(b.new)
      if(b.new < l.bound) b.new <- 2*l.bound - b.new; #print(b.new)
@@ -354,31 +395,33 @@ propose_single_rev<-function(samps, s.p)
 ##' Function to jointly propose parameters using a multivariate normal proposal distribution
 ##' @title propose_joint
 ##' @param samps current sample of the MCMC chain
-##' @param s.p debinfer_par object representing the parameter that is to be proposed
+##' @param s.ps debinfer_parlist object representing the parameters that are to be proposed
+##' @param cov.mat debinfer_cov object; covariance matrix for the proposal
 ##' @import stats
 ##' @import mvtnorm
-propose_joint_rev<-function(samps, s.p){
+propose_joint_rev<-function(samps, s.ps, cov.mat){
 
 
   b<-NULL
-  if(s.p$type=="rw"){
-    b<-as.numeric(samps[s.p$params])
-    sigma<-s.p$var
+  joint.pars <- dimnames(cov.mat$sigma)[[1]]
+  if(cov.mat$samp.type == "rw"){
+    b<-samps[joint.pars]
 
-    b.new<-rmvnorm(1, mean=b, sigma=sigma)
-    lfwd<-dmvnorm(b.new, b, sigma, log=TRUE)
-    lbak<-dmvnorm(b, b.new, sigma, log=TRUE)
+    b.new<-rmvnorm(1, mean=b, sigma=cov.mat$sigma, method="svd")
+    lfwd<-dmvnorm(b.new, b, cov.mat$sigma, log=TRUE)
+    lbak<-dmvnorm(b, b.new, cov.mat$sigma, log=TRUE)
   }
-  else if(s.p$type=="ind"){
-    if(is.null(s.p$mean)) stop("not enough info for the independence sampler")
-    mean<-as.numeric(s.p$mean)
-    b<-as.numeric(samps[s.p$params])
-    sigma<-s.p$var
-
-    b.new<-rmvnorm(1, mean=mean, sigma=sigma)
-    lfwd<-dmvnorm(b.new, mean, sigma, log=TRUE)
-    lbak<-dmvnorm(b, mean, sigma, log=TRUE)
-  }
+  else if(cov.mat$samp.type =="ind"){
+    stop("multivariate independence sampler not yet implemented")
+    # if(is.null(s.p$mean)) stop("not enough info for the independence sampler")
+    # mean<-as.numeric(s.p$mean)
+    # b<-as.numeric(samps[s.p$params])
+    # sigma<-s.p$var
+    #
+    # b.new<-rmvnorm(1, mean=mean, sigma=sigma)
+    # lfwd<-dmvnorm(b.new, mean, sigma, log=TRUE)
+    # lbak<-dmvnorm(b, mean, sigma, log=TRUE)
+  } else stop(paste("unknown sampler type for multivariate block", cov.mat$name))
 
   ##print(c(b, b.new, lfwd, lbak))
 
@@ -386,7 +429,7 @@ propose_joint_rev<-function(samps, s.p){
   ##samp[s]<-b.new
 
   ##stop()
-  return(list(b=b.new, lfwd=lfwd, lbak=lbak))
+  return(list(b=b.new[1,], lfwd=lfwd, lbak=lbak))
 
 }
 
@@ -407,7 +450,8 @@ prior_draw_rev<-function(b, hypers, prior.pdf){
     #assemble density function name
     dens <- paste("d", prior.pdf, sep="")
     lfwd<-do.call(dens, c(x=b.new,  hypers, log=TRUE))
-    lbak<-do.call(dens, c(x=b,  hypers, log=TRUE))
+    lbak<-do.call(dens, c(x=unname(b),  hypers, log=TRUE))
+    names(b.new) <- names(b)
 
   return(list(b=b.new, lfwd=lfwd, lbak=lbak))
 }

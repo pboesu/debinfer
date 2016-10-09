@@ -145,14 +145,15 @@ post_prior_densplot <- function(result, param="all", burnin=NULL, prior.col="red
 #'
 #' @param x a deBInfer_result object
 #' @param plot.type character, which type of plot. Options are "coda" for coda::plot.mcmc, "post_prior" for deBInfer::post_prior_densplot.
+#' @param burnin numeric, number of samples to discard before plotting
 #' @param ... further arguments to methods
 #' @seealso \code{\link{post_prior_densplot}}, \code{\link[coda]{plot.mcmc}}, \code{\link{pairs.debinfer_result}}
 #' @import coda
 #' @export
-plot.debinfer_result <- function(x, plot.type="coda", ...){
+plot.debinfer_result <- function(x, plot.type="coda", burnin = 1, ...){
   # store old par
   old.par <- par(no.readonly=TRUE)
-  if (plot.type=="coda") plot(x$samples, ...)
+  if (plot.type=="coda") plot(window(x$samples, burnin, nrow(x$samples)), ...)
   if (plot.type=="post_prior") post_prior_densplot(x, ...)
   # restore old par
   par(old.par)

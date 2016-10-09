@@ -4,12 +4,14 @@
 \alias{propose_joint_rev}
 \title{propose_joint}
 \usage{
-propose_joint_rev(samps, s.p)
+propose_joint_rev(samps, s.ps, cov.mat)
 }
 \arguments{
 \item{samps}{current sample of the MCMC chain}
 
-\item{s.p}{debinfer_par object representing the parameter that is to be proposed}
+\item{s.ps}{debinfer_parlist object representing the parameters that are to be proposed}
+
+\item{cov.mat}{debinfer_cov object; covariance matrix for the proposal}
 }
 \description{
 joint proposal function
