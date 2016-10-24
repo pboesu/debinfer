@@ -5,15 +5,16 @@ citEntry(entry = "Article",
          author       = personList(as.person("Philipp H Boersch-Supan"),
                                    as.person("Sadie J Ryan"),
                                    as.person("Leah R Johnson")),
-         journal      = "arXiv [q-bio.QM]",
+         journal      = "Methods in Ecology and Evolution",
          year         = "2016",
-         volume       = "1605.00021",
+         volume       = "in press",
          pages        = "",
-         url          = "https://arxiv.org/abs/1605.00021",
+         doi          = "10.1111/2041-210X.12679",
+         url          = "http://doi.org/10.1111/2041-210X.12679",
 
          textVersion  =
            paste("Philipp H Boersch-Supan, Sadie J Ryan, and Leah R Johnson (2016).",
                  "deBInfer: Bayesian inference for dynamical models of biological systems in R.",
-                 "arXiv:1605.00021.",
-                 "URL https://arxiv.org/abs/1605.00021")
+                 "Methods in Ecology and Evolution (in press)",
+                 "URL http://doi.org/10.1111/2041-210X.12679")
 )
