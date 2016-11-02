@@ -15,7 +15,7 @@
 #' @param sizestep for solver
 #' @param method solver method
 #' @param verbose passed to deSolve::ode
-#' @param data.times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL. If value is supplied it takes precendence over any value supplied to \code{numsteps} or \code{sizesteps}.
+#' @param data.times numeric a vector of times at which the ODE is to be evaluated. Defaults to NULL. If value is supplied it takes precedence over any value supplied to \code{numsteps} or \code{sizesteps}.
 #' @param ... additional arguments to solver
 #'
 #'
