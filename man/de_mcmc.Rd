@@ -20,7 +20,7 @@ de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
 
 \item{all.params}{debinfer_parlist containing all model, MCMC, and observation}
 
-\item{ref.params}{an optional named vector containing a set of reference parameters, e.g. the true paramaters underlying a simulated data set}
+\item{ref.params}{an optional named vector containing a set of reference parameters, e.g. the true parameters underlying a simulated data set}
 
 \item{ref.inits}{an optional named vector containing a set of reference initial values, e.g. the true initial values underlying a simulated data set}
 
