@@ -123,7 +123,9 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   if(inherits(sim.start, "try-error")) {
     stop("solver failed on start values")
     } else {
-       if(!all(data.times %in% sim.start[,"time"])) stop("solver times do not cover all data times")
+       if(!all(data.times %in% sim.start[,"time"])){
+         sim.start
+         stop("Solver times do not cover all data times. Integration may have been incomplete using start values. Check for deSolve warnings.")}
     }
 
 
