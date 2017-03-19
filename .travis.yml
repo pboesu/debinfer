@@ -46,4 +46,6 @@ matrix:
      r_packages: covr
      sudo: required
      after_success: Rscript -e 'covr::codecov()'
+ allow_failures:
+        - os: osx
 warnings_are_errors: true
