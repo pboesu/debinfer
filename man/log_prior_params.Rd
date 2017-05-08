@@ -18,4 +18,3 @@ log_prior_params(samp, pdfs, w.p, hyper)
 \description{
 evaluate prior density at current parameter values
 }
-

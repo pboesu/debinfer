@@ -6,3 +6,5 @@
 * correlation coefs in pairs plot now scale with strength of correlation 
 ##Minor bug fixes
 * sampler messages in `de_mcmc` now follow the setting for `verbose.mcmc` rather than `verbose`
+* added github URLs to DESCRIPTION
+* updated CITATION to reflect publication of the deBInfer applucation paper

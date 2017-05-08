@@ -7,7 +7,7 @@
 depars(x)
 }
 \arguments{
-\item{x}{a deBInfer_result object}
+\item{x}{a debinfer_result or debinfer_parlist object}
 }
 \value{
 a named numeric vector
@@ -15,4 +15,3 @@ a named numeric vector
 \description{
 Accessor function for parameters
 }
-

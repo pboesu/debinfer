@@ -19,4 +19,3 @@ the value of the log density function evaluated at \code{x}
 \description{
 Evaluates the log probability density of value given a name of a prior pdf and the corresponding hyperparameters
 }
-

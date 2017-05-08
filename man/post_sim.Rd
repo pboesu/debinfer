@@ -28,4 +28,3 @@ a post_sim object containing a list of de solutions or summaries thereof
 \description{
 post_sim
 }
-

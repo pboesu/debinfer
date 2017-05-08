@@ -24,4 +24,3 @@ log_post_params(samp, w.p, data, pdfs, hyper, sim.data, obs.model)
 \description{
 evaluate the likelihood given the data, the current deterministic model solution and the observation model
 }
-

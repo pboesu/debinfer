@@ -23,4 +23,3 @@
 \description{
 Plots pairwise correlations of posterior marginals
 }
-
