@@ -27,9 +27,10 @@ install.packages("deBInfer")
 
 Development versions of `deBInfer` are available on github, and can be installed using the devtools package [@devtools].
 ```{r install2, eval=FALSE}
-install.packages("devtools")
-#install deBInfer from github
-devtools::install_github("pboesu/debinfer")
+if (require("devtools")){
+  #install deBInfer from github
+  devtools::install_github("pboesu/debinfer")
+}
 ```
 
 ```{r loadlib, message=FALSE}
