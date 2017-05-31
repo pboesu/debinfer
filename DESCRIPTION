@@ -7,6 +7,8 @@ Authors@R: c(
     person("Philipp H", "Boersch-Supan", email = "pboesu@gmail.com", role = c("aut","cre")),
     person("Leah R", "Johnson", email = "lrjohnson0@gmail.com", role = "aut"),
     person("Sadie J", "Ryan", email = "datamonkey@gmail.com", role = "aut"))
+BugReports: https://github.com/pboesu/debinfer/issues
+URL: https://github.com/pboesu/debinfer
 Description: A Bayesian framework for parameter inference in differential equations.
     This approach offers a rigorous methodology for parameter inference as well as
     modeling the link between unobservable model states and parameters, and

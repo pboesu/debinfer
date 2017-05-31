@@ -17,7 +17,7 @@ dmvnorm(x=c(0,0), mean=c(1,1))
 
 sigma <- matrix(c(4,2,2,3), ncol=2)
 x <- mvtnorm::rmvnorm(n=500, mean=c(0,0), sigma=sigma1$sigma)
-xcolMeans(x)
+colMeans(x)
 var(x)
 
 x <- rmvnorm(n=500, mean=c(1,2), sigma=sigma, method="chol")

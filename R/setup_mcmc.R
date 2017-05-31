@@ -9,12 +9,15 @@
 #' @return returns an S3 object of class debinfer_parlist to be fed to the mcmc function
 #' @export
 setup_debinfer <- function(...)
-{ parlist <- list(...)
-  if (!all(sapply(parlist, class) %in% c("debinfer_par", "debinfer_cov"))) stop("input arguments need to be of class debinfer_par")
+{
+  parlist <- list(...)
+  if (!all(sapply(parlist, class) %in% c("debinfer_par", "debinfer_cov")))
+    stop("input arguments need to be of class debinfer_par")
   #check for joint proposals
   #for each unique cov matrix, check that dimensions and dimension names match names and number of associated parameters
-  names(parlist)<-vapply(parlist, function(x) x$name, character(1))
-  structure(parlist, class="debinfer_parlist")
+  names(parlist) <- vapply(parlist, function(x)
+    x$name, character(1))
+  structure(parlist, class = "debinfer_parlist")
 }
 
 
@@ -86,17 +89,16 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
   }
 
   structure(list(name = name,
-              var.type = var.type,
-              fixed = fixed,
-              value = value,
-              joint = joint,
-              prior = prior,
-              bounds = bounds,
-              hypers = hypers,
-              prop.var = prop.var,
-              samp.type = samp.type), class = "debinfer_par")
+                 var.type = var.type,
+                 fixed = fixed,
+                 value = value,
+                 joint = joint,
+                 prior = prior,
+                 bounds = bounds,
+                 hypers = hypers,
+                 prop.var = prop.var,
+                 samp.type = samp.type), class = "debinfer_par")
 }
-
 
 #' debinfer_cov
 #'
@@ -111,8 +113,11 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
 debinfer_cov <- function(var.names, sigma=diag(length(names)), name , samp.type = "rw"){
   if(!is.character(var.names)) stop("var.names must be a character vector")
   if(class(sigma)!= "matrix" || !is.numeric(sigma)) stop("sigma must be a numeric matrix")
+  if (!isSymmetric(sigma)) stop("sigma must be symmetric")
+  if (!all(eigen(sigma, only.values = TRUE)$values>0)) warning("sigma does not appear to be positive semi-definite")
   if(any(dim(sigma)!=length(var.names))) stop("length(var.names) does not match dimensions of sigma")
   colnames(sigma)<-var.names
   rownames(sigma)<-var.names
   structure(list(sigma=sigma, name = name, samp.type = samp.type), class="debinfer_cov")
 }
+

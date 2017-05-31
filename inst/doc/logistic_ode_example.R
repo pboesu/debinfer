@@ -2,14 +2,13 @@
 knitr::opts_chunk$set(dev='png', dpi=150)
 
 ## ----install1, eval=FALSE------------------------------------------------
-#  install.packages("devtools")
+#  install.packages("deBInfer")
 
-## ----install1b-----------------------------------------------------------
-#Load the devtools package.
-library(devtools)
-
-## ----install2, eval=FALSE, results='hide', message=FALSE, warning=FALSE----
-#  install_github("pboesu/debinfer")
+## ----install2, eval=FALSE------------------------------------------------
+#  if (require("devtools")){
+#    #install deBInfer from github
+#    devtools::install_github("pboesu/debinfer")
+#  }
 
 ## ----loadlib, message=FALSE----------------------------------------------
 library(deBInfer)
