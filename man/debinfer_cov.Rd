@@ -21,4 +21,3 @@ a debinfer_cov object
 \description{
 debinfer_cov
 }
-

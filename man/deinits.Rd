@@ -15,4 +15,3 @@ a named numeric vector
 \description{
 Accessor function for initial values
 }
-

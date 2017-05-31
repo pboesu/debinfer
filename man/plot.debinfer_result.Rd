@@ -19,4 +19,3 @@ Plots the inference results from a debinfer_result object
 \seealso{
 \code{\link{post_prior_densplot}}, \code{\link[coda]{plot.mcmc}}, \code{\link{pairs.debinfer_result}}
 }
-

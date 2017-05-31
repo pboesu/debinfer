@@ -23,4 +23,3 @@ post_prior_densplot(result, param = "all", burnin = NULL,
 \description{
 Plots posterior densities and the densities of the corresponding priors. The prior density is automatically evaluated for the range given by the x-axis limits of the plot (which defaults to the posterior support).
 }
-

@@ -25,4 +25,3 @@
 \description{
 Plots the inference results from a debinfer_result object
 }
-

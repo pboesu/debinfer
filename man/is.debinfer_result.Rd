@@ -12,4 +12,3 @@ is.debinfer_result(x)
 \description{
 Check debinfer_result class
 }
-

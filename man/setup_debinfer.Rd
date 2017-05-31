@@ -16,4 +16,3 @@ returns an S3 object of class debinfer_parlist to be fed to the mcmc function
 Creates an object of class debinfer_parlist containing initial values, parameters, prior distributions, hyperparameters
 tuning parameters etc. to set up a debinfer analysis
 }
-

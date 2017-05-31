@@ -17,4 +17,3 @@ A wrapper for coda::summary.mcmc
 \seealso{
 \code{\link[coda]{summary.mcmc}}
 }
-

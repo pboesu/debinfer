@@ -58,4 +58,3 @@ update_sample_rev(samps, samp.p, cov.mats, data, sim, out, Tmax, sizestep,
 \description{
 This is the workhorse of the MCMC algorithm
 }
-
