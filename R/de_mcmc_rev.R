@@ -481,8 +481,8 @@ log_post_params <- function(samp, w.p, data, pdfs, hyper, sim.data, obs.model){
   #}
   ##print(c(b, lik, prior))
 
-  if(is.na(llik)) break #break doesn't work when it's inside a function
-  if(is.na(lprior)) break
+  if(is.na(llik)) llik <- -Inf #break doesn't work when it's inside a function
+  if(is.na(lprior)) lprior <- -Inf
 
   return( llik + lprior )
 }
