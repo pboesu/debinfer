@@ -8,3 +8,4 @@
 * sampler messages in `de_mcmc` now follow the setting for `verbose.mcmc` rather than `verbose`
 * added github URLs to DESCRIPTION
 * updated CITATION to reflect publication of the deBInfer applucation paper
+* internal function log_post_params now gracefully handels NaNs in the likelihood 
