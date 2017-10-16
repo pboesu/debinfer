@@ -12,6 +12,6 @@
 3. deBInfer  provides templates for the DE model, the observation model and data likelihood, and the model parameters and their prior distributions. A Markov chain Monte Carlo (MCMC) procedure processes these inputs to estimate the posterior distributions of the parameters and any derived quantities, including the model trajectories. Further functionality is provided to facilitate MCMC diagnostics and the visualisation of the posterior distributions of model parameters and trajectories. 
 4.  The templating approach makes deBInfer applicable to a wide range of DE models and we demonstrate its application to ordinary and delay DE models for population ecology. 
 
-For more information read our [preprint](https://arxiv.org/abs/1605.00021) or get in touch with pboesu@gmail.com
+For more information read our [software paper](https://doi.org/10.1111/2041-210X.12679) or get in touch with pboesu@gmail.com
 
 Software development is supported by [NSF grant PLR-1341649](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1341649).
