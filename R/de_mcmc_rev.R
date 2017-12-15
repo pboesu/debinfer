@@ -502,15 +502,14 @@ log_post_params <- function(samp, w.p, data, pdfs, hyper, sim.data, obs.model){
 log_prior_params<-function(samp, pdfs, w.p, hyper){
   lp<-0
   len<-length(w.p)
-  if(len==1){
+  #if(len==1){
     ##print(paste("w.p =", w.p, "samp =", samp[w.p[1]], sep=" "))
-    lp<-list(NULL)
-    names(lp)<-w.p
-  }
-  else{
+    #lp<-list(NULL)
+    #names(lp)<-w.p
+  #} else {
     lp<-data.frame(matrix(0, nrow=1, ncol=len))
     names(lp)<-w.p
-  }
+  #}
 
   ##print(c(as.numeric(samp), w.p, hyper[1]))
   for(i in seq_len(len)){
