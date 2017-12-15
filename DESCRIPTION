@@ -43,7 +43,6 @@ Suggests:
     rmarkdown,
     devtools,
     R.rsp,
-    microbenchmark,
     beanplot
 VignetteBuilder:
     knitr,
