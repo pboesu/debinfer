@@ -43,7 +43,9 @@ matrix:
      sudo: required
    - os: linux
      r: devel
-     r_packages: covr
+     r_packages:
+      - devtools
+      - covr
      sudo: required
      after_success: Rscript -e 'covr::codecov()'
  allow_failures:
