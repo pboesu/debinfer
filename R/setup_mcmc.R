@@ -68,25 +68,30 @@ logd_prior <- function(x, pdf, hypers){
 debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, hypers=NULL, prop.var=NULL, samp.type=NULL){
   #check inputs
   if(!is.character(name)) stop("name must be of type character")
-  if(!var.type %in% c("de","obs","init")) stop('var.type must be one of c("de","obs","init")')
-  if(!is.logical(fixed)) stop("fixed must be boolean")
-  if(!is.numeric(value)) stop("value must be numeric")
-  if(!fixed & (is.null(prior) | is.null(hypers) | is.null(prop.var) | is.null(samp.type))) stop("free parameters require a specification of prior, hypers, prop.var and samp.type")
-  if(fixed & !(is.null(prior) | is.null(hypers) | is.null(prop.var) | is.null(samp.type))) warning(paste(name, "is treated as a fixed parameters. Ignoring prior, hypers, prop.var and samp.type specification."))
-  if(!fixed) if(!samp.type %in% c("rw", "rw-unif","ind", "rw-ref")) stop('samp.type must be one of c("rw", "rw-unif","ind", "rw-ref")')
-  if(!fixed) if(samp.type == "rw") if(!is.numeric(prop.var) | prop.var < 0 | length(prop.var)!=1) stop("prop.var must be a numeric > 0 of length 1 for sampler type 'rw'")
-  if(!fixed) if(samp.type == "rw-ref") if(!is.numeric(prop.var) | prop.var < 0 | length(prop.var)!=1) stop("prop.var must be a numeric > 0 of length 1 for sampler type 'rw-ref'")
-  if(!fixed) if(samp.type == "rw-ref") if(prop.var >= 1) warning("prop.var should be << 1 for efficient sampling with sampler type 'rw-ref'")
-  if(!fixed) if(samp.type == "rw-unif") if(!is.numeric(prop.var) | all(prop.var < 0) | length(prop.var)!=2) stop("prop.var must be a numeric > 0 of length 2 for sampler type 'rw-unif'")
-  if(!fixed) if(samp.type == "rw-unif") if(prop.var[1] >= prop.var[2])stop("prop.var[1] must be smaller than prop.var[2] for sampler type 'rw-unif'")
-  #checks for prior and hypers?
-  if(!is.null(joint)) if(!is.character(joint)) stop("joint needs to be of type character (name of covariance matrix)")
-  #get limits of prior support for reflection sampler
-  if(!fixed){
-    bounds <-  do.call(paste("q", prior, sep=""), c(list(p = c(0,1)), hypers))
+  if(!var.type %in% c("de","obs","init", "initfunc")) stop('var.type must be one of c("de","obs","init", "initfunc")')
+  if(var.type != "initfunc"){
+    if(!is.logical(fixed)) stop("fixed must be boolean")
+    if(!is.numeric(value)) stop("value must be numeric")
+    if(!fixed & (is.null(prior) | is.null(hypers) | is.null(prop.var) | is.null(samp.type))) stop("free parameters require a specification of prior, hypers, prop.var and samp.type")
+    if(fixed & !(is.null(prior) | is.null(hypers) | is.null(prop.var) | is.null(samp.type))) warning(paste(name, "is treated as a fixed parameters. Ignoring prior, hypers, prop.var and samp.type specification."))
+    if(!fixed) if(!samp.type %in% c("rw", "rw-unif","ind", "rw-ref")) stop('samp.type must be one of c("rw", "rw-unif","ind", "rw-ref")')
+    if(!fixed) if(samp.type == "rw") if(!is.numeric(prop.var) | prop.var < 0 | length(prop.var)!=1) stop("prop.var must be a numeric > 0 of length 1 for sampler type 'rw'")
+    if(!fixed) if(samp.type == "rw-ref") if(!is.numeric(prop.var) | prop.var < 0 | length(prop.var)!=1) stop("prop.var must be a numeric > 0 of length 1 for sampler type 'rw-ref'")
+    if(!fixed) if(samp.type == "rw-ref") if(prop.var >= 1) warning("prop.var should be << 1 for efficient sampling with sampler type 'rw-ref'")
+    if(!fixed) if(samp.type == "rw-unif") if(!is.numeric(prop.var) | all(prop.var < 0) | length(prop.var)!=2) stop("prop.var must be a numeric > 0 of length 2 for sampler type 'rw-unif'")
+    if(!fixed) if(samp.type == "rw-unif") if(prop.var[1] >= prop.var[2])stop("prop.var[1] must be smaller than prop.var[2] for sampler type 'rw-unif'")
+    #checks for prior and hypers?
+    if(!is.null(joint)) if(!is.character(joint)) stop("joint needs to be of type character (name of covariance matrix)")
+    #get limits of prior support for reflection sampler
+    if(!fixed){
+      bounds <-  do.call(paste("q", prior, sep=""), c(list(p = c(0,1)), hypers))
+    } else {
+      bounds <- NA
+    }
   } else {
-    bounds <- NA
+    #check initfunc
   }
+
 
   structure(list(name = name,
                  var.type = var.type,

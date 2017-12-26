@@ -24,6 +24,7 @@
 #' @export
 solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
                     solver="ode", sizestep=NULL, verbose=FALSE, data.times=NULL, method = "lsoda", ...){
+    #TODO: recalculate inits from parameters if necessary
 
     if(!is.null(data.times)){
       #this is fragile. really the data should be in a class that ensures proper times, no missing data etc. pp. Also this now assumes observations at identical times for all observed variables.
