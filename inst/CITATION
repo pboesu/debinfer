@@ -15,6 +15,7 @@ citEntry(entry = "Article",
          doi          = "10.1111/2041-210X.12679",
          url          = "https://doi.org/10.1111/2041-210X.12679",
 
+
          textVersion  =
            paste("Philipp H Boersch-Supan, Sadie J Ryan, and Leah R Johnson (2017).",
                  "deBInfer: Bayesian inference for dynamical models of biological systems in R.",
