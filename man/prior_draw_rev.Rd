@@ -16,4 +16,3 @@ prior_draw_rev(b, hypers, prior.pdf)
 \description{
 draw from prior
 }
-

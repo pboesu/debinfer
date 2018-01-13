@@ -37,4 +37,3 @@ hyper-parameters, tuning parameters, etc. to set up a debinfer analysis
 Hoff 2009, A First Course in Bayesian Statistical Methods, Springer
             Yang and Rodriguez 2013, PNAS 110:19307-19312 \url{http://doi.org/10.1073/pnas.1311790110}
 }
-

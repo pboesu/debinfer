@@ -1,20 +1,24 @@
 citHeader("To cite deBInfer in publications, please use:")
 
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
 citEntry(entry = "Article",
          title        = "{deBinfer}: Bayesian inference for dynamical models of biological systems",
          author       = personList(as.person("Philipp H Boersch-Supan"),
                                    as.person("Sadie J Ryan"),
                                    as.person("Leah R Johnson")),
          journal      = "Methods in Ecology and Evolution",
-         year         = "2016",
-         volume       = "in press",
-         pages        = "",
+         year         = "2017",
+         volume       = "8",
+         pages        = "511--518",
          doi          = "10.1111/2041-210X.12679",
-         url          = "http://doi.org/10.1111/2041-210X.12679",
+         url          = "https://doi.org/10.1111/2041-210X.12679",
+
 
          textVersion  =
-           paste("Philipp H Boersch-Supan, Sadie J Ryan, and Leah R Johnson (2016).",
+           paste("Philipp H Boersch-Supan, Sadie J Ryan, and Leah R Johnson (2017).",
                  "deBInfer: Bayesian inference for dynamical models of biological systems in R.",
-                 "Methods in Ecology and Evolution (in press)",
-                 "URL http://doi.org/10.1111/2041-210X.12679")
+                 "Methods in Ecology and Evolution 8:511-518.",
+                 "URL https://doi.org/10.1111/2041-210X.12679")
 )

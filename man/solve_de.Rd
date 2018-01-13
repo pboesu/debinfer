@@ -37,4 +37,3 @@ integrated ode object. Data structure depends on the employed solver.
 \description{
 solve_de
 }
-

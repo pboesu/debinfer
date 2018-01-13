@@ -12,4 +12,3 @@ reshape_post_sim(x)
 \description{
 Take a list of DE model solutions and transform into a list of of matrices, one for each state variable, where each row is an iteration, and each column is a time point
 }
-

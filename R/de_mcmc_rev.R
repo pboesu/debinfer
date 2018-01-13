@@ -123,7 +123,9 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   if(inherits(sim.start, "try-error")) {
     stop("solver failed on start values")
     } else {
-       if(!all(data.times %in% sim.start[,"time"])) stop("solver times do not cover all data times")
+       if(!all(data.times %in% sim.start[,"time"])){
+         sim.start
+         stop("Solver times do not cover all data times. Integration may have been incomplete using start values. Check for deSolve warnings.")}
     }
 
 
@@ -481,8 +483,8 @@ log_post_params <- function(samp, w.p, data, pdfs, hyper, sim.data, obs.model){
   #}
   ##print(c(b, lik, prior))
 
-  if(is.na(llik)) break #break doesn't work when it's inside a function
-  if(is.na(lprior)) break
+  if(is.na(llik)) llik <- -Inf #break doesn't work when it's inside a function
+  if(is.na(lprior)) lprior <- -Inf
 
   return( llik + lprior )
 }
@@ -500,15 +502,14 @@ log_post_params <- function(samp, w.p, data, pdfs, hyper, sim.data, obs.model){
 log_prior_params<-function(samp, pdfs, w.p, hyper){
   lp<-0
   len<-length(w.p)
-  if(len==1){
+  #if(len==1){
     ##print(paste("w.p =", w.p, "samp =", samp[w.p[1]], sep=" "))
-    lp<-list(NULL)
-    names(lp)<-w.p
-  }
-  else{
+    #lp<-list(NULL)
+    #names(lp)<-w.p
+  #} else {
     lp<-data.frame(matrix(0, nrow=1, ncol=len))
     names(lp)<-w.p
-  }
+  #}
 
   ##print(c(as.numeric(samp), w.p, hyper[1]))
   for(i in seq_len(len)){
