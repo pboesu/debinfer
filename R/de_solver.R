@@ -105,7 +105,7 @@ post_sim<-function(x, n=100, times, output = "all" , burnin = NULL, prob = 0.95,
 #' @param x debinfer_result object
 #' @param samp sample
 #' @param times times
-#' @param ...
+#' @param ... additional arguments to solver
 #'
 #' @return solve_de output
 #' @export

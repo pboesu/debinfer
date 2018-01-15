@@ -13,7 +13,7 @@ restore_and_solve(x, samp, times, ...)
 
 \item{times}{times}
 
-\item{...}{}
+\item{...}{additional arguments to solver}
 }
 \value{
 solve_de output
