@@ -51,8 +51,16 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   #identify free parameters and inits
   p.names <- vapply(all.params, function(x) x$name, character(1))
   is.free <- !vapply(all.params, function(x) x$fixed, logical(1))
-  is.init <- vapply(all.params, function(x) x$var.type, character(1))=="init"
+  is.init <- vapply(all.params, function(x) x$var.type, character(1)) %in% c("init", "initfunc")
   is.de <- vapply(all.params, function(x) x$var.type, character(1))=="de"
+  var_types <- vapply(all.params, function(x) x$var.type, character(1))
+  if (any(var_types == "initfunc")){
+    initfunc_idx <- which(var_types == "initfunc")
+    initfunc_name <- names(all.params[initfunc_idx])
+    initfunc <- all.params[[initfunc_idx]]$initfunc
+  } else {
+    initfunc = NULL
+  }
   #identify free parameters with joint proposal and split into blocks
   is.single <- vapply(all.params, function(x) is.null(x$joint) , logical(1)) & is.free
   joint.blocks <- unique(vapply(all.params[!is.single & is.free], function(x) x$joint, character(1)))
@@ -118,7 +126,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in p.
 
-  #TODO recalc inits from pars if any init is designated as such
+  #TODO recalc inits from pars if any init is designated as such - not necessary since setup_debinfer calculates start value
   sim.start<-solve_de(sim = de.model, params = params[is.de], inits = inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
 
   ## check that solver provides simulation values for all observations
@@ -156,7 +164,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
     out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], cov.mats = cov.matrices, data = data, sim = de.model, out = out,
                        Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free + n.joints, solver=solver, i=i, cnt=cnt, w.p = w.p,
                        obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, is.de=is.de,
-                       is.single = is.single, joint.blocks = joint.blocks, ...)
+                       is.single = is.single, joint.blocks = joint.blocks, initfunc = initfunc,...)
     samps[i,] <- out$s #make sure order is matched
 #     if(test){
 #       if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
@@ -215,11 +223,12 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param is.de logical, parameter is an input for the solver
 ##' @param is.single parameter is to be proposed individually
 ##' @param joint.blocks names of joint blocks
+##' @param initfunc initfunc from parlist
 ##' @param ... further arguments to solver
 ##' @export
 update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizestep,
                         data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, is.de,
-                        is.single, joint.blocks, ...)
+                        is.single, joint.blocks, initfunc = NULL, ...)
 {
   ## read in some bits
   s<-samps
@@ -284,6 +293,9 @@ update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizes
         #if(verbose.mcmc)message(paste("keeping simulation",jj))#keep using last available de solution
       } else {
       #TODO recalc inits from pars if any init is designated as such
+      if (!(is.null(initfunc))){
+        i.new <- initfunc(inits = i.new, params = p.new[is.de])
+      }
       #compute new solution
        sim.new<-solve_de(sim = sim , params = p.new[is.de], inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
        #if(verbose.mcmc)message(paste("renewing simulation",jj))#keep using last available de solution

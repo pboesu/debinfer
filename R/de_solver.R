@@ -75,20 +75,7 @@ post_sim<-function(x, n=100, times, output = "all" , burnin = NULL, prob = 0.95,
 #sample parameter values
   if(!is.null(burnin)) x$samples <- window(x$samples, burnin, nrow(x$samples))
   samps <- x$samples[sample(nrow(x$samples), size=n, replace=FALSE),]
-#a function to recombine inits and pars
-  restore_and_solve <- function(x, samp, times, ...){
-    params <- depars(x)
-    inits <- deinits(x)
-    #paste in sample values
-    for (i in names(samp)){
-      if (i %in% names(params)) params[i]<-samp[i]
-      if (i %in% names(inits)) inits[i]<-samp[i]
-    }
-    #TODO recalc inits from pars if any init is designated as such
-    #solve DE model
-    soln <- solve_de(sim = x$de.model, params = params, inits = inits, data.times = times, solver = x$solver, ...)
-    return(soln)
-  }
+
   #apply restore_and_solve over the samples
   if (n==1){
     sims <- restore_and_solve(x = x, samp = samps, times = times, ...)
@@ -112,6 +99,38 @@ post_sim<-function(x, n=100, times, output = "all" , burnin = NULL, prob = 0.95,
   }
   }
 
+
+#' an internal function to recombine inits and pars
+#'
+#' @param x debinfer_result object
+#' @param samp sample
+#' @param times times
+#' @param ...
+#'
+#' @return solve_de output
+#' @export
+restore_and_solve <- function(x, samp, times, ...){
+  params <- depars(x)
+  inits <- deinits(x)
+  #paste in sample values
+  for (i in names(samp)){
+    if (i %in% names(params)) params[i]<-samp[i]
+    if (i %in% names(inits)) inits[i]<-samp[i]
+  }
+  #TODO recalc inits from pars if any init is designated as such
+  #check if any initial values need to be calculated
+  var_types <- vapply(x$all.params, function(y) y$var.type, character(1))
+  if (any(var_types == "initfunc")){
+    initfunc_idx <- which(var_types == "initfunc")
+    initfunc_name <- names(x$all.params[initfunc_idx])
+    initfunc <- x$all.params[[initfunc_idx]]$initfunc
+    #recalculate inits
+    inits <- initfunc(inits, params)
+  }
+  #solve DE model
+  soln <- solve_de(sim = x$de.model, params = params, inits = inits, data.times = times, solver = x$solver, ...)
+  return(soln)
+}
 
 
 

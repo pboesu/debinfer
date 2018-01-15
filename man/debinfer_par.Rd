@@ -5,16 +5,16 @@
 \title{debinfer_par}
 \usage{
 debinfer_par(name, var.type, fixed, value, joint = NULL, prior = NULL,
-  hypers = NULL, prop.var = NULL, samp.type = NULL)
+  hypers = NULL, prop.var = NULL, samp.type = NULL, initfunc = NULL)
 }
 \arguments{
 \item{name}{character vector; name of the variable}
 
-\item{var.type}{character vector; type of the variable "de" = parameter for the differential equation, "obs" = parameter of the observation model, "init" = initial condition for a state variable in the differential equation}
+\item{var.type}{character vector; type of the variable "de" = parameter for the differential equation, "obs" = parameter of the observation model, "init" = initial condition for a state variable in the differential equation, "initfunc" = initial condition for a state variable in the differential equation that is a function of the parameters of the differential equation(s)}
 
 \item{fixed}{boolean; TRUE = parameter is taken to be fixed, FALSE = parameter is to be estimated by MCMC}
 
-\item{value}{numeric; parameter value. For fixed parameters this is the value used in the analysis for free parameters this is the starting value used when setting up the MCMC chain}
+\item{value}{numeric; parameter value. For fixed parameters this is the value used in the analysis for free parameters this is the starting value used when setting up the MCMC chain.}
 
 \item{joint}{integer; number of block for joint proposal; NULL means the parameter is not to be jointly proposed}
 
@@ -25,6 +25,8 @@ debinfer_par(name, var.type, fixed, value, joint = NULL, prior = NULL,
 \item{prop.var}{numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter}
 
 \item{samp.type}{character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution, "rw-ref" = reflecting random walk sampler on the bounds of the prior support (cf. Hoff 2009, Chapter 10.5.1; Yang and Rodriguez 2013)}
+
+\item{initfunc}{function; If the parameter is of var.type "initfunc" this argument takes a function to recalculate the initial value(s) from the parameters. The function must have arguments 'inits' and 'params' and return the initial value vector.}
 }
 \value{
 returns an object of class debinfer_par to be fed to the mcmc setup function
