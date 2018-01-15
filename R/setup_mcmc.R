@@ -89,7 +89,8 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
       bounds <- NA
     }
   } else {
-    #check initfunc
+    #TODO check initfunc
+    #use value slot to store function?!
   }
 
 

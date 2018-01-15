@@ -84,6 +84,7 @@ post_sim<-function(x, n=100, times, output = "all" , burnin = NULL, prob = 0.95,
       if (i %in% names(params)) params[i]<-samp[i]
       if (i %in% names(inits)) inits[i]<-samp[i]
     }
+    #TODO recalc inits from pars if any init is designated as such
     #solve DE model
     soln <- solve_de(sim = x$de.model, params = params, inits = inits, data.times = times, solver = x$solver, ...)
     return(soln)
