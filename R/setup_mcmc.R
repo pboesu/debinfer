@@ -18,7 +18,9 @@ setup_debinfer <- function(...)
   names(parlist) <- vapply(parlist, function(x) x$name, character(1))
 
   #check if any initial values need to be calculated
-  var_types <- vapply(parlist, function(x) x$var.type, character(1))
+  var_types <- vapply(parlist, function(x) {
+    ifelse(class(x) == 'debinfer_par', x$var.type, "cov")}
+    , character(1))
   if (any(var_types == "initfunc")){
     initfunc_idx <- which(var_types == "initfunc")
     initfunc_name <- names(parlist[initfunc_idx])
