@@ -97,6 +97,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   ## through ref.params
 
   if(!is.null(ref.params) && !is.null(ref.inits)){
+    #TODO recalc inits from pars if any init is designated as such
     sim.ref<-solve_de(sim = de.model, params = ref.params, inits = ref.inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
     prob.ref<-log_post_params(samp = ref.params, data = data, sim.data = sim.ref, w.p = w.p, obs.model = obs.model, pdfs = pdfs, hyper = hyper)
     message(paste("(unnormalized) posterior probability of the reference parameters= ",
@@ -117,6 +118,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   ## run the data simulation to make the underlying states (for
   ## determining the likelihoods) using the parameters stored in p.
 
+  #TODO recalc inits from pars if any init is designated as such
   sim.start<-solve_de(sim = de.model, params = params[is.de], inits = inits, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
 
   ## check that solver provides simulation values for all observations
@@ -280,7 +282,9 @@ update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizes
       if (all(vapply(jj, function(x) samp.p[[x]]$var.type, character(1)) == "obs")){ ##TIDY UP
         sim.new <- sim.old
         #if(verbose.mcmc)message(paste("keeping simulation",jj))#keep using last available de solution
-      } else { #compute new solution
+      } else {
+      #TODO recalc inits from pars if any init is designated as such
+      #compute new solution
        sim.new<-solve_de(sim = sim , params = p.new[is.de], inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)
        #if(verbose.mcmc)message(paste("renewing simulation",jj))#keep using last available de solution
       }
