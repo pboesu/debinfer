@@ -133,7 +133,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   ## starting values, and to initialize prob.old
   try.lpost <- try(log_post_params(samp = params, data = data, sim.data = sim.start, obs.model = obs.model, pdfs = pdfs, hyper = hyper, w.p = w.p))
   if(inherits(try.lpost, "try-error")) {
-    stop("log likelihood calculation failed with current starting values. Observation model may try to use undeclared parameters or model outputs.")
+    stop("log likelihood calculation failed with current starting values. Observation model may try to use undeclared parameters or model outputs. Rerun de_mcmc following a call to debugonce([obs.model]) or debug([obs.model]) to see what is going on.")
   } else {
     samps[1,"lpost"] <- try.lpost
   }
