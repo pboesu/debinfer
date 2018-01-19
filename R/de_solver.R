@@ -74,7 +74,8 @@ post_sim<-function(x, n=100, times, output = "all" , burnin = NULL, prob = 0.95,
 {
 #sample parameter values
   if(!is.null(burnin)) x$samples <- window(x$samples, burnin, nrow(x$samples))
-  samps <- x$samples[sample(nrow(x$samples), size=n, replace=FALSE),]
+  sample_indices <- sample(nrow(x$samples), size=n, replace=FALSE)
+  samps <- x$samples[sample_indices,]
 
   #apply restore_and_solve over the samples
   if (n==1){
@@ -93,7 +94,9 @@ post_sim<-function(x, n=100, times, output = "all" , burnin = NULL, prob = 0.95,
   if (output == "sims") return(sims)
   if (output == "HDI") return(HDI)
   if (output == "all"){
-    out <- list(sims=sims, HDI = HDI, median=medianlist, time = time)
+    #add burnin to index, so it is relative to original mcmc output
+    if(!is.null(burnin)) sample_indices = sample_indices + burnin
+    out <- list(sims=sims, HDI = HDI, median=medianlist, time = time, sample_indices = sample_indices)
     class(out) <- "post_sim_list"
     return(out)
   }
