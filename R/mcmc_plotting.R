@@ -98,7 +98,12 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
 post_prior_densplot <- function(result, param="all", burnin=NULL, prior.col="red", n=1000, ...){
 
   #remove burnin if supplied
-  if(!is.null(burnin)) result$samples <- window(result$samples, burnin, nrow(result$samples))
+  if(!is.null(burnin)) {
+    #get number of samples of mcmc object
+    mcmc_end <- attr(x$samples, "mcpar")[2]
+    result$samples <- window(result$samples, burnin, mcmc_end)
+    }
+
   if (param=="all"){
     # store old par
     old.par <- par(no.readonly=TRUE)
@@ -153,7 +158,10 @@ post_prior_densplot <- function(result, param="all", burnin=NULL, prior.col="red
 plot.debinfer_result <- function(x, plot.type="coda", burnin = 1, ...){
   # store old par
   old.par <- par(no.readonly=TRUE)
-  if (plot.type=="coda") plot(window(x$samples, burnin, nrow(x$samples)), ...)
+  if (plot.type=="coda") {
+    #get number of samples of mcmc object
+    mcmc_end <- attr(x$samples, "mcpar")[2]
+    plot(window(x$samples, burnin, mcmc_end), ...)}
   if (plot.type=="post_prior") post_prior_densplot(x, ...)
   # restore old par
   par(old.par)
