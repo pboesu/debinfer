@@ -82,7 +82,8 @@ post_sim<-function(x, n=100, times, output = "all" , burnin = NULL, prob = 0.95,
   if(!is.matrix(x$samples)) {x$samples <- as.matrix(x$samples)
   colnames(x$samples) <- names(freeparams(x))
   }
-  samps <- as.matrix(x$samples[sample(nrow(x$samples), size=n, replace=FALSE),])
+  sample_indices <- sample(nrow(x$samples), size=n, replace=FALSE)
+  samps <- as.matrix(x$samples[sample_indices,])
   colnames(samps) <- colnames(x$samples)
 
   #apply restore_and_solve over the samples
@@ -102,7 +103,9 @@ post_sim<-function(x, n=100, times, output = "all" , burnin = NULL, prob = 0.95,
   if (output == "sims") return(sims)
   if (output == "HDI") return(HDI)
   if (output == "all"){
-    out <- list(sims=sims, HDI = HDI, median=medianlist, time = time)
+    #add burnin to index, so it is relative to original mcmc output
+    if(!is.null(burnin)) sample_indices = sample_indices + burnin
+    out <- list(sims=sims, HDI = HDI, median=medianlist, time = time, sample_indices = sample_indices)
     class(out) <- "post_sim_list"
     return(out)
   }
