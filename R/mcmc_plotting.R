@@ -100,7 +100,7 @@ post_prior_densplot <- function(result, param="all", burnin=NULL, prior.col="red
   #remove burnin if supplied
   if(!is.null(burnin)) {
     #get number of samples of mcmc object
-    mcmc_end <- attr(x$samples, "mcpar")[2]
+    mcmc_end <- attr(result$samples, "mcpar")[2]
     result$samples <- window(result$samples, burnin, mcmc_end)
     }
 
