@@ -24,7 +24,7 @@ setup_debinfer <- function(...)
   if (any(var_types == "initfunc")){
     initfunc_idx <- which(var_types == "initfunc")
     initfunc_name <- names(parlist[initfunc_idx])
-    initfunc <- parlist[[initfunc_idx]]$initfunc
+    deinitfunc <- parlist[[initfunc_idx]]$deinitfunc
     #put together pars and inits
     p.names <- vapply(parlist, function(x) x$name, character(1))
     #is.free <- !vapply(all.params, function(x) x$fixed, logical(1))
@@ -36,7 +36,7 @@ setup_debinfer <- function(...)
     inits <- vapply(parlist, function(x) x$value, numeric(1))[is.init]
     names(inits) <- p.names[is.init]
     #recalculate inits
-    inits <- initfunc(inits, params)
+    inits <- deinitfunc(inits, params)
     #write value to parlist
     parlist[[initfunc_name]]$value <- inits[initfunc_name]
   }
@@ -85,13 +85,13 @@ logd_prior <- function(x, pdf, hypers){
 #' @param hypers list of numeric vectors, hyperparameters for the prior; mean only for mvnorm. Can include trunc for truncated pdfs from package truncdist.
 #' @param prop.var numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter
 #' @param samp.type character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution, "rw-ref" = reflecting random walk sampler on the bounds of the prior support (cf. Hoff 2009, Chapter 10.5.1; Yang and Rodriguez 2013)
-#' @param initfunc function; If the parameter is of var.type "initfunc" this argument takes a function to recalculate the initial value(s) from the parameters. The function must have arguments 'inits' and 'params' and return the initial value vector.
+#' @param deinitfunc function; If the parameter is of var.type "initfunc" this argument takes a function to recalculate the initial value(s) from the parameters. The function must have arguments 'inits' and 'params' and return the initial value vector.
 #'
 #' @return returns an object of class debinfer_par to be fed to the mcmc setup function
 #' @references Hoff 2009, A First Course in Bayesian Statistical Methods, Springer
 #'             Yang and Rodriguez 2013, PNAS 110:19307-19312 \url{http://doi.org/10.1073/pnas.1311790110}
 #' @export
-debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, hypers=NULL, prop.var=NULL, samp.type=NULL, initfunc=NULL){
+debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, hypers=NULL, prop.var=NULL, samp.type=NULL, deinitfunc=NULL){
   #check inputs
   if(!is.character(name)) stop("name must be of type character")
   if(!var.type %in% c("de","obs","init", "initfunc")) stop('var.type must be one of c("de","obs","init", "initfunc")')
@@ -115,8 +115,8 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
       bounds <- NA
     }
   } else {#this means var.type == "initfunc"
-    if(!is.function(initfunc)) stop("initfunc must be a function)")
-    #TODO check initfunc
+    if(!is.function(deinitfunc)) stop("initfunc must be a function)")
+    #TODO check deinitfunc
     #use value slot to store function?! - no value slot should store numerical value as calculated from starting parameters
     #a function defining an observation model. Must be a function with arguments 'data', 'sim.data', 'samp'.
     #set bounds to NA
@@ -134,7 +134,7 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
                  hypers = hypers,
                  prop.var = prop.var,
                  samp.type = samp.type,
-                 initfunc = initfunc), class = "debinfer_par")
+                 deinitfunc = deinitfunc), class = "debinfer_par")
 }
 
 #' debinfer_cov

@@ -57,9 +57,9 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   if (any(var_types == "initfunc")){
     initfunc_idx <- which(var_types == "initfunc")
     initfunc_name <- names(all.params[initfunc_idx])
-    initfunc <- all.params[[initfunc_idx]]$initfunc
+    deinitfunc <- all.params[[initfunc_idx]]$deinitfunc
   } else {
-    initfunc = NULL
+    deinitfunc = NULL
   }
   #identify free parameters with joint proposal and split into blocks
   is.single <- vapply(all.params, function(x) is.null(x$joint) , logical(1)) & is.free
@@ -164,7 +164,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
     out <- update_sample_rev(samps = samps[i-1,], samp.p = all.params[is.free], cov.mats = cov.matrices, data = data, sim = de.model, out = out,
                        Tmax = Tmax, sizestep = sizestep, data.times = data.times, l=n.free + n.joints, solver=solver, i=i, cnt=cnt, w.p = w.p,
                        obs.model = obs.model, pdfs = pdfs, hyper = hyper, verbose.mcmc = verbose.mcmc, verbose = verbose, is.de=is.de,
-                       is.single = is.single, joint.blocks = joint.blocks, initfunc = initfunc,...)
+                       is.single = is.single, joint.blocks = joint.blocks, deinitfunc = deinitfunc,...)
     samps[i,] <- out$s #make sure order is matched
 #     if(test){
 #       if(-samps$lpost[i-1]+samps$lpost[i-1]<=-10){
@@ -223,12 +223,12 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
 ##' @param is.de logical, parameter is an input for the solver
 ##' @param is.single parameter is to be proposed individually
 ##' @param joint.blocks names of joint blocks
-##' @param initfunc initfunc from parlist
+##' @param deinitfunc deinitfunc from parlist
 ##' @param ... further arguments to solver
 ##' @export
 update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizestep,
                         data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc, verbose, is.de,
-                        is.single, joint.blocks, initfunc = NULL, ...)
+                        is.single, joint.blocks, deinitfunc = NULL, ...)
 {
   ## read in some bits
   s<-samps
@@ -293,8 +293,8 @@ update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizes
         #if(verbose.mcmc)message(paste("keeping simulation",jj))#keep using last available de solution
       } else {
       #TODO recalc inits from pars if any init is designated as such
-      if (!(is.null(initfunc))){
-        i.new <- initfunc(inits = i.new, params = p.new[is.de])
+      if (!(is.null(deinitfunc))){
+        i.new <- deinitfunc(inits = i.new, params = p.new[is.de])
       }
       #compute new solution
        sim.new<-solve_de(sim = sim , params = p.new[is.de], inits = i.new, Tmax = Tmax, solver=solver, sizestep = sizestep, data.times = data.times, ...)

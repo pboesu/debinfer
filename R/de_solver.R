@@ -126,9 +126,9 @@ restore_and_solve <- function(x, samp, times, ...){
   if (any(var_types == "initfunc")){
     initfunc_idx <- which(var_types == "initfunc")
     initfunc_name <- names(x$all.params[initfunc_idx])
-    initfunc <- x$all.params[[initfunc_idx]]$initfunc
+    deinitfunc <- x$all.params[[initfunc_idx]]$deinitfunc
     #recalculate inits
-    inits <- initfunc(inits, params)
+    inits <- deinitfunc(inits, params)
   }
   #solve DE model
   soln <- solve_de(sim = x$de.model, params = params, inits = inits, data.times = times, solver = x$solver, ...)
