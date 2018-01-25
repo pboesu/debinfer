@@ -73,9 +73,18 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
 post_sim<-function(x, n=100, times, output = "all" , burnin = NULL, prob = 0.95, ...)
 {
 #sample parameter values
-  if(!is.null(burnin)) x$samples <- window(x$samples, burnin, nrow(x$samples))
+  if(!is.null(burnin)) {
+    #get number of samples of mcmc object
+    mcmc_end <- attr(x$samples, "mcpar")[2]
+  x$samples <- window(x$samples, burnin, mcmc_end)
+  }
+  #reshape and relabel in case there is only one free paramater (mcmc object is vector, not matrix)
+  if(!is.matrix(x$samples)) {x$samples <- as.matrix(x$samples)
+  colnames(x$samples) <- names(freeparams(x))
+  }
   sample_indices <- sample(nrow(x$samples), size=n, replace=FALSE)
-  samps <- x$samples[sample_indices,]
+  samps <- as.matrix(x$samples[sample_indices,])
+  colnames(samps) <- colnames(x$samples)
 
   #apply restore_and_solve over the samples
   if (n==1){

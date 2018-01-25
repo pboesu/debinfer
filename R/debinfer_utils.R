@@ -75,6 +75,26 @@ depars <- function(x){
     } else NULL}
 }
 
+#' Get starting/fixed values of DE initial values
+#'
+#' Accessor function for free parameters
+#'
+#' @param x a debinfer_result or debinfer_parlist object
+#' @return a named logical vector
+#' @export
+freeparams <- function(x){
+  if (is.debinfer_result(x)){
+    is.free <- vapply(x$all.params, function(x) !x$fixed, logical(1))
+    freepars <- vapply(x$all.params, function(x) x$fixed, logical(1))[is.free]
+    return(freepars)
+  } else {
+    if (is.debinfer_parlist(x)){
+      is.free <- vapply(x, function(x) !x$fixed, logical(1))
+      freepars <- vapply(x, function(x) !x$fixed, logical(1))[is.free]
+      return(freepars)
+    } else NULL}
+}
+
 
 #' Reshape posterior model solutions
 #'
