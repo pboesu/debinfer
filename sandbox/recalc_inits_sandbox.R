@@ -81,7 +81,7 @@ recalc_Ny <- function(inits, params){
   return(inits)
 }
 
-Ny <- debinfer_par(name = "Ny", var.type = "initfunc", value = NA, fixed = TRUE, initfunc = recalc_Ny)
+Ny <- debinfer_par(name = "Ny", var.type = "initfunc", value = NA, fixed = TRUE, deinitfunc = recalc_Ny)
 
 mcmc.pars2 <- setup_debinfer(alph, bet, delt, gam, sdlog.N, Nx, Ny)
 

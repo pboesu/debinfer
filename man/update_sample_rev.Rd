@@ -6,7 +6,7 @@
 \usage{
 update_sample_rev(samps, samp.p, cov.mats, data, sim, out, Tmax, sizestep,
   data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc,
-  verbose, is.de, is.single, joint.blocks, initfunc = NULL, ...)
+  verbose, is.de, is.single, joint.blocks, deinitfunc = NULL, ...)
 }
 \arguments{
 \item{samps}{row vector of samples from the previous mcmc iteration}
@@ -53,7 +53,7 @@ update_sample_rev(samps, samp.p, cov.mats, data, sim, out, Tmax, sizestep,
 
 \item{joint.blocks}{names of joint blocks}
 
-\item{initfunc}{initfunc from parlist}
+\item{deinitfunc}{deinitfunc from parlist}
 
 \item{...}{further arguments to solver}
 }

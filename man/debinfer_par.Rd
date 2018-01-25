@@ -5,7 +5,7 @@
 \title{debinfer_par}
 \usage{
 debinfer_par(name, var.type, fixed, value, joint = NULL, prior = NULL,
-  hypers = NULL, prop.var = NULL, samp.type = NULL, initfunc = NULL)
+  hypers = NULL, prop.var = NULL, samp.type = NULL, deinitfunc = NULL)
 }
 \arguments{
 \item{name}{character vector; name of the variable}
@@ -26,7 +26,7 @@ debinfer_par(name, var.type, fixed, value, joint = NULL, prior = NULL,
 
 \item{samp.type}{character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution, "rw-ref" = reflecting random walk sampler on the bounds of the prior support (cf. Hoff 2009, Chapter 10.5.1; Yang and Rodriguez 2013)}
 
-\item{initfunc}{function; If the parameter is of var.type "initfunc" this argument takes a function to recalculate the initial value(s) from the parameters. The function must have arguments 'inits' and 'params' and return the initial value vector.}
+\item{deinitfunc}{function; If the parameter is of var.type "initfunc" this argument takes a function to recalculate the initial value(s) from the parameters. The function must have arguments 'inits' and 'params' and return the initial value vector.}
 }
 \value{
 returns an object of class debinfer_par to be fed to the mcmc setup function
