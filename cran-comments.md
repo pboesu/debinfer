@@ -1,28 +1,23 @@
-## Resubmission
-This is a re-submission. In this version I have:
-
-* Removed the package name from the description paragraph in DESCRIPTION.
-* Increased version number to 0.4.1
-
 ## Release summary
 
-This is a re-submission of the first CRAN release of deBInfer.
+This is a minor update of the previous version. Most importantly it addresses a warning raised by R-devel CRAN checks about break being used in the wrong context.
 
 ## Test environments
-* OS X 10.9.5 (on travis-ci) R 3.3.1 and R-devel (2016-08-17 r71112)
-* ubuntu 12.04 (on travis-ci), R 3.3.1 and R-devel (2016-09-13 r71247)
-* win-builder (devel and release)
+* local Windows install R 3.4.4
+* win-builder (R-devel and R-release)
+* ubuntu 14.04.5 (on travis-ci), R 3.4.4 and R-devel (2018-04-18 r74614)
+* OS X 10.12.6 (on travis-ci) R 3.4.4
+
+
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
 
-There was 1 NOTE on win-builder:
+There was 1 NOTE on win-builder R-release:
 
 * New submission
 
   Possibly mis-spelled words in DESCRIPTION:
-  MCMC (15:48, 18:19)
-  unobservable (12:31)
+  unobservable (15:31)
 
-* The note was for the package being a first-time submission. 
-  Furthermore, two words were highlighted as possibly mis-spelled, the first is a common abbreviation that is explained within the description paragraph, the second is a correctly spelled English adjective.
+* The note highlighted a possibly mis-spelled word, which is in fact a correctly spelled English adjective.
