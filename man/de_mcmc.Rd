@@ -6,8 +6,8 @@
 \usage{
 de_mcmc(N, data, de.model, obs.model, all.params, ref.params = NULL,
   ref.inits = NULL, Tmax, data.times, cnt = 10, plot = TRUE,
-  sizestep = 0.01, solver = "ode", verbose.mcmc = TRUE, verbose = FALSE,
-  ...)
+  sizestep = 0.01, solver = "ode", verbose.mcmc = TRUE,
+  verbose = FALSE, ...)
 }
 \arguments{
 \item{N}{integer, number of MCMC iterations}

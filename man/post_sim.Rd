@@ -4,8 +4,8 @@
 \alias{post_sim}
 \title{post_sim}
 \usage{
-post_sim(x, n = 100, times, output = "all", burnin = NULL, prob = 0.95,
-  ...)
+post_sim(x, n = 100, times, output = "all", burnin = NULL,
+  prob = 0.95, ...)
 }
 \arguments{
 \item{x}{debinfer_result object}

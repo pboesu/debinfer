@@ -4,7 +4,8 @@
 \alias{debinfer_cov}
 \title{debinfer_cov}
 \usage{
-debinfer_cov(var.names, sigma = diag(length(names)), name, samp.type = "rw")
+debinfer_cov(var.names, sigma = diag(length(names)), name,
+  samp.type = "rw")
 }
 \arguments{
 \item{var.names}{names of the parameters that are to be proposed together}

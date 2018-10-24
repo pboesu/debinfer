@@ -40,7 +40,11 @@ logd_prior <- function(x, pdf, hypers){
   if (pdf == 'mvnorm'){
     stop('multivariate priors not implemented')
     } else {
-    lp <- do.call(paste("d",pdf, sep=''), args=append(list(x, log=TRUE), hypers))
+      if (pdf == 'trunc'){#handle inconsistent behaviour of truncdist, which silently fails (i.e. produces incorrect output) with log = TRUE
+        lp <- log(do.call(paste("d",pdf, sep=''), args=append(list(x, log = FALSE), hypers)))
+      } else {
+        lp <- do.call(paste("d",pdf, sep=''), args=append(list(x, log=TRUE), hypers))
+      }
     return(lp)
     }
 }

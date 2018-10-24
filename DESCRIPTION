@@ -22,7 +22,7 @@ Description: A Bayesian framework for parameter inference in differential equati
     of model parameters and trajectories.
 License: GPL-3
 LazyData: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Depends:
     R  (>= 2.10),
     deSolve
