@@ -6,3 +6,5 @@ figs/
 sandbox/*.pdf
 *.o
 *.so
+doc
+Meta

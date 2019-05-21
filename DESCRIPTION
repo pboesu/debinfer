@@ -1,7 +1,7 @@
 Package: deBInfer
 Type: Package
 Title: Bayesian Inference for Differential Equations
-Version: 0.4.2
+Version: 0.4.3
 Date: 2018-04-18
 Authors@R: c(
     person("Philipp H", "Boersch-Supan", email = "pboesu@gmail.com", role = c("aut","cre"), comment = c(ORCID = "0000-0001-6723-6833")),
@@ -22,9 +22,9 @@ Description: A Bayesian framework for parameter inference in differential equati
     of model parameters and trajectories.
 License: GPL-3
 LazyData: TRUE
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Depends:
-    R  (>= 2.10),
+    R  (>= 3.5.0),
     deSolve
 Imports:
     truncdist,

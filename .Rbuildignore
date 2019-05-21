@@ -10,3 +10,5 @@
 ^docs$
 ^cran-comments\.md$
 ^NEWS\.md$
+^doc$
+^Meta$
