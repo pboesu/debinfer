@@ -2,7 +2,7 @@
 
 debinfer_cov <- function(var.names, sigma=diag(length(names)), joint.block ){
   if(!is.character(var.names)) stop("var.names must be a character vector")
-  if(class(sigma)!= "matrix" || !is.numeric(sigma)) stop("sigma must be a numeric matrix")
+  if(!is.matrix(sigma) || !is.numeric(sigma)) stop("sigma must be a numeric matrix")
   if(any(dim(sigma)!=length(var.names))) stop("length(var.names) does not match dimensions of sigma")
   colnames(sigma)<-var.names
   rownames(sigma)<-var.names

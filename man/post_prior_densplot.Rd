@@ -4,8 +4,14 @@
 \alias{post_prior_densplot}
 \title{Plot posterior marginals and corresponding priors}
 \usage{
-post_prior_densplot(result, param = "all", burnin = NULL,
-  prior.col = "red", n = 1000, ...)
+post_prior_densplot(
+  result,
+  param = "all",
+  burnin = NULL,
+  prior.col = "red",
+  n = 1000,
+  ...
+)
 }
 \arguments{
 \item{result}{a deBInfer_result object}

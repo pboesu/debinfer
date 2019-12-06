@@ -4,8 +4,17 @@
 \alias{debinfer_par}
 \title{debinfer_par}
 \usage{
-debinfer_par(name, var.type, fixed, value, joint = NULL, prior = NULL,
-  hypers = NULL, prop.var = NULL, samp.type = NULL)
+debinfer_par(
+  name,
+  var.type,
+  fixed,
+  value,
+  joint = NULL,
+  prior = NULL,
+  hypers = NULL,
+  prop.var = NULL,
+  samp.type = NULL
+)
 }
 \arguments{
 \item{name}{character vector; name of the variable}

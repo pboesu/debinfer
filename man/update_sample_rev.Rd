@@ -4,9 +4,31 @@
 \alias{update_sample_rev}
 \title{update_sample_rev}
 \usage{
-update_sample_rev(samps, samp.p, cov.mats, data, sim, out, Tmax, sizestep,
-  data.times, l, solver, i, cnt, obs.model, pdfs, hyper, w.p, verbose.mcmc,
-  verbose, is.de, is.single, joint.blocks, ...)
+update_sample_rev(
+  samps,
+  samp.p,
+  cov.mats,
+  data,
+  sim,
+  out,
+  Tmax,
+  sizestep,
+  data.times,
+  l,
+  solver,
+  i,
+  cnt,
+  obs.model,
+  pdfs,
+  hyper,
+  w.p,
+  verbose.mcmc,
+  verbose,
+  is.de,
+  is.single,
+  joint.blocks,
+  ...
+)
 }
 \arguments{
 \item{samps}{row vector of samples from the previous mcmc iteration}

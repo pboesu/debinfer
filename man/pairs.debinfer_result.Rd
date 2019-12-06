@@ -4,8 +4,7 @@
 \alias{pairs.debinfer_result}
 \title{Pairwise posterior marginals}
 \usage{
-\method{pairs}{debinfer_result}(x, trend = FALSE, scatter = FALSE,
-  burnin = NULL, medians = TRUE, ...)
+\method{pairs}{debinfer_result}(x, trend = FALSE, scatter = FALSE, burnin = NULL, medians = TRUE, ...)
 }
 \arguments{
 \item{x}{a deBInfer_result object}
