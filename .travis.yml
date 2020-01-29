@@ -16,7 +16,8 @@ matrix:
    - os: osx
      disable_homebrew: false
      r: devel
-     r_packages:
+     r_packages:#
+      - magick
       - coda
       - deSolve
       - mvtnorm
