@@ -17,6 +17,7 @@ matrix:
       - sudo tlmgr install titling
    - os: osx
      disable_homebrew: false
+     brew_packages: imagemagick
      r: devel
      r_packages:
       - magick
@@ -35,12 +36,22 @@ matrix:
       - beanplot
      sudo: required
    - os: linux
+     addons:
+        apt:
+          update: true
+          packages:
+            - libmagick++-dev
      r: release
      r_packages:
      - covr
      - magick
      sudo: required
    - os: linux
+     addons:
+        apt:
+          update: true
+          packages:
+            - libmagick++-dev
      r: devel
      r_packages:
       - devtools
