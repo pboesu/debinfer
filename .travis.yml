@@ -7,6 +7,8 @@ matrix:
  include:
    - os: osx
      r: release
+     r_packages:
+      - magick
      disable_homebrew: true
      sudo: required
      before_install:
@@ -32,21 +34,18 @@ matrix:
       - R.rsp
       - beanplot
      sudo: required
-     before_install:
-      - curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
-      - sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
-      - sudo tlmgr update --self
-      - sudo tlmgr install framed
-      - sudo tlmgr install titling
    - os: linux
      r: release
-     r_packages: covr
+     r_packages:
+     - covr
+     - magick
      sudo: required
    - os: linux
      r: devel
      r_packages:
       - devtools
       - covr
+      - magick
      sudo: required
      after_success: Rscript -e 'covr::codecov()'
  allow_failures:
