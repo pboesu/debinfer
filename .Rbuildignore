@@ -5,8 +5,6 @@
 ^sandbox$
 ^conversion_notes\.Rmd$
 ^conversion_notes\.html$
-^\.travis\.yml$
-^codecov\.yml$
 ^docs$
 ^cran-comments\.md$
 ^NEWS\.md$
@@ -14,3 +12,4 @@
 ^Meta$
 ^CONTRIBUTING\.md$
 ^CODE_OF_CONDUCT\.md$
+^\.github$
