@@ -1,7 +1,8 @@
-pandoc: 1.19.2.1
-pkgdown: 1.4.1
+pandoc: 2.7.3
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  chytrid_dede_example: ../../../../../../../../N:/Projects/r_pkg_dev/debinfer/vignettes/chytrid_dede_example.html
-  logistic_ode_example: ../../../../../../../../N:/Projects/r_pkg_dev/debinfer/vignettes/logistic_ode_example.html
+  chytrid_dede_example: chytrid_dede_example.html
+  logistic_ode_example: logistic_ode_example.html
+last_built: 2021-06-03T11:30Z
 
