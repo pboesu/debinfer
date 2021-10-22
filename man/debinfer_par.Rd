@@ -31,7 +31,7 @@ debinfer_par(
 
 \item{hypers}{list of numeric vectors, hyperparameters for the prior; mean only for mvnorm. Can include trunc for truncated pdfs from package truncdist.}
 
-\item{prop.var}{numeric; tuning parameters, that is the standard deviation of the proposal distribution for each parameter}
+\item{prop.var}{numeric; tuning parameters. For Normal proposals (`samp.type="rw"` or `samp.type="rw-ref"`), this must be a positive number representing the standard deviation of the proposal distribution for each parameter. For the asymmetric uniform proposal distribution (`samp.type="rw-unif"`) two positive numeric values are required and the proposal will then have the bounds `prop.var[1]/prop.var[2]*current_proposal` and `prop.var[2]/prop.var[1]*current_proposal`. See Boersch-Supan et al. (2016).}
 
 \item{samp.type}{character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution, "rw-ref" = reflecting random walk sampler on the bounds of the prior support (cf. Hoff 2009, Chapter 10.5.1; Yang and Rodriguez 2013)}
 }
@@ -43,6 +43,9 @@ Creates an object containing all the necessary bits for a parameter i.e. initial
 hyper-parameters, tuning parameters, etc. to set up a debinfer analysis
 }
 \references{
-Hoff 2009, A First Course in Bayesian Statistical Methods, Springer
-            Yang and Rodriguez 2013, PNAS 110:19307-19312 \url{http://doi.org/10.1073/pnas.1311790110}
+Boersch-Supan et al. 2016, MEE 8:511-518 \url{https://doi.org/10.1111/2041-210X.12679}
+
+            Hoff 2009, A First Course in Bayesian Statistical Methods, Springer
+
+            Yang and Rodriguez 2013, PNAS 110:19307-19312 \url{https://doi.org/10.1073/pnas.1311790110}
 }
