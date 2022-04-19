@@ -10,7 +10,7 @@
 #'   \item{time}{days since the start of the experiment}
 #'   \item{count}{count of zoospores (x 1e4)}
 #' }
-#' @references Voyles et al. 2012, Ecol Evol 9:2241-2249 \doi{10.1002\%2Fece3.334}
+#' @references Voyles et al. 2012, Ecol Evol 9:2241-2249 \doi{10.1002/ece3.334}
 #' @keywords data
 NULL
 
