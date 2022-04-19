@@ -25,7 +25,7 @@
 solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
                     solver="ode", sizestep=NULL, verbose=FALSE, data.times=NULL, method = "lsoda", ...){
     #TODO: recalculate inits from parameters if necessary
-    if( !(solver %in% c(1,2,3) || solver %in% c("ode","dde","dede") )){
+    if( !(solver %in% c(1,2,3) | solver %in% c("ode","dde","dede") )){
       stop(paste('invalid value [', solver, '] for argument "solver". Must be one of "ode","dde","dede". To set a specific solver algorithm use the "method" argument (see ?ode or ?dede).'))
       }
     if(!is.null(data.times)){
@@ -35,16 +35,16 @@ solve_de<-function(sim, params, inits, Tmax, numsteps=10000,
       if(is.null(sizestep)) times<- seq(0, Tmax, length=numsteps)
       if(is.null(numsteps))  times<- seq(0, Tmax, by=sizestep)
     }
-      if(solver == 1 || solver == "ode"){
+      if(solver == 1 | solver == "ode"){
         #require(deSolve)
         out <- try(ode(inits, times, sim, parms=params, verbose=verbose , method=method, ...))
       }
-      if(solver == 2 || solver == "dde"){
+      if(solver == 2 | solver == "dde"){
         #require(PBSddesolve)
         #on.exit(freeglobaldata())
         out <- try(PBSddesolve::dde(inits, times, sim, parms=params, ...))
       }
-      if(solver == 3 || solver == "dede"){
+      if(solver == 3 | solver == "dede"){
         #require(PBSddesolve)
         #on.exit(freeglobaldata())
         out <- try(dede(y=inits, times=times, func=sim, parms=params))

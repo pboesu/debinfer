@@ -35,7 +35,7 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   #check models
   if(!is.function(obs.model)) stop("obs.model must be a function")
   if(!identical(formalArgs(obs.model), c("data", "sim.data", "samp" ))) stop("obs.model must be a function with arguments 'data', 'sim.data', 'samp'")
-  if(!(is.function(de.model) || is.character(de.model))) stop("de.model must be a function or function name (character)")
+  if(!(is.function(de.model) | is.character(de.model))) stop("de.model must be a function or function name (character)")
   if(!inherits(all.params, "debinfer_parlist")) stop("all.params must be of class debinfer_parlist")
 
   #identify cov matrices
@@ -271,7 +271,7 @@ update_sample_rev<-function(samps, samp.p, cov.mats, data, sim, out, Tmax, sizes
         #ww<-samp.p[[k]]$name
       if (k %in% singles) jj <- k else jj <- dimnames(cov.mats[[k]]$sigma)[[1]] ##TIDY UP
       for (j in jj){
-        if (samp.p[[j]]$var.type== "de" || samp.p[[j]]$var.type == "obs")  p.new[j]<-s.new[j]<-q$b[j]
+        if (samp.p[[j]]$var.type== "de" | samp.p[[j]]$var.type == "obs")  p.new[j]<-s.new[j]<-q$b[j]
         if (samp.p[[j]]$var.type== "init") i.new[j]<-s.new[j]<-q$b[j]
       }
       #}
@@ -377,7 +377,7 @@ propose_single_rev<-function(samps, s.p)
    sd<-sqrt(var)
    b.new <- rnorm(1, b, sd=sd)
    names(b.new) <- names(b)
-   while(b.new > u.bound || b.new < l.bound){
+   while(b.new > u.bound | b.new < l.bound){
      if(b.new > u.bound) b.new <- 2*u.bound - b.new; #print(b.new)
      if(b.new < l.bound) b.new <- 2*l.bound - b.new; #print(b.new)
    }

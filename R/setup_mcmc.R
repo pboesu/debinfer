@@ -124,7 +124,7 @@ debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, h
 #'
 debinfer_cov <- function(var.names, sigma=diag(length(names)), name , samp.type = "rw"){
   if(!is.character(var.names)) stop("var.names must be a character vector")
-  if(!is.matrix(sigma) || !is.numeric(sigma)) stop("sigma must be a numeric matrix")
+  if(!is.matrix(sigma) | !is.numeric(sigma)) stop("sigma must be a numeric matrix")
   if (!isSymmetric(sigma)) stop("sigma must be symmetric")
   if (!all(eigen(sigma, only.values = TRUE)$values>0)) warning("sigma does not appear to be positive semi-definite")
   if(any(dim(sigma)!=length(var.names))) stop("length(var.names) does not match dimensions of sigma")
