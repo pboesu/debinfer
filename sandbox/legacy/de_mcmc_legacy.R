@@ -138,7 +138,7 @@ deb_mcmc<-function(N, p.start, data, w.p, params, inits, sim=DEB1,
       ## hyper, sim.old, sds)
       prob.new <- log_post_params(samp=samps[i+1,], w.p=w.p, data=data, p=p.new, pdfs=pdfs, hyper=hyper, sim.data=sim.new, sds=sds, obs.model=obs.model)
       if(i%%cnt==0) print(paste("prob.old = ", prob.old, "; prob.new = ", prob.new, sep=""))
-      if(is.finite(prob.new) && is.finite(prob.old)){
+      if(is.finite(prob.new) & is.finite(prob.old)){
         A<-exp( prob.new + q$lbak - prob.old - q$lfwd )
       }
       else{
@@ -388,7 +388,7 @@ update_sample<-function(samps, samp.p, data, sim, inits, out, Tmax, sizestep,
 
     s.new$lpost<-log.post.params(s.new, data, samp.p, sim.new)
 
-    if(is.finite(s.new$lpost) && is.finite(s$lpost)){
+    if(is.finite(s.new$lpost) & is.finite(s$lpost)){
       A<-exp( s.new$lpost + q$lbak - s$lpost - q$lfwd )
     }
     else{
