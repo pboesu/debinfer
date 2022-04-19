@@ -1,3 +1,8 @@
+# Changes in version 0.4.3
+##Minor bug fixes and improvements
+* clarifications in documentation
+* patched bug in `truncdist::dtrunc`
+* internal type checking and control flow tidied up to be compatible with upcoming changes in R 4.2.0
 # Changes in version 0.4.2
 ##New Functionality
 * New sampler type `rw-ref`, an implementation of the reflecting random walk described in Yang and Rodriguez 2013. The sampler reflects on the bounds of the associated prior distribution.
