@@ -66,11 +66,11 @@ logd_prior <- function(x, pdf, hypers){
 #' @param samp.type character; type of sampler: "rw" = Normal random walk, "ind" = independence, "rw-unif" = asymmetric uniform distribution, "rw-ref" = reflecting random walk sampler on the bounds of the prior support (cf. Hoff 2009, Chapter 10.5.1; Yang and Rodriguez 2013)
 #'
 #' @return returns an object of class debinfer_par to be fed to the mcmc setup function
-#' @references Boersch-Supan et al. 2016, MEE 8:511-518 \url{https://doi.org/10.1111/2041-210X.12679}
+#' @references Boersch-Supan et al. 2016, MEE 8:511-518 \doi{10.1111/2041-210X.12679}
 #'
 #'             Hoff 2009, A First Course in Bayesian Statistical Methods, Springer
 #'
-#'             Yang and Rodriguez 2013, PNAS 110:19307-19312 \url{https://doi.org/10.1073/pnas.1311790110}
+#'             Yang and Rodriguez 2013, PNAS 110:19307-19312 \doi{10.1073/pnas.1311790110}
 #' @export
 debinfer_par <- function(name, var.type, fixed, value, joint=NULL, prior=NULL, hypers=NULL, prop.var=NULL, samp.type=NULL){
   #check inputs
