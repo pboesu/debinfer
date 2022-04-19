@@ -39,8 +39,8 @@ de_mcmc <- function(N, data, de.model, obs.model, all.params, ref.params=NULL, r
   if(!inherits(all.params, "debinfer_parlist")) stop("all.params must be of class debinfer_parlist")
 
   #identify cov matrices
-  is.par <- vapply(all.params, class, character(1)) == "debinfer_par"
-  is.cov <- vapply(all.params, class, character(1)) == "debinfer_cov"
+  is.par <- vapply(all.params, inherits, logical(1), what = 'debinfer_par')
+  is.cov <- vapply(all.params, inherits, logical(1), what = 'debinfer_cov')
   #subset into parameters and covariance matrices
   if (any(is.cov)){
     cov.matrices <- all.params[is.cov]
