@@ -62,19 +62,19 @@ test_that("Inference on simulated data with known inits. ", {
 
   # do inference with deBInfer
   # MCMC iterations
-  iter = 15000
+  iter = 7000
   # define burnin
-  burnin = 10000
+  burnin = 5000
   # inference call
 
   mcmc_samples <- de_mcmc(N = iter, data=N_obs, de.model=logistic_model, obs.model=logistic_obs_model, all.params=mcmc.pars,
                           Tmax = max(N_obs$time), data.times=N_obs$time, cnt=iter+1,
                           plot=FALSE, sizestep=0.1, solver=1)
   #add more tests here checking the integrity & contents of the returned data structure
-  #check accuracy of estimation (threshold is 1% of true de parameter value and 10% of true observation noise)
-  expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"r"])/parms["r"]),1,tolerance = 1e-2)
-  expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"K"])/parms["K"]),1,tolerance = 1e-2)
-  expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"logsd.N"])/parms["logsd.N"]),1,tolerance = 1e-1)
+  #check accuracy of estimation (threshold is 5% of true de parameter value and 20% of true observation noise)
+  expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"r"])/parms["r"]),1,tolerance = 5e-2)
+  expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"K"])/parms["K"]),1,tolerance = 5e-2)
+  expect_equal(unname(mean(mcmc_samples$samples[burnin:iter,"logsd.N"])/parms["logsd.N"]),1,tolerance = 2e-1)
 
   #test utility function for checking results class
   expect_equal(is.debinfer_result(mcmc_samples), TRUE)
