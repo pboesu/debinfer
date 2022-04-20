@@ -1,8 +1,8 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/pboesu/debinfer/workflows/R-CMD-check/badge.svg)](https://github.com/pboesu/debinfer/actions)
-[![codecov](https://codecov.io/gh/pboesu/debinfer/branch/master/graph/badge.svg)](https://codecov.io/gh/pboesu/debinfer)
+[![codecov](https://codecov.io/gh/pboesu/debinfer/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pboesu/debinfer)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/deBInfer)](https://cran.r-project.org/package=deBInfer)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/deBInfer)](http://www.r-pkg.org/pkg/deBInfer)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/deBInfer)](https://www.r-pkg.org/pkg/deBInfer)
 [![DOI](https://zenodo.org/badge/21877/pboesu/debinfer.svg)](https://zenodo.org/badge/latestdoi/21877/pboesu/debinfer)
 <!-- badges: end -->
 
@@ -15,4 +15,4 @@
 
 For more information read our [software paper](https://doi.org/10.1111/2041-210X.12679) or get in touch with pboesu@gmail.com
 
-Software development is supported by [NSF grant PLR-1341649](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1341649).
+Software development is supported by [NSF grant PLR-1341649](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1341649).
