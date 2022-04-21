@@ -1,6 +1,8 @@
 ## Release summary
 
-This is a minor update of the previous version it addresses warnings raised by R-devel CRAN checks about the use of && and || with vectors of length >1, and type checking with class(x), rather than inherits().
+This is a resubmission. Tests and vignettes have been further optimised. Check times on win-builder are now below 10 minutes (518 seconds for R-release, and 489 seconds for R-devel).
+
+Otherwise this remains a minor update of the previous version it addresses warnings raised by R-devel CRAN checks about the use of && and || with vectors of length >1, and type checking with class(x), rather than inherits().
 
 ## Test environments
 * local macOS 10.14.6, R 4.1.3
