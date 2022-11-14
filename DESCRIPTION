@@ -1,8 +1,8 @@
 Package: deBInfer
 Type: Package
 Title: Bayesian Inference for Differential Equations
-Version: 0.4.3
-Date: 2022-04-19
+Version: 0.4.4
+Date: 2022-11-14
 Authors@R: c(
     person("Philipp H", "Boersch-Supan", email = "pboesu@gmail.com", role = c("aut","cre"), comment = c(ORCID = "0000-0001-6723-6833")),
     person("Leah R", "Johnson", email = "lrjohnson0@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-9922-579X")),

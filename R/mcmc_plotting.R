@@ -62,12 +62,18 @@ pairs.debinfer_result <- function(x, trend = FALSE, scatter = FALSE, burnin=NULL
 
   for(i in 2:np)
     for(j in seq_len(i-1)){
+      range_x = if(diff(range(x$samples[,i])) == 0) {c(mean(x$samples[,i]) - 0.02, mean(x$samples[,i]) + 0.02)} else {range(x$samples[,i])}
+      range_y = if(diff(range(x$samples[,j])) == 0) {c(mean(x$samples[,j]) - 0.02, mean(x$samples[,j]) + 0.02)} else {range(x$samples[,j])}
       if (scatter == TRUE){
         plot.default(x$samples[,i],x$samples[,j], pch=16, cex=0.3, col='darkgrey', ...)
       } else {
-        plot.default(range(x$samples[,i]), range(x$samples[,j]), type = 'n', ...)
+        plot.default(range_x, range_y, type = 'n', ...)
       }
-      z <- MASS::kde2d(x$samples[,i],x$samples[,j], n=20)
+      z <- MASS::kde2d(x$samples[,i],x$samples[,j],
+                       h= c(ifelse(bandwidth.nrd(x$samples[,i]) == 0, 0.01, bandwidth.nrd(x$samples[,i])),
+                            ifelse(bandwidth.nrd(x$samples[,j]) == 0, 0.01, bandwidth.nrd(x$samples[,j]))),
+                       n=20,
+                       lims= c(range_x, range_y))
       contour(z, drawlabels=FALSE, nlevels=k, col=my.cols, add=TRUE)
       if (medians) abline(h=median(x$samples[,j]), v=median(x$samples[,i]), lwd=2, lty = 2)
       if (trend == TRUE) {
