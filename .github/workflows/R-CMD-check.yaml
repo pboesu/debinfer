@@ -55,4 +55,4 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          build_args: '--compact-vignettes="gs+qpdf"'
+          build_args: 'c("--compact-vignettes=gs+qpdf")'
