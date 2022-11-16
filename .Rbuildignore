@@ -7,7 +7,6 @@
 ^conversion_notes\.html$
 ^docs$
 ^cran-comments\.md$
-^NEWS\.md$
 ^doc$
 ^Meta$
 ^CONTRIBUTING\.md$
