@@ -1,3 +1,6 @@
+# Changes in version 0.4.4
+##Minor bug fixes and improvements
+* `pairs.debinfer_result` now handles chains stuck at the initial value more gracefully.
 # Changes in version 0.4.3
 ##Minor bug fixes and improvements
 * clarifications in documentation
